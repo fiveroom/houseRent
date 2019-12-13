@@ -9,8 +9,9 @@
 </template>
 
 <script>
-import MyInput from '../components/MyInput';
+import MyInput from './MyInput';
 export default {
+    name: 'login',
     components: {
         MyInput,
     },
