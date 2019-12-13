@@ -5,11 +5,11 @@
 				<div>PY租赁找房</div>
 				<div>
 					<i class="el-icon-location"></i>
-					<span>成都</span>
+					<span v-text="city"></span>
 				</div>
 			</div>
 			<div class="nav-cont__right">
-				<ul>
+				<ul class="page-feature">
 					<li>
 						<router-link to="/">首页</router-link>
 					</li>
@@ -18,15 +18,15 @@
 					</li>
 					<li>
 						<span>小程序</span>
-						<!-- <div></div> -->
 					</li>
 				</ul>
-				<div>
-					<div>
+				<div class="user-feature">
+					<div class="user-feature__nolog">
 						<router-link to="/user/login">登录</router-link>
-						<span>|</span>
+						<span class="baffle">|</span>
 						<router-link to="/user/register">注册</router-link>
 					</div>
+					<div></div>
 				</div>
 			</div>
 		</div>
@@ -41,24 +41,15 @@
 			};
 		},
 		methods: {
-			loadScript(key) {
-				var script = document.createElement("script");
-				script.src = `http://api.map.baidu.com/api?v=2.0&ak=${key}&callback=getCity`;
-				document.body.appendChild(script);
-			},
-			async getCity() {
-				let result = await this.loadScript();
+			getCity(key) {
 				var myCity = new BMap.LocalCity();
 				myCity.get(result => {
-					// var cityName = result.name;
-					this.city =  result.name;
-					// map.setCenter(cityName);
-					// alert("当前定位城市:" + cityName);
+					this.city = result.name;
 				});
 			}
 		},
-		mounted() {
-			this.loadScript("UOXq0NThuRG9VD9723CxMcpkQxwhiKkk");
+		created() {
+			this.getCity();
 		}
 	};
 </script>
@@ -74,6 +65,7 @@
 		background-color: rgba(0, 0, 0, 0.06);
 	}
 	.nav-cont {
+		color: #787878;
 		width: 116.8rem;
 		background-color: #fff;
 		height: 100%;
@@ -89,6 +81,7 @@
 				color: #fff;
 				font-weight: bold;
 				font-size: 2rem;
+				flex-shrink: 0;
 			}
 			& > div:last-of-type {
 				margin-left: 1rem;
@@ -97,7 +90,32 @@
 				padding: 0.4rem 0.8rem;
 				border-radius: 2em;
 				cursor: pointer;
+				flex-shrink: 0;
 			}
+		}
+		&__right {
+			display: flex;
+			align-items: center;
+			justify-content: flex-end;
+		}
+	}
+	.user-feature {
+		display: flex;
+		a {
+			color: #787878;
+		}
+		.baffle {
+			margin: 0 0.8rem;
+		}
+		margin-left: 3rem;
+	}
+	.page-feature {
+		display: flex;
+		a {
+			color: #787878;
+		}
+		li {
+			margin-left: 1.5rem;
 		}
 	}
 </style>

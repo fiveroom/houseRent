@@ -6,7 +6,7 @@
 
 <script>
 	export default {
-
+	
 	};
 </script>
 
@@ -28,5 +28,8 @@
 	li,
 	ol {
 		list-style-type: none;
+	}
+	a{
+		text-decoration: none;
 	}
 </style>
