@@ -13,14 +13,20 @@
 	margin: 0;
 	padding: 0;
 }
+
 html {
 	font-size: 62.5%;
+	height: 100%;
 }
 body {
 	font-size: 1.6rem;
 	font-family: PingFang SC, Hiragino Sans GB, Microsoft YaHei, Helvetica Neue,
 		Helvetica, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji,
 		Segoe UI Symbol !important;
+	height: 100%;
+}
+#app{
+	height: 100%;
 }
 ul,
 li,

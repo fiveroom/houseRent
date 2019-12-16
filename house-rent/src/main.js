@@ -6,6 +6,8 @@ import element from '@/element';
 
 import Nav from '@/components/Nav.vue';
 import Footer from '@/components/Footer';
+import Mybutton from '@/components/Mybutton';
+import MyInput from '@/components/MyInput';
 
 import Axios from 'axios';
 import Qs from 'qs';
@@ -20,6 +22,8 @@ Vue.config.productionTip = false
 
 Vue.component('header-nav', Nav)
 Vue.component('Footer', Footer)
+Vue.component('Mybutton', Mybutton)
+Vue.component('MyInput', MyInput)
 new Vue({
     router,
     store,

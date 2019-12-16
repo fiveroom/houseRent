@@ -13,7 +13,7 @@ const originalPush = VueRouter.prototype.push
 VueRouter.prototype.push = function push(location) {
     return originalPush.call(this, location).catch(err => err)
 }
-
+const meta = {requireAuth: true}
 Vue.use(VueRouter)
 
 const routes = [{
@@ -37,11 +37,17 @@ const routes = [{
                 component: Login
             }, {
                 path: '/user/login',
-                component: Login
+                component: Login,
+                meta: {
+                    index: 1
+                }
             },
             {
                 path: '/user/register',
-                component: Register
+                component: Register,
+                meta: {
+                    index: 2
+                }
             }
         ]
     },
@@ -51,7 +57,10 @@ const routes = [{
     },
     {
         path: '/userDetail',
-        component: UserDetail
+        component: UserDetail,
+        meta: {
+            ...meta
+        }
     }
 ]
 
