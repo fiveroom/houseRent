@@ -19,7 +19,7 @@
 				beginClientX: 0 /*鼠标距离屏幕左端距离*/,
 				mouseMoveStata: false /*触发拖动状态  判断*/,
 				maxwidth: "" /*拖动最大宽度*/,
-				confirmWords: "拖动滑块验证" /*滑块文字*/,
+				confirmWords: "请按住滑块，拖到最右边" /*滑块文字*/,
 				confirmSuccess: false /*验证成功判断*/
 			};
 		},
@@ -32,6 +32,8 @@
 				}
 			}, //mousedoen 事件
 			successFunction() {
+				console.log('成功');
+
                 this.confirmSuccess = true;
                 this.$emit('slidStatus', this.confirmSuccess)
 				this.confirmWords = "验证通过";
@@ -73,7 +75,7 @@
 		},
 		mounted() {
 			this.maxwidth =
-				this.$refs.dragDiv.clientWidth - this.$refs.moveDiv.clientWidth;
+				this.$refs.dragDiv.clientWidth - this.$refs.moveDiv.clientWidth - 2;
 			document
 				.getElementsByTagName("html")[0]
 				.addEventListener("mousemove", this.mouseMoveFn);

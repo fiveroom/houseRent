@@ -2,7 +2,9 @@
 	<header class="nav-top">
 		<div class="nav-cont">
 			<div class="nav-cont__left">
-				<div class="logo">PY租赁找房</div>
+				<div class="logo">
+					<img :src="logoImg" alt="">
+				</div>
 				<div class="city">
 					<i class="el-icon-location"></i>
 					<span v-text="city"></span>
@@ -34,8 +36,10 @@
 <script>
 	export default {
 		data() {
+			const logoImg = require('@/assets/logo.png');
 			return {
-				city: null
+				city: null,
+				logoImg
 			};
 		},
 		methods: {
@@ -54,10 +58,6 @@
 
 <style lang="scss" scoped>
 .nav-top {
-	// position: absolute;
-	// top: 0;
-	// left: 0;
-	// width: 100%;
 	z-index: 1;
 	background-color: #fff;
 }
@@ -72,12 +72,12 @@
 		display: flex;
 		align-items: center;
 		.logo {
-			flex-shrink: 0;
-			padding: 10px 0;
-			background: skyblue;
-			color: #fff;
-			font-weight: bold;
-			font-size: 2.5rem;
+			width: 13.6rem;
+			height: 7.3rem;
+			img{
+				width: 100%;
+				height: 100%;
+			}
 			flex-shrink: 0;
 		}
 		.city {

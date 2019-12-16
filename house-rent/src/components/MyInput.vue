@@ -13,7 +13,7 @@
 			/>
 			<div :class="['input-box__remind', remindStyle]">
 				<i class="el-icon-warning mycolor"></i>
-				<span v-text="judgeRequired?' 输入不能为空哦':` ${regStr && regStr.hint}`"></span>
+				<span v-text="judgeRequired?' 输入不能为空':` ${regStr && regStr.hint}`"></span>
 			</div>
 			<div :class="hintLineStyle"></div>
 		</div>
@@ -21,7 +21,6 @@
 </template>
 
 <script>
-	import { turquoise } from "color-name";
 	export default {
 		props: {
 			type: null,

@@ -5,6 +5,7 @@ import store from '@/store'
 import element from '@/element';
 
 import Nav from '@/components/Nav.vue';
+import Footer from '@/components/Footer';
 
 import Axios from 'axios';
 import Qs from 'qs';
@@ -18,6 +19,7 @@ Vue.use(element)
 Vue.config.productionTip = false
 
 Vue.component('header-nav', Nav)
+Vue.component('Footer', Footer)
 new Vue({
     router,
     store,

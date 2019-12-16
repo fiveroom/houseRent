@@ -3,13 +3,13 @@
 		<div class="login-from__left"></div>
 		<div class="login-from__right">
 			<div class="form">
-				<el-tabs v-model="activeName" @tab-click="handleClick">
-					<el-tab-pane label="密码登录" name="first">
+				<el-tabs v-model="activeName" class="mytab" @tab-click="handleClick">
+					<el-tab-pane label="账号密码登录" name="first">
 						<MyInput
 							lable="userName"
 							v-model="userName"
 							:required="true"
-							placeholder="账号"
+							placeholder="账号或手机号"
 							@inputStatus="(status)=>{userNameStatus = status}"
 							:upStatus="loginStatus"
 						/>
@@ -32,17 +32,24 @@
 							:required="true"
 							placeholder="手机号"
 							@inputStatus="(status)=>{userPhoneStatus = status}"
-							:upStatus="loginStatus"
+							:upStatus="loginCodeStatus"
 						/>
 						<div class="code">
-							<input class="code__input" type="text" />
+							<MyInput
+								lable="code"
+								v-model="code"
+								:required="true"
+								class="code__input"
+								placeholder="验证码"
+								@inputStatus="(status)=>{codeStatus = status}"
+								:upStatus="getCodeStatus || loginCodeStatus"
+							/>
 							<div @click="getCodeJudge" class="code__get">
 								<span>{{timeOut?`重新获取${timeOut}`:'获取验证码'}}</span>
 							</div>
 						</div>
 					</el-tab-pane>
 				</el-tabs>
-
 				<div ref="formBut" class="form__but" @mousedown="addWrap" @mouseup="delWrap">
 					<span>登录</span>
 					<div class="wrap-box">
@@ -50,12 +57,17 @@
 						<div v-if="wrapDown" :style="wrapStyle" :class="['wrap',wrapDown?'wrap--two':'']"></div>
 					</div>
 				</div>
+				<div class="form__bootm">
+					<router-link to="/user/register">免费注册</router-link>
+					<router-link to="/editCode">忘记密码</router-link>
+				</div>
 			</div>
 		</div>
 	</section>
 </template>
 
 <script>
+	import { login, getCode, logByCode } from "@/api/user";
 	import MyInput from "./MyInput";
 	import SlidVal from "./SlidVal";
 	export default {
@@ -68,6 +80,9 @@
 			let wrapStyle = {},
 				wrapDown = false;
 			return {
+				code: null,
+				codeStatus: false,
+				getCodeStatus: true,
 				userName: null,
 				userNameStatus: false,
 				userPhone: null,
@@ -79,6 +94,7 @@
 				wrapDown, // 登录按钮按下
 				slidStatus: false,
 				loginStatus: true,
+				loginCodeStatus: true,
 				activeName: "first",
 				timeOut: 0
 			};
@@ -91,8 +107,7 @@
 			// 登录按钮按下
 			addWrap(e) {
 				this.wrapDown = true;
-				this.loginStatus =
-					this.userNameStatus && this.pwdStatus && this.slidStatus;
+				this.getCodeStatus = false;
 				let percent =
 					(
 						e.offsetX /
@@ -104,151 +119,201 @@
 					left: percent,
 					transform: `translateX(-${percent})`
 				};
-				if (this.loginStatus) {
-					this.loginTo();
-				}
 			},
 			// 去除登录按钮样式
 			delWrap() {
 				this.wrapDown = false;
 				this.wrapStyle = {};
+				if (this.activeName === "first") {
+					this.loginStatus =
+						this.userNameStatus && this.pwdStatus && this.slidStatus;
+					this.loginStatus && this.loginTo();
+				} else if (this.activeName === "second") {
+					this.loginCodeStatus = this.userPhoneStatus && this.codeStatus;
+					this.loginCodeStatus && this.loginCode();
+				}
 			},
-			loginTo() {
-				console.log("登录");
+			// 账户密码登录
+			async loginTo() {
+				let data = await login(
+					{
+						loginInfo: this.userName,
+						user_pwd: this.pwd
+					},
+					res => {
+						return res.data;
+					}
+				);
 			},
-			handleClick() {},
+			// 验证码登录
+			async loginCode() {
+				let data = await logByCode(
+					{
+						telephone: this.userPhone,
+						code: this.code
+					},
+					res => {
+						console.log(res, "验证码验证");
+					}
+				);
+			},
+			handleClick(item) {},
 			getCodeJudge() {
-				this.loginStatus = this.userPhoneStatus;
-				if (!this.timeOut) {
-					this.getCode()
+				this.loginCodeStatus = this.userPhoneStatus;
+				if (!this.timeOut && this.userPhoneStatus) {
+					getCode({
+						telephone: this.userPhone
+					},(res)=>{
+						console.log(res, '验证码');
+					});
 					this.timeOut = 60;
 					let timer = setInterval(() => {
 						this.timeOut--;
-						if(this.timeOut === 0) {
-							clearInterval(timer)
+						if (this.timeOut === 0) {
+							clearInterval(timer);
 						}
 					}, 1000);
 				}
-			},
-			getCode(){
-				console.log('获取验证码');
 			}
-		}
+		},
+		created() {}
 	};
 </script>
 
 <style lang="scss" scoped>
-.login-from {
-	width: 100rem;
-	height: 56rem;
-	display: flex;
-	border-radius: 0.8rem;
-	overflow: hidden;
-	box-shadow: 0 6px 20px 5px rgba(40, 120, 255, 0.1),
-		0 16px 24px 2px rgba(0, 0, 0, 0.05);
-	&__left {
-		flex-shrink: 0;
-		width: 44rem;
-		background-color: skyblue;
-	}
-	&__right {
-		flex-grow: 1;
-		box-sizing: border-box;
-	}
-}
-.form {
-	width: 33rem;
-	margin: 0 auto;
-	&__title {
-		font-size: 3.6rem;
-		font-weight: bolder;
-		color: #2878ff;
-		margin: 81px 0 60px 0;
-		text-align: center;
-	}
-	&__but {
-		background-color: #2878ff;
-		color: #fff;
-		font-weight: bolder;
-		border-radius: 0.4rem;
-		height: 4rem;
-		text-align: center;
-		line-height: 4rem;
-		position: relative;
-		cursor: pointer;
-		box-shadow: 0 1px 6px rgba(0, 0, 0, 0.117647),
-			0 1px 4px rgba(0, 0, 0, 0.117647);
-		&:hover {
-			background-color: #246ce5;
-		}
-		&:active {
-			box-shadow: 2px 5px 8px rgba(0, 0, 0, 0.2),
-				-2px 0px 6px rgba(0, 0, 0, 0.2);
-		}
-	}
-	&__slid {
-		margin: 2rem 0 3rem;
-	}
-}
-.wrap-box {
-	position: absolute;
-	width: 100%;
-	height: 100%;
-	top: 0;
-	left: 0;
-}
-.wrap {
-	position: absolute;
-	height: 100%;
-	top: 0;
-	width: 0;
-	background-color: rgba(255, 255, 255, 0.1);
-	&--one {
-		animation: addWrap 0.3s forwards;
-	}
-	&--two {
-		animation: addWrap 0.2s forwards;
-	}
-}
-.code {
-	display: flex;
-	margin: 2rem 0 3rem;
-	height: 4rem;
-	&__input {
-		width: 13rem;
-		box-sizing: border-box;
-		text-align: center;
-		font-size: 2rem;
-		&:focus {
-			outline: none;
-		}
-	}
-	&__get {
-		cursor: pointer;
-		background-color: skyblue;
-		border-radius: 0.4rem;
-		margin-left: 1.8rem;
+	.login-from {
+		width: 100rem;
+		height: 56rem;
 		display: flex;
-		align-items: center;
-		color: #fff;
-		padding: 0 1rem;
-		box-shadow:  0 6px 20px 5px rgba(40, 120, 255, 0.1),
-		0 16px 24px 2px rgba(0, 0, 0, 0.05);
-		&:hover {
-			background-color: red;
+		border-radius: 0.8rem;
+		overflow: hidden;
+		box-shadow: 0 6px 20px 5px rgba(40, 120, 255, 0.1),
+			0 16px 24px 2px rgba(0, 0, 0, 0.05);
+		&__left {
+			flex-shrink: 0;
+			width: 44rem;
+			background-color: skyblue;
 		}
-		&:active {
-			box-shadow: 2px 5px 8px rgba(0, 0, 0, 0.2),
-				-2px 0px 6px rgba(0, 0, 0, 0.2);
+		&__right {
+			flex-grow: 1;
+			box-sizing: border-box;
 		}
 	}
-}
-@keyframes addWrap {
-	0% {
-		width: 0;
+	.form {
+		width: 33rem;
+		margin: 0 auto;
+		&__title {
+			font-size: 3.6rem;
+			font-weight: bolder;
+			color: #2878ff;
+			margin: 81px 0 60px 0;
+			text-align: center;
+		}
+		&__but {
+			background-color: #2878ff;
+			color: #fff;
+			font-weight: bolder;
+			border-radius: 0.4rem;
+			height: 4rem;
+			text-align: center;
+			line-height: 4rem;
+			position: relative;
+			cursor: pointer;
+			box-shadow: 0 1px 6px rgba(0, 0, 0, 0.117647),
+				0 1px 4px rgba(0, 0, 0, 0.117647);
+			&:hover {
+				background-color: #246ce5;
+			}
+			&:active {
+				box-shadow: 2px 5px 8px rgba(0, 0, 0, 0.2),
+					-2px 0px 6px rgba(0, 0, 0, 0.2);
+			}
+		}
+		&__slid {
+			margin: 2rem 0 3rem;
+		}
+		&__bootm {
+			display: flex;
+			font-size: 1.2rem;
+			align-items: center;
+			padding: 1rem 0;
+			justify-content: space-between;
+			a:first-of-type {
+				color: #396afe;
+			}
+			a:last-of-type {
+				color: #9fa2a8;
+			}
+		}
 	}
-	100% {
+	.wrap-box {
+		position: absolute;
 		width: 100%;
+		height: 100%;
+		top: 0;
+		left: 0;
 	}
-}
+	.wrap {
+		position: absolute;
+		height: 100%;
+		top: 0;
+		width: 0;
+		background-color: rgba(255, 255, 255, 0.1);
+		&--one {
+			animation: addWrap 0.3s forwards;
+		}
+		&--two {
+			animation: addWrap 0.2s forwards;
+		}
+	}
+	.code {
+		display: flex;
+		justify-content: space-between;
+		margin-bottom: 2rem;
+		&__input {
+			width: 17.4rem;
+			text-align: center;
+			input {
+				font-size: 2rem;
+			}
+		}
+		&__get {
+			cursor: pointer;
+			background-color: skyblue;
+			border-radius: 0.4rem;
+			margin-left: 1.8rem;
+			display: flex;
+			align-items: center;
+			color: #fff;
+			padding: 0 1rem;
+			height: 4rem;
+			box-shadow: 0 1px 6px rgba(0, 0, 0, 0.117647),
+				0 1px 4px rgba(0, 0, 0, 0.117647);
+			&:hover {
+				background-color: red;
+			}
+			&:active {
+				box-shadow: 2px 5px 8px rgba(0, 0, 0, 0.2),
+					-2px 0px 6px rgba(0, 0, 0, 0.2);
+			}
+			margin-top: 1.1rem;
+		}
+	}
+	.mytab {
+		margin-top: 10rem;
+	}
+	.el-tabs >>> .el-tabs__item {
+		font-size: 1.8rem;
+	}
+	// /deep/ .el-tabs__item{
+	// 	font-size: 16px
+	// }
+	@keyframes addWrap {
+		0% {
+			width: 0;
+		}
+		100% {
+			width: 100%;
+		}
+	}
 </style>

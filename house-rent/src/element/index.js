@@ -1,6 +1,12 @@
 import {
-    Button, Dropdown, DropdownMenu,
-    DropdownItem, Tabs, TabPane 
+    Button,
+    Dropdown,
+    DropdownMenu,
+    DropdownItem,
+    Tabs,
+    TabPane,
+    Breadcrumb,
+    BreadcrumbItem,
 } from 'element-ui';
 
 const element = {
@@ -11,6 +17,8 @@ const element = {
         Vue.use(DropdownItem);
         Vue.use(Tabs);
         Vue.use(TabPane);
+        Vue.use(Breadcrumb);
+        Vue.use(BreadcrumbItem);
     }
 }
 
