@@ -16,8 +16,10 @@
 						<li
 							v-for="(value, indexC) in item.items"
 							:key="indexC"
+							:data-sole="`${indexC}-${item.key}`"
 							v-text="value"
-							class="check-line__alone"
+							:class="['check-line__alone', addLight(indexC, item.key)?'check-line__alone--choice':'']"
+							@click="addSearchKey($event, indexC)"
 						></li>
 						<li v-if="item.title === '价格'" class="input-price">
 							<input v-model="startP" @input="judgeNum($event, 'startP')" type="text" />
@@ -38,10 +40,17 @@
 		data() {
 			let searchField = [
 				{
+					key: "locat",
 					title: "位置",
 					items: ["不限", "高新区", "双流区"]
 				},
 				{
+					key: "room",
+					title: "居室",
+					items: ["不限", "一居室", "二居室", "三居室", "四居室以上"]
+				},
+				{
+					key: "price",
 					title: "价格",
 					items: [
 						"不限",
@@ -54,12 +63,31 @@
 					]
 				},
 				{
-					title: "居室",
-					items: ["不限", "一居室", "二居室", "三居室", "四居室以上"]
-				},
-				{
+					key: "type",
 					title: "类型",
 					items: ["不限", "押一付一", "押一付二", "押一付三"]
+				}
+			];
+			let choiceSearchKey = [
+				{
+					key: "locat",
+					searchKey: "area_str",
+					item: ["0-locat"]
+				},
+				{
+					key: "price",
+					searchKey: "rent_str",
+					item: ["0-price"]
+				},
+				{
+					key: "room",
+					searchKey: "shape_str",
+					item: ["0-room"]
+				},
+				{
+					key: "type",
+					searchKey: "months_str",
+					item: ["0-type"]
 				}
 			];
 			let feature = {
@@ -93,101 +121,143 @@
 			};
 			return {
 				searchField,
+				choiceSearchKey,
 				startP: null,
 				endP: null
 			};
 		},
 		computed: {
-			startPreg() {
-				if (/^\d+$/.test(this.startP)) {
-					this.startP = oldV + newV + "";
+			// addLight(){
+
+			// }
+		},
+		methods: {
+			judgeNum(e, name) {
+				if (!/^\d+(\.{1}\d+){0,1}$/.test(e.target.value)) {
+					this[name] = "";
 				}
-				console.log(/^\d+$/.test(newV));
-				this.startP = oldV;
+			},
+			getPriceSec() {
+				// if()
+			},
+			addSearchKey(e, indexC) {
+				let [index, key] = e.target.dataset.sole.split("-");
+				let arrItem = [];
+				let indexA = null;
+				let minItem = `0-${key}`;
+				for(let i = 0; i < this.choiceSearchKey.length; i++){
+					if (this.choiceSearchKey[i].key === key) {
+						arrItem = this.choiceSearchKey[i].item;
+						indexA = i;
+						break;
+					}
+				}
+				let resNow = arrItem.indexOf(e.target.dataset.sole);
+				if (resNow === -1) {
+					arrItem.push(e.target.dataset.sole);
+				} else {
+					arrItem.splice(resNow, 1);
+				}
+				let resMin = arrItem.indexOf(minItem);
+				if (index === "0") {
+					arrItem = [minItem];
+				} else if (resMin != -1) {
+					arrItem.splice(arrItem.indexOf(minItem), 1);
+				}
+				if(arrItem.length === 0) {
+					arrItem = [minItem];
+				}
+				this.choiceSearchKey[indexA].item = arrItem;
+			},
+			addLight(indexC, key){
+				let arrItem = [];
+				for(let i = 0; i < this.choiceSearchKey.length; i++){
+					if (this.choiceSearchKey[i].key === key) {
+						arrItem = this.choiceSearchKey[i].item;
+						break;
+					}
+				}
+				return arrItem.includes(`${indexC}-${key}`)
+			},
+			dealData(){
+				
 			}
-        },
-        methods: {
-            judgeNum(e, name) {
-                if(!/^\d+|\.$/.test(e.target.value)){
-                    this[name] = ''
-                }
-            },
-            getPriceSec(){
-                // if()
-            }
-        },
+		}
 	};
 </script>
 
 <style lang="scss" scoped>
-	$hoverColor: #00bfc8;
-	$fontLightColor: #3dbcc6;
-	.body {
-		width: 116.8rem;
-		margin: 0 auto;
-		&__header {
-			height: 5rem;
-			display: flex;
-			align-items: center;
-		}
-		&__check {
-			// border: 1px solid #e5e5e5;
-		}
-	}
-	.check-line {
-		font-size: 1.5rem;
-		padding-top: 1.5rem;
+$hoverColor: #00bfc8;
+$fontLightColor: #3dbcc6;
+.body {
+	width: 116.8rem;
+	margin: 0 auto;
+	&__header {
+		height: 5rem;
 		display: flex;
-		&__title {
-			font-weight: bold;
-			width: 6rem;
-		}
-		&__con {
-			flex-grow: 1;
-			display: flex;
-			flex-wrap: wrap;
-			border-bottom: 1px solid #e5e5e5;
-		}
-		&__alone {
-			color: rgba(0, 0, 0, 0.6);
-			font-size: 1.5rem;
-			margin-right: 2rem;
-			margin-bottom: 1.5rem;
-			cursor: pointer;
-			&:hover {
-				text-decoration: underline;
-			}
-		}
+		align-items: center;
 	}
-	.check-color {
-		color: $fontLightColor;
+	&__check {
+		// border: 1px solid #e5e5e5;
 	}
-	.input-price {
+}
+.check-line {
+	font-size: 1.5rem;
+	padding-top: 1.5rem;
+	display: flex;
+	&__title {
+		font-weight: bold;
+		width: 6rem;
+	}
+	&__con {
+		flex-grow: 1;
+		display: flex;
+		flex-wrap: wrap;
+		border-bottom: 1px solid #e5e5e5;
+	}
+	&__alone {
 		color: rgba(0, 0, 0, 0.6);
-		display: flex;
-		height: auto;
-		input:focus {
-			outline: none;
+		font-size: 1.5rem;
+		margin-right: 2rem;
+		margin-bottom: 1.5rem;
+		cursor: pointer;
+		&:hover {
+			text-decoration: underline;
 		}
-		input {
-			border: 1px solid #e5e5e5;
-			border-radius: 2px;
-			width: 46px;
-			padding: 2px 2px 2px 5px;
-			height: 16px;
-			color: rgba(0, 0, 0, 0.6);
-		}
-		&--min {
-			margin: 0 4px;
-		}
-		div {
-			width: 30px;
-		}
-		&--confim {
-			font-size: 1.4rem;
+		&--choice {
 			color: $fontLightColor;
-			margin-left: 2rem;
-			cursor: pointer;
 		}
 	}
+}
+.check-color {
+	color: $fontLightColor;
+}
+.input-price {
+	color: rgba(0, 0, 0, 0.6);
+	display: flex;
+	height: auto;
+	input:focus {
+		outline: none;
+	}
+	input {
+		border: 1px solid #e5e5e5;
+		border-radius: 2px;
+		width: 46px;
+		padding: 2px 2px 2px 5px;
+		height: 16px;
+		color: rgba(0, 0, 0, 0.6);
+	}
+	&--min {
+		margin: 0 4px;
+	}
+	div {
+		width: 30px;
+	}
+	&--confim {
+		font-size: 1.4rem;
+		color: $fontLightColor;
+		margin-left: 2rem;
+		cursor: pointer;
+	}
+}
 </style>
