@@ -3,8 +3,7 @@ import qs from 'qs';
 // 登录
 export const login = (data, call) => {
     return axios.post('/LoginRegistMgeSvr.assx/loginByUserNameOrTel', qs.stringify(data)).then(res => {
-        console.log(res);
-        return call(res);
+        return res;
     }).catch(err => {
         return err
     })

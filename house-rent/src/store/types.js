@@ -1,7 +1,6 @@
-// const INCREMENT = 'INCREMENT'
-// const DECREMENT = 'DECREMENT'
+/**
+ * 用户
+ */
 
-// export default {
-//     INCREMENT,
-//     DECREMENT
-// }
+export const SAVE_USER = 'saveUser'
+export const LOGIN_USER = 'loginUser'

@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 
+import createPersistedState from "vuex-persistedstate"; // 持久化
 import getters from './getters';
 import actions from './actions';
 import mutations from './mutations';
@@ -14,5 +15,14 @@ export default new Vuex.Store({
     mutations,
     modules: {
         user
-    }
+    },
+    plugins: [createPersistedState({
+        storage: window.sessionStorage,
+        reducer(val) {
+            debugger;
+            return {
+                user: val.user
+            }
+        }
+    })]
 })

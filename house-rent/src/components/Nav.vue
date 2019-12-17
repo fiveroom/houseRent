@@ -22,18 +22,23 @@
 				</ul>
 			</div>
 			<div class="nav-cont__right">
-				<div class="nav-cont__right--nolog">
+				<div v-if="!userId" class="nav-cont__right--nolog">
 					<router-link to="/user/login">登录</router-link>
 					<span class="baffle">|</span>
 					<router-link to="/user/register">注册</router-link>
 				</div>
-				<div></div>
+				<div v-else class="nav-cont__right--nolog">
+					<router-link to="/userDetail">{{userName || telDeal}}</router-link>
+					<span class="baffle">|</span>
+					<span>退出</span>
+				</div>
 			</div>
 		</div>
 	</header>
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 	export default {
 		data() {
 			const logoImg = require('@/assets/logo.png');
@@ -41,6 +46,12 @@
 				city: null,
 				logoImg
 			};
+		},
+		computed: {
+			...mapGetters(['userId', 'userName', 'telDeal']),
+			name() {
+				return this.data 
+			}
 		},
 		methods: {
 			getCity(key) {
@@ -52,6 +63,7 @@
 		},
 		created() {
 			this.getCity();
+			console.log(this.$store.getters);
 		}
 	};
 </script>
@@ -60,6 +72,7 @@
 .nav-top {
 	z-index: 1;
 	background-color: #fff;
+	box-shadow: 0 0 10px 0 #aaa;
 }
 .nav-cont {
 	color: #787878;
@@ -119,6 +132,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: flex-end;
+		color: #787878;
 		a {
 			color: #787878;
 			transition: color 0.3s;
@@ -129,6 +143,7 @@
 		&--nolog {
 			display: flex;
 			.baffle {
+				color: #000;
 				margin: 0 0.8rem;
 			}
 			margin-left: 3rem;

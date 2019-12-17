@@ -61,6 +61,7 @@
 </template>
 
 <script>
+	import { mapActions } from "vuex";
 	import { login, getCode, logByCode } from "@/api/user";
 	import SlidVal from "./SlidVal";
 	export default {
@@ -75,7 +76,7 @@
 			return {
 				code: null,
 				codeStatus: false,
-				getCodeStatus: true,  // 点击获取验证码时判断
+				getCodeStatus: true, // 点击获取验证码时判断
 				userName: null,
 				userNameStatus: false,
 				userPhone: null,
@@ -94,22 +95,23 @@
 			SlidVal
 		},
 		methods: {
-			// 账户密码登录
-			async loginTo() {
-				console.log('登录');
-				let data = await login(
-					{
-						loginInfo: this.userName,
-						user_pwd: this.pwd
-					},
-					res => {
-						return res.data;
+			...mapActions(["loginUser"]),
+			loginTo() {
+				this.loginUser({
+					loginInfo: this.userName,
+					user_pwd: this.pwd
+				}).then(res=>{
+					if(res.status){
+						this.$router.go('-1')
+						console.log(sessionStorage);
+					} else {
+						console.log('登录失败');
 					}
-				);
+				});
 			},
-			// 验证码登录
+			// 手机验证码登录
 			async loginCode() {
-				console.log('验证码登录');
+				console.log("验证码登录");
 				let data = await logByCode(
 					{
 						telephone: this.userPhone,
@@ -141,8 +143,8 @@
 					}, 1000);
 				}
 			},
-			loginWeb(){
-				this.getCodeStatus = false
+			loginWeb() {
+				this.getCodeStatus = false;
 				if (this.activeName === "first") {
 					this.loginStatus =
 						this.userNameStatus && this.pwdStatus && this.slidStatus;
@@ -158,86 +160,86 @@
 </script>
 
 <style lang="scss" scoped>
-.login-from {
-	width: 100rem;
-	height: 56rem;
-	display: flex;
-	border-radius: 0.8rem;
-	overflow: hidden;
-	box-shadow: 0 6px 20px 5px rgba(40, 120, 255, 0.1),
-		0 16px 24px 2px rgba(0, 0, 0, 0.05);
-	&__left {
-		flex-shrink: 0;
-		width: 44rem;
-		background-color: skyblue;
-	}
-	&__right {
-		flex-grow: 1;
-		box-sizing: border-box;
-	}
-}
-.form {
-	width: 33rem;
-	margin: 0 auto;
-	&__title {
-		font-size: 3.6rem;
-		font-weight: bolder;
-		color: #2878ff;
-		margin: 81px 0 60px 0;
-		text-align: center;
-	}
-	&__slid {
-		margin: 2rem 0 3rem;
-	}
-	&__bootm {
+	.login-from {
+		width: 100rem;
+		height: 56rem;
 		display: flex;
-		font-size: 1.2rem;
-		align-items: center;
-		padding: 1rem 0;
-		justify-content: space-between;
-		a:first-of-type {
-			color: #396afe;
+		border-radius: 0.8rem;
+		overflow: hidden;
+		box-shadow: 0 6px 20px 5px rgba(40, 120, 255, 0.1),
+			0 16px 24px 2px rgba(0, 0, 0, 0.05);
+		&__left {
+			flex-shrink: 0;
+			width: 44rem;
+			background-color: skyblue;
 		}
-		a:last-of-type {
-			color: #9fa2a8;
+		&__right {
+			flex-grow: 1;
+			box-sizing: border-box;
 		}
 	}
-}
+	.form {
+		width: 33rem;
+		margin: 0 auto;
+		&__title {
+			font-size: 3.6rem;
+			font-weight: bolder;
+			color: #2878ff;
+			margin: 81px 0 60px 0;
+			text-align: center;
+		}
+		&__slid {
+			margin: 2rem 0 3rem;
+		}
+		&__bootm {
+			display: flex;
+			font-size: 1.2rem;
+			align-items: center;
+			padding: 1rem 0;
+			justify-content: space-between;
+			a:first-of-type {
+				color: #396afe;
+			}
+			a:last-of-type {
+				color: #9fa2a8;
+			}
+		}
+	}
 
-.code {
-	display: flex;
-	justify-content: space-between;
-	margin-bottom: 2rem;
-	&__input {
-		width: 17.4rem;
-		text-align: center;
-		input {
-			font-size: 2rem;
-		}
-	}
-	&__get {
-		cursor: pointer;
-		background-color: skyblue;
-		border-radius: 0.4rem;
-		margin-left: 1.8rem;
+	.code {
 		display: flex;
-		align-items: center;
-		color: #fff;
-		padding: 0 1rem;
-		height: 4rem;
-		box-shadow: 0 1px 6px rgba(0, 0, 0, 0.117647),
-			0 1px 4px rgba(0, 0, 0, 0.117647);
-		&:hover {
-			background-color: red;
+		justify-content: space-between;
+		margin-bottom: 2rem;
+		&__input {
+			width: 17.4rem;
+			text-align: center;
+			input {
+				font-size: 2rem;
+			}
 		}
-		&:active {
-			box-shadow: 2px 5px 8px rgba(0, 0, 0, 0.2),
-				-2px 0px 6px rgba(0, 0, 0, 0.2);
+		&__get {
+			cursor: pointer;
+			background-color: skyblue;
+			border-radius: 0.4rem;
+			margin-left: 1.8rem;
+			display: flex;
+			align-items: center;
+			color: #fff;
+			padding: 0 1rem;
+			height: 4rem;
+			box-shadow: 0 1px 6px rgba(0, 0, 0, 0.117647),
+				0 1px 4px rgba(0, 0, 0, 0.117647);
+			&:hover {
+				background-color: red;
+			}
+			&:active {
+				box-shadow: 2px 5px 8px rgba(0, 0, 0, 0.2),
+					-2px 0px 6px rgba(0, 0, 0, 0.2);
+			}
+			margin-top: 1.1rem;
 		}
-		margin-top: 1.1rem;
 	}
-}
-.mytab {
-	margin-top: 10rem;
-}
+	.mytab {
+		margin-top: 10rem;
+	}
 </style>

@@ -10,6 +10,7 @@
 				:value="value"
 				@blur="verifyValue"
 				@input="$emit('input', $event.target.value)"
+				autocomplete="off"
 			/>
 			<div :class="['input-box__remind', remindStyle]">
 				<i class="el-icon-warning mycolor"></i>

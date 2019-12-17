@@ -1,99 +1,211 @@
 <template>
 	<div class="user-detail">
 		<div class="user-detail__con">
-				<header-nav />
-				<section class="user-container">
-					<div class="user-deal">
-						<header class="user-deal__header">
-							<el-breadcrumb separator-class="el-icon-arrow-right">
-								<!-- <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item> -->
-								<el-breadcrumb-item>活动管理</el-breadcrumb-item>
-								<el-breadcrumb-item>活动列表</el-breadcrumb-item>
-								<el-breadcrumb-item>活动详情</el-breadcrumb-item>
-							</el-breadcrumb>
-						</header>
-						<section class="user-deal__body">
-							<nav class="body__left">
+			<header-nav />
+			<!-- <section class="user-container"> -->
+			<div class="user-deal">
+				<header class="user-deal__header">
+					<el-breadcrumb separator-class="el-icon-arrow-right">
+						<!-- <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item> -->
+						<el-breadcrumb-item>相寓租房</el-breadcrumb-item>
+						<el-breadcrumb-item>个人设置</el-breadcrumb-item>
+						<el-breadcrumb-item>{{$route.name}}</el-breadcrumb-item>
+					</el-breadcrumb>
+				</header>
+				<section class="user-deal__body">
+					<nav class="body body__left">
+						<ul>
+							<li v-for="(item, index) in menu" :key="index">
+								<h2 class="body__left--h2" v-text="item.title"></h2>
 								<ul>
-									<li>
-										<h2>个人设置</h2>
-										<ul>
-											<li>个人中心</li>
-											<li>我的收藏</li>
-											<li>修改手机号</li>
-											<li>修改密码</li>
-										</ul>
-									</li>
-									<li>
-										<h2>租客服务</h2>
-										<ul>
-											<li>我的合同</li>
-											<li>租房问题</li>
-										</ul>
-									</li>
-									<li>
-										<h2>意见/建议</h2>
-										<ul>
-											<li>意见反馈</li>
-										</ul>
+									<li class="body__left--item" v-for="(child, childIndex) in item.items" :key="childIndex">
+										<router-link
+											:to="child.url"
+											:class="['item__a',child.url === nowRouteP?'item__a--light':'' ]"
+										>
+											{{child.title}}
+											<i class="side"></i>
+										</router-link>
 									</li>
 								</ul>
-							</nav>
-							<section class="body__right">
-								<router-view />
-							</section>
-						</section>
-					</div>
+							</li>
+						</ul>
+					</nav>
+					<!-- <section class="body body__right"> -->
+					<router-view class="body body__right" />
+					<!-- </section> -->
 				</section>
-			<div class="user-detail__empt"></div>
+			</div>
+			<!-- </section> -->
+			<!-- <div class="user-detail__empt"></div> -->
 		</div>
-		<Footer class="user-detail__footer" />
+		<!-- <Footer class="user-detail__footer" /> -->
 	</div>
 </template>
 
 <script>
-	export default {};
+	export default {
+		data() {
+			const menu = [
+				{
+					title: "个人设置",
+					items: [
+						{
+							title: "个人中心",
+							url: "/userDetail/persCenter"
+						},
+						{
+							title: "我的收藏",
+							url: "/userDetail/myCollect"
+						},
+						{
+							title: "修改手机号",
+							url: "#"
+						},
+						{
+							title: "修改密码",
+							url: "#"
+						}
+					]
+				},
+				{
+					title: "租客服务",
+					items: [
+						{
+							title: "我的合同",
+							url: "#"
+						},
+						{
+							title: "租房问题",
+							url: "#"
+						}
+					]
+				},
+				{
+					title: "意见/建议",
+					items: [
+						{
+							title: "意见反馈",
+							url: "#"
+						}
+					]
+				}
+			];
+			return {
+				menu
+			};
+		},
+		watch: {},
+		computed: {
+			nowRouteP() {
+				console.log(this.$route);
+				if (this.$route.fullPath === "/userDetail") {
+					return "/userDetail/persCenter";
+				}
+				return this.$route.fullPath;
+			},
+			showTitle(){
+
+			}
+		}
+	};
 </script>
 
 <style lang="scss" scoped>
-.user-detail {
-	height: 100%;
-	&__con {
-		background-color: #f8f8f8;
-		min-height: 100%;
+	$hoverColor: #00bfc8;
+	$fontLightColor: #3dbcc6;
+	.user-detail {
+		// height: 100%;
+		&__con {
+			background-color: #f8f8f8;
+			padding-bottom: 4rem;
+			// min-height: 100%;
+			// min-height: 100vh;
+			box-sizing: border-box;
+		}
+		// &__footer {
+		// 	margin-top: -100px;
+		// }
+		// &__empt {
+		// 	height: 100px;
+		// }
 	}
-	&__footer {
-		margin-top: -100px;
+	// .user-container {
+	// 	height:100vh;
+	// }
+	.user-deal {
+		width: 116.8rem;
+		margin: 0 auto;
+		&__header {
+			height: 5rem;
+			display: flex;
+			align-items: center;
+		}
+		&__body {
+			display: flex;
+			min-height: calc(100vh - 16.5rem);
+		}
 	}
-	&__empt {
-		height: 100px;
+	::v-deep .el-breadcrumb__inner {
+		color: #999999;
+		font-size: 1.2px;
 	}
-}
-.user-container {
-}
-.user-deal {
-	width: 116.8rem;
-	margin: 0 auto;
-	&__header {
-		height: 5rem;
-		display: flex;
-		align-items: center;
+	.body {
+		// min-height: 100%;
 	}
-	&__body {
-		display: flex;
+	.body__left {
+		width: 20rem;
+		padding: 15px 30px 30px 0;
+		background: #fff;
+		box-sizing: border-box;
+		&--h2 {
+			font-size: 1.8rem;
+			position: relative;
+			padding: 0.5rem 0 0.5rem 3rem;
+			margin-top: 1rem;
+			color: #333;
+			font-weight: 400;
+		}
+		&--item {
+			font-weight: normal;
+			position: relative;
+			padding: 5px 0 5px 30px;
+			margin-top: 10px;
+			font-size: 1.4rem;
+			transition: color 0.3s;
+			& > a:hover > i {
+				background-color: $fontLightColor;
+			}
+		}
 	}
-}
-::v-deep .el-breadcrumb__inner {
-	color: #999999;
-	font-size: 1.2px;
-}
-.body__left {
-	width: 20rem;
-	min-height: 70rem;
-	padding: 15px 30px 30px 0;
-	background: #fff;
-	box-sizing: border-box;
-}
-.body__right {
-}
+	.item__a {
+		color: #666;
+		&:hover {
+			color: $fontLightColor;
+		}
+		&:hover > i {
+			background-color: $fontLightColor;
+		}
+		&--light {
+			color: $fontLightColor;
+			i {
+				background-color: $fontLightColor;
+			}
+		}
+	}
+	.body__right {
+		margin-left: 20px;
+		padding: 30px;
+		background-color: #fff;
+		flex-grow: 1;
+	}
+	.side {
+		transition: background-color 0.3s;
+		position: absolute;
+		height: 1.9rem;
+		top: 50%;
+		left: 0;
+		transform: translateY(-50%);
+		width: 2px;
+	}
 </style>
