@@ -8,10 +8,12 @@ import {
     Breadcrumb,
     BreadcrumbItem,
     Upload,
-    Dialog
+    Dialog,
+    Steps,
+    Step,
 } from 'element-ui';
 
-const element = {
+export default {
     install: (Vue) => {
         Vue.use(Button);
         Vue.use(Dropdown);
@@ -23,7 +25,7 @@ const element = {
         Vue.use(BreadcrumbItem);
         Vue.use(Upload);
         Vue.use(Dialog);
+        Vue.use(Steps);
+        Vue.use(Step);
     }
 }
-
-export default element

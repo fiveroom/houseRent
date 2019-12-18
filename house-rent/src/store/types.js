@@ -4,7 +4,7 @@
 
 export const SAVE_USER = 'saveUser'
 export const LOGIN_USER = 'loginUser'
-
+export const UPDATE_USER = 'updateUser'
 /**
  * 位置
  */
@@ -12,6 +12,6 @@ export const LOGIN_USER = 'loginUser'
 // mutations
 export const SAVE_DISTRICT = 'saveDistrict'
 export const SAVE_LOCAT = 'saveLocat'
-    // action
+// action
 export const DEAL_DISTRICT = 'dealDistrict'
 export const GET_CURLOCAT = 'getCurLocat'

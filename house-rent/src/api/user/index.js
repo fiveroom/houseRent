@@ -25,3 +25,14 @@ export const logByCode = (data, call) => {
         return err
     })
 }
+
+export const updateUserInfo = (data) => {
+    return {
+        status: true
+    }
+    // return axios.post('/UserMgeSvr.assx/updateUserInfo', qs.stringify(data)).then(res => {
+    //     return res
+    // }).catch(err => {
+    //     return err
+    // })
+}

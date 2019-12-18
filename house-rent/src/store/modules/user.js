@@ -1,10 +1,10 @@
 import * as types from '../types';
-import * as user from '@/api/user';
+import * as userApi from '@/api/user';
 
 const state = {
     user_id: null,
     user_name: null,
-    tel: null,
+    tel: '15182432853',
     userEmail: 'asdfadf@163.com'
 }
 
@@ -23,18 +23,25 @@ const getters = {
     },
     userEmail(state) {
         return state.userEmail
+    },
+    tel(state){
+        return state.tel
     }
 }
 
 const actions = {
     async [types.LOGIN_USER]({ commit, state }, logoInfo) {
-        let res = await user.login(logoInfo)
+        let res = await userApi.login(logoInfo)
         if (res.data.Code === "200") {
             commit(types.SAVE_USER, res.data.Data);
             return { status: true, msg: res.data.Msg }
         } else {
             return { status: false, msg: res.data.Msg }
         }
+    },
+    async [types.UPDATE_USER]({commit}, updateData){
+        let res = await userApi.updateUserInfo(updateData);
+        return res
     }
 }
 

@@ -11,6 +11,7 @@ import Login from '@/components/Login'; // 登录
 import Register from '@/components/Register'; // 注册
 import PersCenter from '@/components/PersCenter'; // 个人中心
 import EditPerData from '@/components/EditPerData'; // 个人中心
+import EditPhone from '@/components/EditPhone'; // 个人中心
 
 const originalPush = VueRouter.prototype.push
 VueRouter.prototype.push = function push(location) {
@@ -90,7 +91,7 @@ const routes = [{
                 // 修改手机号
                 name: '修改手机号',
                 path: '/userDetail/editPhone',
-                component: NoContent
+                component: EditPhone
             },
             {
                 // 修改手机号
