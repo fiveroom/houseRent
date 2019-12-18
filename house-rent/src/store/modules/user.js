@@ -4,7 +4,8 @@ import * as user from '@/api/user';
 const state = {
     user_id: null,
     user_name: null,
-    tel: null
+    tel: null,
+    userEmail: 'asdfadf@163.com'
 }
 
 const getters = {
@@ -19,6 +20,9 @@ const getters = {
     },
     userName(state) {
         return state.user_name
+    },
+    userEmail(state) {
+        return state.userEmail
     }
 }
 

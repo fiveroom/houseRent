@@ -10,6 +10,7 @@ import NoContent from '@/views/NoContent';
 import Login from '@/components/Login'; // 登录
 import Register from '@/components/Register'; // 注册
 import PersCenter from '@/components/PersCenter'; // 个人中心
+import EditPerData from '@/components/EditPerData'; // 个人中心
 
 const originalPush = VueRouter.prototype.push
 VueRouter.prototype.push = function push(location) {
@@ -83,8 +84,20 @@ const routes = [{
                 // 资料修改
                 name: '编辑个人资料',
                 path: '/userDetail/editInfo',
+                component: EditPerData
+            },
+            {
+                // 修改手机号
+                name: '修改手机号',
+                path: '/userDetail/editPhone',
                 component: NoContent
             },
+            {
+                // 修改手机号
+                name: '修改手机号',
+                path: '/userDetail/editEmail',
+                component: NoContent
+            }
         ]
 
     }

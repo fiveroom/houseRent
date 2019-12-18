@@ -6,6 +6,7 @@ import getters from './getters';
 import actions from './actions';
 import mutations from './mutations';
 import user from './modules/user';
+import locat from './modules/locat';
 
 Vue.use(Vuex)
 
@@ -14,12 +15,12 @@ export default new Vuex.Store({
     actions,
     mutations,
     modules: {
-        user
+        user,
+        locat
     },
     plugins: [createPersistedState({
         storage: window.sessionStorage,
         reducer(val) {
-            debugger;
             return {
                 user: val.user
             }

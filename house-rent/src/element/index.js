@@ -7,6 +7,8 @@ import {
     TabPane,
     Breadcrumb,
     BreadcrumbItem,
+    Upload,
+    Dialog
 } from 'element-ui';
 
 const element = {
@@ -19,6 +21,8 @@ const element = {
         Vue.use(TabPane);
         Vue.use(Breadcrumb);
         Vue.use(BreadcrumbItem);
+        Vue.use(Upload);
+        Vue.use(Dialog);
     }
 }
 

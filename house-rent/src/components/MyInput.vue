@@ -11,6 +11,7 @@
 				@blur="verifyValue"
 				@input="$emit('input', $event.target.value)"
 				autocomplete="off"
+				:readonly="readonly && 'readonly'"
 			/>
 			<div :class="['input-box__remind', remindStyle]">
 				<i class="el-icon-warning mycolor"></i>
@@ -30,7 +31,8 @@
 			value: null,
 			required: Boolean,
 			regStr: Object,
-			upStatus: Boolean
+			upStatus: Boolean,
+			readonly: null
 		},
 		data() {
 			return {

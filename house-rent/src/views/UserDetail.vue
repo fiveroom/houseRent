@@ -32,7 +32,7 @@
 						</ul>
 					</nav>
 					<!-- <section class="body body__right"> -->
-					<router-view class="body body__right" />
+					<router-view class="body__right" />
 					<!-- </section> -->
 				</section>
 			</div>
@@ -149,9 +149,6 @@
 	::v-deep .el-breadcrumb__inner {
 		color: #999999;
 		font-size: 1.2px;
-	}
-	.body {
-		// min-height: 100%;
 	}
 	.body__left {
 		width: 20rem;
