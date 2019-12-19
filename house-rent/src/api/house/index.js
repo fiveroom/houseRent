@@ -3,7 +3,7 @@ import qs from 'qs';
 
 export const searchHouse = (data, call) => {
     return axios.post('/UserMgeSvr.assx/queryHouseByColumn', qs.stringify(data)).then(res => {
-        call(res)
+        call(res.data)
     }).catch(err => {
         call(err)
     })

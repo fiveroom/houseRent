@@ -62,8 +62,6 @@
 					<router-link class="form-tonext--to" to="/userDetail/editEmail">更改邮箱号</router-link>
 				</div>
 				<Mybutton class="form-but" @clickTo="updateInfo" title="保存" />
-				<div></div>
-				<div></div>
 			</div>
 		</section>
 	</div>

@@ -3,6 +3,7 @@ import App from '@/App.vue'
 import router from '@/router'
 import store from '@/store'
 import element from '@/element';
+import '@/router/permission'
 
 import Nav from '@/components/Nav.vue';
 import Footer from '@/components/Footer';
@@ -24,6 +25,7 @@ Vue.component('header-nav', Nav)
 Vue.component('Footer', Footer)
 Vue.component('Mybutton', Mybutton)
 Vue.component('MyInput', MyInput)
+
 new Vue({
     router,
     store,

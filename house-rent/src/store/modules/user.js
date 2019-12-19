@@ -4,7 +4,7 @@ import * as userApi from '@/api/user';
 const state = {
     user_id: null,
     user_name: null,
-    tel: '15182432853',
+    tel: null,
     userEmail: 'asdfadf@163.com'
 }
 
@@ -24,7 +24,7 @@ const getters = {
     userEmail(state) {
         return state.userEmail
     },
-    tel(state){
+    tel(state) {
         return state.tel
     }
 }
@@ -39,7 +39,7 @@ const actions = {
             return { status: false, msg: res.data.Msg }
         }
     },
-    async [types.UPDATE_USER]({commit}, updateData){
+    async [types.UPDATE_USER]({ commit }, updateData) {
         let res = await userApi.updateUserInfo(updateData);
         return res
     }
@@ -50,6 +50,14 @@ const mutations = {
         state.user_id = obj.user_id;
         state.user_name = obj.user_name;
         state.tel = obj.tel;
+    },
+    [types.LOGIN_OUT](state, obj) {
+        state.user_id = '';
+        state.user_name = '';
+        state.tel = '';
+        state.userEmail = '';
+        sessionStorage.clear()
+        console.log('退出登录');
     }
 }
 

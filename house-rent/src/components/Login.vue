@@ -97,17 +97,17 @@
 		methods: {
 			...mapActions(["loginUser"]),
 			loginTo() {
-				this.loginUser({
-					loginInfo: this.userName,
-					user_pwd: this.pwd
-				}).then(res=>{
-					if(res.status){
-						this.$router.go('-1')
-						console.log(sessionStorage);
-					} else {
-						console.log('登录失败');
-					}
-				});
+				console.log(this.$route.query);
+				// this.loginUser({
+				// 	loginInfo: this.userName,
+				// 	user_pwd: this.pwd
+				// }).then(res=>{
+				// 	if(res.status){
+				// 		// this.$router.go('-1')
+				// 	} else {
+				// 		console.log('登录失败');
+				// 	}
+				// });
 			},
 			// 手机验证码登录
 			async loginCode() {

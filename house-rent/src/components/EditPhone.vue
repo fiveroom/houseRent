@@ -8,12 +8,12 @@
 			<MySteps :active="active" :stepInfo="stepInfo" />
 		</div>
 		<section class="step-body">
-			<div>
-				<span>手机号码</span>
+			<div class="hint-info">
+				<span>手机号码:</span>
 				<span>{{telDeal}}</span>
 			</div>
-			<p>若当前手机号码无法接受验证码，请拨打****人工服务</p>
-			<div >
+			<p class="hint-help">若当前手机号码无法接受验证码，请拨打****人工服务</p>
+			<div class="get-authcode">
 				<MyInput
 					placeholder="请输入短信验证码"
 					lable="code"
@@ -22,14 +22,19 @@
 					@inputStatus="(status)=>{codeStatus = status}"
 					:upStatus="nextOneStatus"
 				/>
-                <Mybutton class="next-but" title="获取验证码" :disabled="true"/>
+				<div class="get-authcode__but">
+					<Mybutton :authCode='true'/>
+				</div>
 			</div>
+            <Mybutton class="next-but" @clickTo="nextStep" title="下一步" :disabled="!codeStatus"/>
 		</section>
 	</div>
 </template>
 
 <script>
+
 	import MySteps from "@/components/MySteps";
+	import GetAuthCode from "@/components/GetAuthCode";
 	import { mapGetters } from "vuex";
 	export default {
 		data() {
@@ -57,15 +62,30 @@
 			};
 		},
 		components: {
-			MySteps
+			MySteps,
+			GetAuthCode
 		},
 		computed: {
 			...mapGetters(["telDeal", "tel"])
-		}
+		},
+		methods: {
+			nextStep() {
+				this.nextOneStatus = this.codeStatus;
+				if(this.nextOneStatus){
+					this.active++;
+				}
+			}
+		},
 	};
 </script>
 
 <style lang="scss" scoped>
+$hoverColor: #00bfc8;
+$fontLightColor: #3dbcc6;
+$bacHoerClr: #3dbcc6;
+$NoHover: #999999;
+$checkFontColor: #636b74;
+$noCheckFontColor: #dadce0;
 .header {
 	padding-bottom: 3rem;
 	font-size: 1.8rem;
@@ -85,5 +105,26 @@
 }
 .next-but{
     margin-top: 2rem;
+}
+.hint-info{
+	color: #666;
+	font-size: 1.5rem;
+	span:first-of-type{
+		margin-right: 10px;
+	}
+	margin-bottom: 2rem;
+}
+.hint-help{
+	color: $noCheckFontColor;
+	font-size: 1.4rem;
+	margin-bottom: 2rem;
+}
+.get-authcode{
+	display: flex;
+	justify-content: space-between;
+	&__but{
+		width: 150px;
+		margin-top: 1rem;
+	}
 }
 </style>

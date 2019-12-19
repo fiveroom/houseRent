@@ -23,7 +23,7 @@ $hoverColor: #00bfc8;
 $fontLightColor: #3dbcc6;
 $bacHoerClr: #3dbcc6;
 $NoHover: #999999;
-$checkColor: #636b74;
+$checkFontColor: #636b74;
 $noCheckFontColor: #dadce0;
 .step {
 	display: flex;
@@ -38,7 +38,7 @@ $noCheckFontColor: #dadce0;
 		font-size: 1.6rem;
 		color: $noCheckFontColor;
 		&--check {
-			color: $checkColor;
+			color: $checkFontColor;
 		}
 	}
 }

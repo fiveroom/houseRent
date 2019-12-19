@@ -30,7 +30,7 @@
 				<div v-else class="nav-cont__right--nolog">
 					<router-link to="/userDetail">{{userName || telDeal}}</router-link>
 					<span class="baffle">|</span>
-					<span>退出</span>
+					<span class="nav-cont__right--loginout" @click="loginOut">退出</span>
 				</div>
 			</div>
 		</div>
@@ -38,7 +38,7 @@
 </template>
 
 <script>
-	import { mapGetters } from "vuex";
+	import { mapGetters, mapMutations } from "vuex";
 	export default {
 		data() {
 			const logoImg = require("@/assets/logo.png");
@@ -53,6 +53,7 @@
 			}
 		},
 		methods: {
+			...mapMutations(['loginOut']),
 			getCurr() {
 				this.$store.dispatch("getCurLocat").then(res => {
 					if (!res.status) {
@@ -153,6 +154,9 @@
 					margin: 0 0.8rem;
 				}
 				margin-left: 3rem;
+			}
+			&--loginout{
+				cursor: pointer;
 			}
 		}
 	}

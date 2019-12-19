@@ -1,30 +1,43 @@
 <template>
-    <div>
-        房子详情
-        <button @click="$router.push('/hdetail?house_id=4')">点我</button>
-    </div>
+	<div>
+		<header-nav />
+		<div class="container"></div>
+	</div>
 </template>
 
 <script>
-export default {
-    data(){
-        return {
-
-        }
-    },
-    computed: {
-        routeInfo() {
-        }
-    },
-    beforeRouteEnter(to, from, next) {
-        next(vm => {});
-    },
-    created(){
-        console.log('更新');
-    }
-}
+	import * as houseApi from "@/api/house";
+	export default {
+		data() {
+			return {};
+		},
+		computed: {},
+		beforeRouteEnter(to, from, next) {
+			next(vm => {});
+		},
+		methods: {
+			getHouseDetail() {
+				console.log(this.$route.query.House_id);
+				houseApi.houseDetail(
+					{
+						house_id: this.$route.query.House_id
+					},
+					res => {
+						console.log(res, "房子详情");
+					}
+				);
+			}
+		},
+		created() {
+			this.getHouseDetail();
+			console.log("更新");
+		}
+	};
 </script>
 
-<style>
-
+<style lang="scss" scoped>
+.container{
+    width: 116.8rem;
+    margin: 0 auto;
+}
 </style>
