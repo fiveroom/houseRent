@@ -11,6 +11,9 @@ import {
     Dialog,
     Steps,
     Step,
+    DatePicker,
+    Switch,
+    Loading,
 } from 'element-ui';
 
 export default {
@@ -27,5 +30,9 @@ export default {
         Vue.use(Dialog);
         Vue.use(Steps);
         Vue.use(Step);
+        Vue.use(DatePicker);
+        Vue.use(Switch);
+        Vue.use(Loading);
+
     }
 }

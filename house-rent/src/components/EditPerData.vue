@@ -6,7 +6,7 @@
 		</header>
 		<section class="edit-body">
 			<div class="user-avator">
-				<img :src="avator" alt />
+				<img :src="userAvater || avator" alt />
 			</div>
 			<div class="edit-body__form">
 				<MyInput
@@ -89,7 +89,13 @@
 			};
 		},
 		computed: {
-			...mapGetters(["userId", "telDeal", "userName", "userEmail"])
+			...mapGetters([
+				"userId",
+				"telDeal",
+				"userName",
+				"userEmail",
+				"userAvater"
+			])
 		},
 		methods: {
 			...mapActions(["updateUser"]),
@@ -98,6 +104,7 @@
 				this.userNameBk = this.userName;
 				this.userEmailBk = this.userEmail;
 				this.userNameBkStatus = !!this.userName;
+				console.log(this.userAvater);
 			},
 			updateInfo() {
 				this.updateStatus = this.userNameBkStatus;
@@ -119,66 +126,66 @@
 </script>
 
 <style lang="scss" scoped>
-$hoverColor: #00bfc8;
-$fontLightColor: #3dbcc6;
-$bacHoerClr: #3dbcc6;
-$NoHover: #999999;
-.header {
-	padding-bottom: 3rem;
-	font-size: 1.8rem;
-	line-height: 2.1rem;
-	border-bottom: 1px solid #f1f1f1;
-	color: #333;
-	span {
-		margin-left: 15px;
+	$hoverColor: #00bfc8;
+	$fontLightColor: #3dbcc6;
+	$bacHoerClr: #3dbcc6;
+	$NoHover: #999999;
+	.header {
+		padding-bottom: 3rem;
+		font-size: 1.8rem;
+		line-height: 2.1rem;
+		border-bottom: 1px solid #f1f1f1;
+		color: #333;
+		span {
+			margin-left: 15px;
+		}
 	}
-}
-.user-avator {
-	width: 12rem;
-	height: 12rem;
-	border-radius: 50%;
-	border: 0.2rem solid $fontLightColor;
-	margin: 0 auto;
-	overflow: hidden;
-	img {
-		height: 100%;
-		width: 100%;
-	}
-}
-.edit-body {
-	padding-top: 5rem;
-	&__form {
-		width: 35rem;
+	.user-avator {
+		width: 12rem;
+		height: 12rem;
+		border-radius: 50%;
+		border: 0.2rem solid $fontLightColor;
 		margin: 0 auto;
+		overflow: hidden;
+		img {
+			height: 100%;
+			width: 100%;
+		}
 	}
-}
-.form-but {
-	margin-top: 1rem;
-}
-.form-gender {
-	margin-bottom: 2rem;
-	&__title {
-		color: #0000008a;
-		font-size: 1.2rem;
-		margin-bottom: 8px;
+	.edit-body {
+		padding-top: 5rem;
+		&__form {
+			width: 35rem;
+			margin: 0 auto;
+		}
 	}
-	&__check {
-		label {
-			display: inline-block;
-			margin-right: 30px;
-			input {
-				vertical-align: middle;
-				margin-right: 6px;
+	.form-but {
+		margin-top: 1rem;
+	}
+	.form-gender {
+		margin-bottom: 2rem;
+		&__title {
+			color: #0000008a;
+			font-size: 1.2rem;
+			margin-bottom: 8px;
+		}
+		&__check {
+			label {
+				display: inline-block;
+				margin-right: 30px;
+				input {
+					vertical-align: middle;
+					margin-right: 6px;
+				}
 			}
 		}
 	}
-}
-.form-tonext {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	&--to {
-		color: $fontLightColor;
+	.form-tonext {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		&--to {
+			color: $fontLightColor;
+		}
 	}
-}
 </style>

@@ -6,6 +6,7 @@ Router.beforeEach((to, from, next) => {
         if (store.getters.userId) {
             next()
         } else {
+            console.log(to.fullPath);
             next({
                 path: '/user/login',
                 query: to.fullPath
