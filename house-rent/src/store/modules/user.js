@@ -5,7 +5,8 @@ const state = {
     user_id: null,
     user_name: null,
     tel: null,
-    userEmail: 'asdfadf@163.com'
+    userEmail: 'asdfadf@163.com',
+    userAvater: null
 }
 
 const getters = {
@@ -26,6 +27,9 @@ const getters = {
     },
     tel(state) {
         return state.tel
+    },
+    userAvater(state) {
+        return state.userAvater
     }
 }
 
@@ -50,14 +54,16 @@ const mutations = {
         state.user_id = obj.user_id;
         state.user_name = obj.user_name;
         state.tel = obj.tel;
+        state.userAvater = obj.user_avaterPath;
+        console.log(state.userAvater);
     },
     [types.LOGIN_OUT](state, obj) {
         state.user_id = '';
         state.user_name = '';
         state.tel = '';
         state.userEmail = '';
+        state.userAvaterPath = '';
         sessionStorage.clear()
-        console.log('退出登录');
     }
 }
 

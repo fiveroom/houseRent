@@ -12,6 +12,7 @@
 				@input="$emit('input', $event.target.value)"
 				autocomplete="off"
 				:readonly="readonly && 'readonly'"
+				@keydown="downInput"
 			/>
 			<div :class="['input-box__remind', remindStyle]">
 				<i class="el-icon-warning mycolor"></i>
@@ -32,7 +33,8 @@
 			required: Boolean,
 			regStr: Object,
 			upStatus: Boolean,
-			readonly: null
+			readonly: null,
+			judgeNum: null
 		},
 		data() {
 			return {
@@ -44,7 +46,6 @@
 		},
 		watch: {
 			upStatus(newV, oldV) {
-				console.log("sdfa");
 				this.verifyValue();
 			}
 		},
@@ -87,14 +88,23 @@
 				this.focusStatus = false;
 				this.judgeRequired =
 					!this.haveValue && !this.focusStatus && this.required;
-				if (this.regStr) {
-					this.valueStatus = !this.regStr.reg.test(this.value);
+				if(this.judgeNum == 1){
+					this.valueStatus = false
+				} else {
+					// 需要reg
+					if (this.regStr) {
+						this.valueStatus = !this.regStr.reg.test(this.value);
+					}
 				}
 				this.$emit(
 					"inputStatus",
 					this.regStr ? !this.valueStatus : !this.judgeRequired
 				);
+			},
+			downInput(){
+				this.$emit('keyDownTo')
 			}
+			
 		}
 	};
 </script>

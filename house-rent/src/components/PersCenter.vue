@@ -2,7 +2,7 @@
 	<div>
 		<header class="header">
 			<div class="header__left">
-				<img :src="avator" alt />
+				<img :src="userAvater || avator" alt />
 			</div>
 			<div class="header__right">
 				<div>
@@ -43,7 +43,7 @@
 			};
 		},
 		computed: {
-			...mapGetters(["userId", "userName", "telDeal"]),
+			...mapGetters(["userId", "userName", "telDeal", "userAvater"]),
 			timeHint() {
 				let time = new Date().getHours();
 				switch (true) {

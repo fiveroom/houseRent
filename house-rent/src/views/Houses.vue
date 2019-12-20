@@ -340,6 +340,7 @@
 					if (data.Code == "200") {
 						this.arrHouses = data.Data._Items;
 					}
+					console.log(data);
 					this.reqData = {
 						area_str: [],
 						rent_str: [],
