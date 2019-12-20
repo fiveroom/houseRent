@@ -144,7 +144,7 @@
 	import mixin from "@/mixin";
 	import * as userApi from "@/api/user";
 	import { mapActions, mapGetters } from "vuex";
-	import { Loading } from "element-ui";
+	import { Loading, Notification } from "element-ui";
 	export default {
 		data() {
 			let userPhoneRex = {
@@ -156,15 +156,15 @@
 				House: {},
 				Admin: {},
 				showWeiXin: true,
-				subscribeEdit: false,  // 添加预约窗口
+				subscribeEdit: false, // 添加预约窗口
 				subDate: new Date(), // 预约时间
-				cpUserTel: null,  // copyPhone
-				userTel: null,  // 电话号码
-				userPhoneStatus: false,  // 
+				cpUserTel: null, // copyPhone
+				userTel: null, // 电话号码
+				userPhoneStatus: false, //
 				userPhoneRex,
-				seePhone: false,  // 看号码
-				subfromStatus: true,  // 
-				userRemark: "",  //
+				seePhone: false, // 看号码
+				subfromStatus: true, //
+				userRemark: "", //
 				fullLoading: false, // 加载框
 				inputkeyDown: false,
 				judgeNum: 1 // 检验次数1
@@ -239,8 +239,17 @@
 							})
 						},
 						res => {
-							
-							this.subscribeEdit =false;
+							let obj = {
+								showClose: false,
+								position: "top-left",
+								duration: 1000
+							};
+							if (res.status) {
+								Notification.success({ ...obj, message: res.msg });
+							} else {
+								Notification.warning({ ...obj, message: res.msg });
+							}
+							this.subscribeEdit = false;
 							this.fullLoading = false;
 						}
 					);
