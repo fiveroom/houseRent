@@ -62,6 +62,7 @@
 
 <script>
 	import { mapActions } from "vuex";
+	import { Message } from "element-ui";
 	import { login, getCode, logByCode } from "@/api/user";
 	import SlidVal from "./SlidVal";
 	export default {
@@ -73,6 +74,7 @@
 			};
 			let wrapStyle = {},
 				wrapDown = false;
+			let hmg = { center: true, duration: 1000 };
 			return {
 				code: null,
 				codeStatus: false,
@@ -88,7 +90,8 @@
 				loginStatus: true,
 				loginCodeStatus: true,
 				activeName: "first",
-				timeOut: 0
+				timeOut: 0,
+				hmg
 			};
 		},
 		components: {
@@ -97,16 +100,20 @@
 		methods: {
 			...mapActions(["loginUser"]),
 			loginTo() {
-				console.log(this.$route.query.lastPath);
 				this.loginUser({
 					loginInfo: this.userName,
 					user_pwd: this.pwd
-				}).then(res=>{
-					if(res.status){
-						console.log(res, 'dsfasaf');
-						this.$router.go(-1)
+				}).then(res => {
+					if (res.status) {
+						Message({ ...this.hmg, type: "success", message: res.msg });
+						console.log(window.history);
+						if (window.history.length <= 2) {
+							this.$router.push({ name: "home" });
+						} else {
+							this.$router.go(-1);
+						}
 					} else {
-						console.log('登录失败');
+						Message({ ...this.hmg, type: "error", message: res.msg });
 					}
 				});
 			},
@@ -156,93 +163,91 @@
 				}
 			}
 		},
-		created() {
-		
-		}
+		created() {}
 	};
 </script>
 
 <style lang="scss" scoped>
-	.login-from {
-		width: 100rem;
-		height: 56rem;
-		display: flex;
-		border-radius: 0.8rem;
-		overflow: hidden;
-		box-shadow: 0 6px 20px 5px rgba(40, 120, 255, 0.1),
-			0 16px 24px 2px rgba(0, 0, 0, 0.05);
-		&__left {
-			flex-shrink: 0;
-			width: 44rem;
-			background-color: skyblue;
-		}
-		&__right {
-			flex-grow: 1;
-			box-sizing: border-box;
-		}
+.login-from {
+	width: 100rem;
+	height: 56rem;
+	display: flex;
+	border-radius: 0.8rem;
+	overflow: hidden;
+	box-shadow: 0 6px 20px 5px rgba(40, 120, 255, 0.1),
+		0 16px 24px 2px rgba(0, 0, 0, 0.05);
+	&__left {
+		flex-shrink: 0;
+		width: 44rem;
+		background-color: skyblue;
 	}
-	.form {
-		width: 33rem;
-		margin: 0 auto;
-		&__title {
-			font-size: 3.6rem;
-			font-weight: bolder;
-			color: #2878ff;
-			margin: 81px 0 60px 0;
-			text-align: center;
-		}
-		&__slid {
-			margin: 2rem 0 3rem;
-		}
-		&__bootm {
-			display: flex;
-			font-size: 1.2rem;
-			align-items: center;
-			padding: 1rem 0;
-			justify-content: space-between;
-			a:first-of-type {
-				color: #396afe;
-			}
-			a:last-of-type {
-				color: #9fa2a8;
-			}
-		}
+	&__right {
+		flex-grow: 1;
+		box-sizing: border-box;
 	}
-
-	.code {
+}
+.form {
+	width: 33rem;
+	margin: 0 auto;
+	&__title {
+		font-size: 3.6rem;
+		font-weight: bolder;
+		color: #2878ff;
+		margin: 81px 0 60px 0;
+		text-align: center;
+	}
+	&__slid {
+		margin: 2rem 0 3rem;
+	}
+	&__bootm {
 		display: flex;
+		font-size: 1.2rem;
+		align-items: center;
+		padding: 1rem 0;
 		justify-content: space-between;
-		margin-bottom: 2rem;
-		&__input {
-			width: 17.4rem;
-			text-align: center;
-			input {
-				font-size: 2rem;
-			}
+		a:first-of-type {
+			color: #396afe;
 		}
-		&__get {
-			cursor: pointer;
-			background-color: skyblue;
-			border-radius: 0.4rem;
-			margin-left: 1.8rem;
-			display: flex;
-			align-items: center;
-			color: #fff;
-			padding: 0 1rem;
-			height: 4rem;
-			box-shadow: 0 1px 6px rgba(0, 0, 0, 0.117647),
-				0 1px 4px rgba(0, 0, 0, 0.117647);
-			&:hover {
-				background-color: red;
-			}
-			&:active {
-				box-shadow: 2px 5px 8px rgba(0, 0, 0, 0.2),
-					-2px 0px 6px rgba(0, 0, 0, 0.2);
-			}
-			margin-top: 1.1rem;
+		a:last-of-type {
+			color: #9fa2a8;
 		}
 	}
-	.mytab {
-		margin-top: 10rem;
+}
+
+.code {
+	display: flex;
+	justify-content: space-between;
+	margin-bottom: 2rem;
+	&__input {
+		width: 17.4rem;
+		text-align: center;
+		input {
+			font-size: 2rem;
+		}
 	}
+	&__get {
+		cursor: pointer;
+		background-color: skyblue;
+		border-radius: 0.4rem;
+		margin-left: 1.8rem;
+		display: flex;
+		align-items: center;
+		color: #fff;
+		padding: 0 1rem;
+		height: 4rem;
+		box-shadow: 0 1px 6px rgba(0, 0, 0, 0.117647),
+			0 1px 4px rgba(0, 0, 0, 0.117647);
+		&:hover {
+			background-color: red;
+		}
+		&:active {
+			box-shadow: 2px 5px 8px rgba(0, 0, 0, 0.2),
+				-2px 0px 6px rgba(0, 0, 0, 0.2);
+		}
+		margin-top: 1.1rem;
+	}
+}
+.mytab {
+	margin-top: 10rem;
+}
 </style>

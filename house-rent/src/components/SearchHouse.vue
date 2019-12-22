@@ -19,11 +19,12 @@
 			<input
 				class="search-input__item"
 				@focus="searchFocus=true"
+				@input="$emit('input', $event.target.value)"
 				@blur="searchFocus=false"
 				type="text"
 			/>
 		</div>
-		<div class="search-but">
+		<div class="search-but" @click="$emit('clickTo')">
 			<i class="el-icon-search"></i>
 			<span>搜索</span>
 		</div>
@@ -50,14 +51,15 @@
 			return {
 				keyWords: "默认值",
 				searchFocus: false,
-				searchTypeArr
+				searchTypeArr,
 			};
 		},
 		methods: {
 			clickItem(index) {
 				this.keyWords = this.searchTypeArr[index].msg;
 			}
-		}
+		},
+		
 	};
 </script>
 

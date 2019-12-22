@@ -15,4 +15,5 @@ Router.beforeEach((to, from, next) => {
     } else {
         next()
     }
+
 })

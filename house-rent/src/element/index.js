@@ -14,6 +14,9 @@ import {
     DatePicker,
     Switch,
     Loading,
+    Backtop,
+    Notification,
+    Icon
 } from 'element-ui';
 
 export default {
@@ -33,6 +36,8 @@ export default {
         Vue.use(DatePicker);
         Vue.use(Switch);
         Vue.use(Loading);
-
+        Vue.use(Backtop);
+        Vue.use(Icon);
+        Vue.prototype.$notify = Notification;
     }
 }

@@ -11,7 +11,7 @@
 					:required="true"
 					placeholder="手机号"
 					@inputStatus="(status)=>{userPhoneStatus = status}"
-					:upStatus="registerStatus"
+					:upStatus="allowGetCode && registerStatus"
 				/>
 				<div class="code">
 					<MyInput
@@ -23,9 +23,12 @@
 						@inputStatus="status=>codeStatus = status"
 						:upStatus="getCodeStatus || registerStatus"
 					/>
-					<div @click="getDynCode" class="code__get">
-						<span>{{timeOut?`重新获取${timeOut}`:'获取验证码'}}</span>
-					</div>
+					<Mybutton
+						@clickTo="getResCode"
+						class="code__get"
+						:disabled="!userPhoneStatus"
+						:authCode="true"
+					/>
 				</div>
 				<MyInput
 					lable="userName"
@@ -68,6 +71,8 @@
 </template>
 
 <script>
+	import { registUser, registUserCode } from "@/api/user";
+	import { Notification } from "element-ui";
 	export default {
 		name: "register",
 		data() {
@@ -100,7 +105,8 @@
 				affirmPwdStatus: false,
 				slidStatus: false,
 				registerStatus: true,
-				timeOut: 0
+				timeOut: 0,
+				allowGetCode: true
 			};
 		},
 		methods: {
@@ -118,10 +124,31 @@
 				}
 			},
 			getCode() {
-				console.log("获取验证码");
+				// registUserCode
 			},
-			registerUser(){
-				console.log('注册');
+			getResCode(status) {
+				this.allowGetCode = false;
+				this.registerUser()
+				if (this.userPhoneStatus && status) {
+					registUserCode({ telephone: this.userPhone }).then(res => {
+						let obj = { message: res.msg };
+						if (res.status) {
+							Notification.success({ ...obj, duration: 1000 });
+						} else {
+							Notification.warning({ ...obj, duration: 1500 });
+						}
+					});
+				}
+			},
+			registerUser() {
+				registUser({
+					user: JSON.stringify({
+						user_tel: this.userPhone,
+						User_name: this.userName,
+						user_pwd: this.pwd,
+						code: this.code
+					})
+				}).then(res => {});
 			},
 			registerWeb() {
 				this.getCodeStatus = false;
@@ -185,13 +212,14 @@
 			color: #396afe;
 		}
 	}
-	&--bot{
+	&--bot {
 		margin-bottom: 2rem;
 	}
 }
 .code {
 	display: flex;
 	justify-content: space-between;
+	align-items: center;
 	&__input {
 		width: 17.4rem;
 		text-align: center;
@@ -200,25 +228,9 @@
 		}
 	}
 	&__get {
-		cursor: pointer;
-		background-color: skyblue;
-		border-radius: 0.4rem;
-		margin-left: 1.8rem;
-		display: flex;
-		align-items: center;
 		color: #fff;
-		padding: 0 1rem;
-		height: 4rem;
-		box-shadow: 0 1px 6px rgba(0, 0, 0, 0.117647),
-			0 1px 4px rgba(0, 0, 0, 0.117647);
-		&:hover {
-			background-color: red;
-		}
-		&:active {
-			box-shadow: 2px 5px 8px rgba(0, 0, 0, 0.2),
-				-2px 0px 6px rgba(0, 0, 0, 0.2);
-		}
-		margin-top: 1.1rem;
+		width: 124px;
+		margin-bottom: 9px;
 	}
 }
 </style>

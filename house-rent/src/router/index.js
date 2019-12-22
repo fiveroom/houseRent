@@ -21,88 +21,88 @@ const meta = { requiresAuth: true }
 Vue.use(VueRouter)
 
 const routes = [{
-        path: '/',
-        name: 'home',
-        component: Home
+    path: '/',
+    name: 'home',
+    component: Home
+},
+{
+    path: '/h',
+    name: '房屋搜索',
+    component: Houses
+},
+{
+    path: '/hdetail',
+    component: HouseDetail
+},
+{
+    path: '/user',
+    component: UserEnt,
+    children: [{
+        path: '',
+        component: Login
+    }, {
+        path: '/user/login',
+        component: Login,
+        meta: {
+            index: 1
+        }
     },
     {
-        path: '/h',
-        name: '房屋搜索',
-        component: Houses
+        path: '/user/register',
+        component: Register,
+        meta: {
+            index: 2
+        }
+    }
+    ]
+},
+{
+    path: '/editCode',
+    component: NoContent
+},
+{
+    path: '/userDetail',
+    component: UserDetail,
+    meta: {
+        ...meta
+    },
+    children: [{
+        path: '',
+        name: '个人中心',
+        component: PersCenter
+    }, {
+        // 个人中心
+        name: '个人中心',
+        path: '/userDetail/persCenter',
+        component: PersCenter
     },
     {
-        path: '/hdetail',
-        component: HouseDetail
-    },
-    {
-        path: '/user',
-        component: UserEnt,
-        children: [{
-                path: '',
-                component: Login
-            }, {
-                path: '/user/login',
-                component: Login,
-                meta: {
-                    index: 1
-                }
-            },
-            {
-                path: '/user/register',
-                component: Register,
-                meta: {
-                    index: 2
-                }
-            }
-        ]
-    },
-    {
-        path: '/editCode',
+        // 我的收藏
+        name: '我的收藏',
+        path: '/userDetail/myCollect',
         component: NoContent
     },
     {
-        path: '/userDetail',
-        component: UserDetail,
-        meta: {
-            ...meta
-        },
-        children: [{
-                path: '',
-                name: '个人中心',
-                component: PersCenter
-            }, {
-                // 个人中心
-                name: '个人中心',
-                path: '/userDetail/persCenter',
-                component: PersCenter
-            },
-            {
-                // 我的收藏
-                name: '我的收藏',
-                path: '/userDetail/myCollect',
-                component: NoContent
-            },
-            {
-                // 资料修改
-                name: '编辑个人资料',
-                path: '/userDetail/editInfo',
-                component: EditPerData
-            },
-            {
-                // 修改手机号
-                name: '修改手机号',
-                path: '/userDetail/editPhone',
-                component: EditPhone
-            },
-            {
-                // 修改手机号
-                name: '修改手机号',
-                path: '/userDetail/editEmail',
-                component: NoContent
-            }
-        ]
-
+        // 资料修改
+        name: '编辑个人资料',
+        path: '/userDetail/editInfo',
+        component: EditPerData
+    },
+    {
+        // 修改手机号
+        name: '修改手机号',
+        path: '/userDetail/editPhone',
+        component: EditPhone
+    },
+    {
+        // 修改手机号
+        name: '修改手机号',
+        path: '/userDetail/editEmail',
+        component: NoContent
     }
+    ]
+
+}
 ]
 
 const router = new VueRouter({

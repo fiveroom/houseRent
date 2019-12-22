@@ -9,22 +9,26 @@ import Nav from '@/components/Nav.vue';
 import Footer from '@/components/Footer';
 import Mybutton from '@/components/Mybutton';
 import MyInput from '@/components/MyInput';
+import myLoadding from '@/components/loadding';
 
-import Axios from 'axios';
+// import Axios from '@/axios';
+// import Axios from '@/axios';
 import Qs from 'qs';
 
-Axios.defaults.headers.post["Content-Type"] =
-    "application/x-www-form-urlencoded";
-Vue.prototype.$axios = Axios;
-Vue.prototype.$qs = Qs;
+// Axios.defaults.headers.post["Content-Type"] =
+//     "application/x-www-form-urlencoded";
+// Vue.prototype.$axios = Axios;
+// Vue.prototype.$qs = Qs;
 
 Vue.use(element)
+Vue.use(myLoadding)
 Vue.config.productionTip = false
 
 Vue.component('header-nav', Nav)
 Vue.component('Footer', Footer)
 Vue.component('Mybutton', Mybutton)
 Vue.component('MyInput', MyInput)
+
 
 new Vue({
     router,

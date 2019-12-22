@@ -36,12 +36,10 @@ const getters = {
 const actions = {
     async [types.LOGIN_USER]({ commit, state }, logoInfo) {
         let res = await userApi.login(logoInfo)
-        if (res.data.Code === "200") {
-            commit(types.SAVE_USER, res.data.Data);
-            return { status: true, msg: res.data.Msg }
-        } else {
-            return { status: false, msg: res.data.Msg }
+        if (res.status) {
+            commit(types.SAVE_USER, res.Data);
         }
+        return res
     },
     async [types.UPDATE_USER]({ commit }, updateData) {
         let res = await userApi.updateUserInfo(updateData);

@@ -172,8 +172,6 @@
 					.get("/product/hotGoods", {})
 					.then(res => {
 						this.showgoods = res.data;
-						//   console.log(this.showgoods);
-						//   console.log(this.showgoods.g_onsale);
 					})
 					.catch(err => {
 						console.log(err);
@@ -354,21 +352,21 @@
 		background: url(../assets/img/s-mask.png) no-repeat;
 		display: none;
 	}
-	// & > .show-big {
-	// 	position: absolute;
-	// 	width: 530px;
-	// 	height: 530px;
-	// 	top: 0;
-	// 	left: 450px;
-	// 	overflow: hidden;
-	// 	display: none;
-	// 	& > .big-img-show {
-	// 		// 4倍
-	// 		width: 880px;
-	// 		height: 880px;
-	// 		position: absolute;
-	// 	}
-	// }
+	& > .show-big {
+		position: absolute;
+		width: 530px;
+		height: 530px;
+		top: 0;
+		left: 450px;
+		overflow: hidden;
+		display: none;
+		& > .big-img-show {
+			// 4倍
+			width: 880px;
+			height: 880px;
+			position: absolute;
+		}
+	}
 }
 .choice-img-ul {
 	font-size: 0;
