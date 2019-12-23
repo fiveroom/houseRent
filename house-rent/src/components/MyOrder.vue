@@ -44,7 +44,7 @@
 			};
 		},
 		computed: {
-			...mapGetters("userId")
+			...mapGetters(["userId"])
 		},
 		methods: {
 			getMyOrder() {

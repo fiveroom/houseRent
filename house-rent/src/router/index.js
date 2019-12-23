@@ -10,10 +10,11 @@ import NoContent from '@/views/NoContent';
 import Login from '@/components/Login'; // 登录
 import Register from '@/components/Register'; // 注册
 import PersCenter from '@/components/PersCenter'; // 个人中心
-import EditPerData from '@/components/EditPerData'; // 个人中心
-import EditPhone from '@/components/EditPhone'; // 个人中心
-import MyOrder from '@/components/MyOrder'; // 个人中心
-import MyContract from '@/components/MyContract'; // 个人中心
+import EditPerData from '@/components/EditPerData'; // 个人资料
+import EditPhone from '@/components/EditPhone'; // 手机号码更改
+import MyOrder from '@/components/MyOrder'; // 订单
+import MyContract from '@/components/MyContract'; // 合同
+import MyCollect from '@/components/MyCollect'; // 合同
 
 const originalPush = VueRouter.prototype.push
 VueRouter.prototype.push = function push(location) {
@@ -82,7 +83,7 @@ const routes = [{
                 // 我的收藏
                 name: '我的收藏',
                 path: '/userDetail/myCollect',
-                component: NoContent
+                component: MyCollect
             },
             {
                 // 资料修改

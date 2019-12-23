@@ -23,19 +23,19 @@
 					:upStatus="nextOneStatus"
 				/>
 				<div class="get-authcode__but">
-					<Mybutton :authCode='true'/>
+					<Mybutton :authCode="true" @clickTo="getAuthCode" />
 				</div>
 			</div>
-            <Mybutton class="next-but" @clickTo="nextStep" title="下一步" :disabled="!codeStatus"/>
+			<Mybutton class="next-but" @clickTo="nextStep" title="下一步" :disabled="!codeStatus" />
 		</section>
 	</div>
 </template>
 
 <script>
-
 	import MySteps from "@/components/MySteps";
 	import GetAuthCode from "@/components/GetAuthCode";
 	import { mapGetters } from "vuex";
+	import { editAuthCode, updateUserInfo } from "@/api/user";
 	export default {
 		data() {
 			let active = 0;
@@ -55,27 +55,38 @@
 			];
 			return {
 				active,
-                stepInfo,
-                code: null,
-                codeStatus: false,
-                nextOneStatus: true
+				stepInfo,
+				code: null,
+				codeStatus: false,  // 
+				nextOneStatus: true,
+				serverCode: null,
+				hintMsg: {duration: 1500, title: "验证码"}
 			};
 		},
 		components: {
 			MySteps,
-			GetAuthCode
+			GetAuthCode,
 		},
 		computed: {
 			...mapGetters(["telDeal", "tel"])
 		},
 		methods: {
 			nextStep() {
-				this.nextOneStatus = this.codeStatus;
-				if(this.nextOneStatus){
-					this.active++;
+				if(this.code === this.serverCode && this.codeStatus){
+					this.nextOneStatus = this.codeStatus;
+					this.active++
 				}
+			},
+			getAuthCode() {
+				editAuthCode({ telephone: '15182432853', noLoading: true }).then(res => {
+					if(res.status){
+						this.serverCode = res.data;
+					} else {
+						this.$notify.error({...this.hintMsg, message: res.msg})
+					}
+				});
 			}
-		},
+		}
 	};
 </script>
 
@@ -103,26 +114,26 @@ $noCheckFontColor: #dadce0;
 		width: 40rem;
 	}
 }
-.next-but{
-    margin-top: 2rem;
+.next-but {
+	margin-top: 2rem;
 }
-.hint-info{
+.hint-info {
 	color: #666;
 	font-size: 1.5rem;
-	span:first-of-type{
+	span:first-of-type {
 		margin-right: 10px;
 	}
 	margin-bottom: 2rem;
 }
-.hint-help{
+.hint-help {
 	color: $noCheckFontColor;
 	font-size: 1.4rem;
 	margin-bottom: 2rem;
 }
-.get-authcode{
+.get-authcode {
 	display: flex;
 	justify-content: space-between;
-	&__but{
+	&__but {
 		width: 150px;
 		margin-top: 1rem;
 	}

@@ -98,13 +98,13 @@ export const queryUName = data => {
 // 动态验证码
 export const editAuthCode = data => {
     return axios.post('/LoginRegistMgeSvr.assx/sendUpdateCode', data).then(res => {
-        // console.log(res, '添加收藏');
+        console.log(res, '添加收藏');
         if (res.data.Code == "200") {
-            return { status: true, msg: '收藏成功' }
+            return { status: true, data: res.data.Data }
         }
-        return { status: false, msg: '收藏失败，请稍后再试' }
+        return { status: false, msg: '验证码获取失败，请稍后再试' }
     }).catch(err => {
-        return { status: false, msg: '收藏失败，请稍后再试' }
+        return { status: false, msg: '验证码获取失败，请稍后再试' }
     })
 }
 
@@ -172,20 +172,20 @@ export const deleteOwnCollectBatch = (data, call) => {
 // }
 export const queryOwnCollect = async(data) => {
     return await axios.post('/UserMgeSvr.assx/queryOwnCollect', data).then(res => {
-        // console.log('查询收藏', res);
+        console.log('查询收藏', res);
         if (res.data.Code == 200) {
-            return { status: true }
+            return { status: true, data: res.data.Data._Items}
         }
-        return { status: false }
+        return { status: false, data: []}
     }).catch(err => {
-        return { status: false }
+        return { status: false, data: []}
     })
 }
 
 // 查看合同
 export const queryCtractIn = async(data) => {
     return await axios.post('/UserMgeSvr.assx/queryContractInfoOfUser', data).then(res => {
-        console.log('查看合同', res);
+        // console.log('查看合同', res);
         if (res.data.Code == 200) {
             return { status: true, data: res.data.Data._Items }
         }
@@ -198,7 +198,7 @@ export const queryCtractIn = async(data) => {
 // 查看订单
 export const queryOrder = data => {
     return axios.post('/UserMgeSvr.assx/queryOrderInfoOfUser', data).then(res => {
-        console.log('查看订单', res);
+        // console.log('查看订单', res);
         if (res.data.Code == 200) {
             return { status: true, data: res.data.Data._Items }
         }
