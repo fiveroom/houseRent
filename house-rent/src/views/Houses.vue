@@ -221,7 +221,11 @@
 				this.choiceSearchKey.forEach((item, index) => {
 					item.item.forEach((con, itemIndex) => {
 						console.log(con.split("-")[0], "sdaffffff");
-						if (con.split("-")[0] != "0" && con.split("-")[0] != "p" && con.split("-")[0] != "s") {
+						if (
+							con.split("-")[0] != "0" &&
+							con.split("-")[0] != "p" &&
+							con.split("-")[0] != "s"
+						) {
 							items.push({
 								content: this.getCh(index, con),
 								index: `${item.key}-${index}-${itemIndex}`
@@ -237,7 +241,7 @@
 								content: `${this.startP}~${this.endP}元`,
 								index: `p-price`
 							});
-						} else if(con.split("-")[0] == "s"){
+						} else if (con.split("-")[0] == "s") {
 							items.push({
 								content: this.searchValue,
 								index: `s-title`
@@ -408,10 +412,10 @@
 					this.choiceSearchKey[1].item = ["0-price"];
 					this.endP = null;
 					this.startP = null;
-					let index = this.choiceSearchKey[0].item.indexOf('s-title')
-					if(index != -1){
+					let index = this.choiceSearchKey[0].item.indexOf("s-title");
+					if (index != -1) {
 						this.choiceSearchKey[0].item.splice(index, 1);
-						this.searchValue = null
+						this.searchValue = null;
 					}
 				} else {
 					let index = item.match(/(\d+)/g).map(ind => parseInt(ind));
@@ -458,7 +462,7 @@
 			searchHouseByT() {
 				let data = { house_title: this.searchValue };
 				this.$myLoadding.open(this.$refs.arrHouse);
-				this.choiceSearchKey[0].item.push('s-title');
+				this.choiceSearchKey[0].item.push("s-title");
 				houseApi.queryByT(data).then(res => {
 					this.arrHouses = res.data;
 					this.$myLoadding.hide();
@@ -491,298 +495,302 @@
 </script>
 
 <style lang="scss" scoped>
-$hoverColor: #00bfc8;
-$fontLightColor: #3dbcc6;
-$noCheckFontColor: #dadce0;
-$baseFontColor: #00000099;
-@keyframes showChoice {
-	0% {
-		transform: scale(0);
-	}
-	50% {
-		transform: scale(1.2);
-	}
-	100% {
-		transform: scale(1);
-	}
-}
-.body {
-	width: 116.8rem;
-	margin: 0 auto;
-	&__header {
-		height: 5rem;
-		display: flex;
-		align-items: center;
-	}
-	&__check {
-		margin-bottom: 3rem;
-	}
-}
-.search-bytitle{
-
-}
-.check-line {
-	font-size: 1.5rem;
-	padding-top: 1.5rem;
-	display: flex;
-	&__title {
-		flex-shrink: 0;
-		font-weight: bold;
-		width: 7rem;
-	}
-	&__con {
-		flex-grow: 1;
-		display: flex;
-		border-bottom: 1px solid #e5e5e5;
-	}
-	&__alone {
-		flex-shrink: 0;
-		color: rgba(0, 0, 0, 0.6);
-		font-size: 1.5rem;
-		margin-right: 2rem;
-		margin-bottom: 1.5rem;
-		cursor: pointer;
-		&:hover {
-			text-decoration: underline;
-		}
-		&--choice {
-			color: $fontLightColor;
-		}
-	}
-	&__option {
-		display: flex;
-		flex-wrap: wrap;
-	}
-}
-.user-check {
-	margin-top: 3rem;
-	border-bottom: 1px solid #e5e5e5;
-	&__sort {
-		display: flex;
-		justify-content: flex-end;
-		font-size: 1.6rem;
-		&-li {
-			margin-left: 4rem;
-			position: relative;
-			padding-bottom: 1rem;
-			cursor: pointer;
-			color: #00000099;
-			i:nth-of-type(2) {
-				transform: translateX(-8px);
-			}
-		}
-		&-li--check:not(i) {
-			color: $fontLightColor;
-		}
-		&-li--no {
-			color: #00000099;
-		}
-		&-li--check::after {
-			position: absolute;
-			height: 2px;
-			left: 0;
-			bottom: -1px;
-			width: 100%;
-			content: "";
-			background-color: $fontLightColor;
-		}
-	}
-	&__item {
-		display: flex;
-		&--title {
-			flex-shrink: 0;
-			font-size: 13px;
-			color: #00000099;
-			width: 7rem;
-			height: 23px;
-			line-height: 23px;
-		}
-		overflow: hidden;
-		transition: all 0.3s;
-		&--no {
-			height: 0;
-			padding: 0;
-		}
-		&--have {
-			height: auto;
-			padding: 3rem 0;
-		}
-	}
-	&__con {
-		display: flex;
-		flex-wrap: wrap;
-		&--one {
+	$hoverColor: #00bfc8;
+	$fontLightColor: #3dbcc6;
+	$noCheckFontColor: #dadce0;
+	$baseFontColor: #00000099;
+	@keyframes showChoice {
+		0% {
 			transform: scale(0);
-			animation: showChoice 0.5s 0.3s forwards;
-			margin: 0 10px 15px 0;
-			background-color: #3dbcc626;
-			font-size: 12px;
-			padding: 4px 5px;
-			border-radius: 4px;
-			box-sizing: border-box;
-			line-height: 12px;
-			border: 1px solid $fontLightColor;
-			color: $fontLightColor;
-			i {
+		}
+		50% {
+			transform: scale(1.2);
+		}
+		100% {
+			transform: scale(1);
+		}
+	}
+	.body {
+		width: 116.8rem;
+		margin: 0 auto;
+		&__header {
+			height: 5rem;
+			display: flex;
+			align-items: center;
+		}
+		&__check {
+			margin-bottom: 3rem;
+		}
+	}
+	.search-bytitle {
+	}
+	.check-line {
+		font-size: 1.5rem;
+		padding-top: 1.5rem;
+		display: flex;
+		&__title {
+			flex-shrink: 0;
+			font-weight: bold;
+			width: 7rem;
+		}
+		&__con {
+			flex-grow: 1;
+			display: flex;
+			border-bottom: 1px solid #e5e5e5;
+		}
+		&__alone {
+			flex-shrink: 0;
+			color: rgba(0, 0, 0, 0.6);
+			font-size: 1.5rem;
+			margin-right: 2rem;
+			margin-bottom: 1.5rem;
+			cursor: pointer;
+			&:hover {
+				text-decoration: underline;
+			}
+			&--choice {
+				color: $fontLightColor;
+			}
+		}
+		&__option {
+			display: flex;
+			flex-wrap: wrap;
+		}
+	}
+	.user-check {
+		margin-top: 3rem;
+		border-bottom: 1px solid #e5e5e5;
+		&__sort {
+			display: flex;
+			justify-content: flex-end;
+			font-size: 1.6rem;
+			&-li {
+				margin-left: 4rem;
+				position: relative;
+				padding-bottom: 1rem;
 				cursor: pointer;
+				color: #00000099;
+				i:nth-of-type(2) {
+					transform: translateX(-8px);
+				}
+			}
+			&-li--check:not(i) {
+				color: $fontLightColor;
+			}
+			&-li--no {
+				color: #00000099;
+			}
+			&-li--check::after {
+				position: absolute;
+				height: 2px;
+				left: 0;
+				bottom: -1px;
+				width: 100%;
+				content: "";
+				background-color: $fontLightColor;
+			}
+		}
+		&__item {
+			display: flex;
+			&--title {
+				flex-shrink: 0;
+				font-size: 13px;
+				color: #00000099;
+				width: 7rem;
+				height: 23px;
+				line-height: 23px;
+			}
+			overflow: hidden;
+			transition: all 0.3s;
+			&--no {
+				height: 0;
+				padding: 0;
+			}
+			&--have {
+				height: auto;
+				padding: 3rem 0;
+			}
+		}
+		&__con {
+			display: flex;
+			flex-wrap: wrap;
+			&--one {
+				transform: scale(0);
+				animation: showChoice 0.5s 0.3s forwards;
+				margin: 0 10px 15px 0;
+				background-color: #3dbcc626;
+				font-size: 12px;
+				padding: 4px 5px;
+				border-radius: 4px;
+				box-sizing: border-box;
+				line-height: 12px;
+				border: 1px solid $fontLightColor;
+				color: $fontLightColor;
+				i {
+					cursor: pointer;
+				}
 			}
 		}
 	}
-}
-.check-color {
-	color: $fontLightColor;
-}
-.input-price {
-	color: rgba(0, 0, 0, 0.6);
-	display: flex;
-	height: auto;
-	input:focus {
-		outline: none;
+	.check-color {
+		color: $fontLightColor;
 	}
-	input {
-		border: 1px solid #e5e5e5;
-		border-radius: 2px;
-		width: 46px;
-		padding: 2px 2px 2px 5px;
-		height: 16px;
+	.input-price {
 		color: rgba(0, 0, 0, 0.6);
-	}
-	&--min {
-		margin: 0 4px;
-	}
-	div {
-		width: 30px;
-	}
-	&--confim {
-		font-size: 1.4rem;
-		color: $fontLightColor;
-		margin-left: 2rem;
-		cursor: pointer;
-	}
-	&--ch {
-		margin-left: 5px;
-	}
-}
-.nohouse {
-	margin: 100px auto 0;
-	width: fit-content;
-	text-align: center;
-	&-img {
-		width: 150px;
-		height: 150px;
-		img {
-			height: 100%;
-			width: 100%;
-		}
-	}
-	color: $noCheckFontColor;
-	p {
-		margin-top: 10px;
-		font-size: 12px;
-	}
-}
-.houses {
-	&-item {
-		float: left;
-		width: 37rem;
-		margin-right: 2.6rem;
-		border-radius: 5px;
-		overflow: hidden;
-		border: 1px solid rgba(0, 0, 0, 0.12);
-		margin-bottom: 2rem;
-		transition: all 0.3s;
-		&:hover {
-			transform: translateY(-2px);
-			box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
-		}
-	}
-	&-item:nth-child(3n) {
-		margin-right: 0;
-	}
-	&__img {
-		display: block;
-		height: 270px;
-		width: 100%;
-		img {
-			width: 100%;
-			height: 100%;
-		}
-	}
-	&__title {
-		font-size: 1.7rem;
-		font-weight: bold;
-		margin: 2rem 0 0.6rem 0;
-		color: #000;
-		transition: color 0.1s;
-		&:hover {
-			color: $hoverColor;
-		}
-	}
-	&__body {
-		height: 132px;
-		padding: 1.6rem;
-	}
-	&__size,
-	&__detail {
-		font-size: 12px;
-		padding-top: 8px;
-		color: #00000066;
-		&__split {
-			margin: 0 5px;
-		}
-	}
-	&__detail {
-		overflow: hidden;
-		text-overflow: ellipsis;
-		white-space: nowrap;
-	}
-	&__locat {
-		margin-top: 8px;
-		border-radius: 10px;
-		border: 1px solid $fontLightColor;
-		box-sizing: border-box;
-		color: $fontLightColor;
-		width: fit-content;
-		padding: 0 6px;
-		font-size: 12px;
-		line-height: 20px;
-		transition: all 0.2s;
-		cursor: pointer;
-		&:hover {
-			color: #fff;
-			background-color: $fontLightColor;
-		}
-	}
-}
-.houses__price {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	padding-top: 10px;
-	&-des {
 		display: flex;
+		height: auto;
+		input:focus {
+			outline: none;
+		}
+		input {
+			border: 1px solid #e5e5e5;
+			border-radius: 2px;
+			width: 46px;
+			padding: 2px 2px 2px 5px;
+			height: 16px;
+			color: rgba(0, 0, 0, 0.6);
+		}
+		&--min {
+			margin: 0 4px;
+		}
+		div {
+			width: 30px;
+		}
+		&--confim {
+			font-size: 1.4rem;
+			color: $fontLightColor;
+			margin-left: 2rem;
+			cursor: pointer;
+		}
+		&--ch {
+			margin-left: 5px;
+		}
+	}
+	.nohouse {
+		margin: 100px auto 0;
+		width: fit-content;
+		text-align: center;
+		&-img {
+			width: 150px;
+			height: 150px;
+			img {
+				height: 100%;
+				width: 100%;
+			}
+		}
+		color: $noCheckFontColor;
 		p {
-			border-radius: 6px;
-			padding: 2px 6px;
+			margin-top: 10px;
 			font-size: 12px;
+		}
+	}
+	.houses {
+		&-item {
+			float: left;
+			width: 37rem;
+			margin-right: 2.6rem;
+			border-radius: 5px;
+			overflow: hidden;
+			border: 1px solid rgba(0, 0, 0, 0.12);
+			margin-bottom: 2rem;
+			transition: all 0.3s;
+			&:hover {
+				transform: translateY(-2px);
+				box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+			}
+		}
+		&-item:nth-child(3n) {
+			margin-right: 0;
+		}
+		&__img {
+			display: block;
+			height: 270px;
+			width: 100%;
+			img {
+				width: 100%;
+				height: 100%;
+			}
+		}
+		&__title {
+			font-size: 1.7rem;
+			font-weight: bold;
+			margin: 2rem 0 0.6rem 0;
+			color: #000;
+			transition: color 0.1s;
+			&:hover {
+				color: $hoverColor;
+			}
+		}
+		&__body {
+			height: 132px;
+			padding: 1.6rem;
+		}
+		&__size,
+		&__detail {
+			font-size: 12px;
+			padding-top: 8px;
+			color: #00000066;
+			&__split {
+				margin: 0 5px;
+			}
+		}
+		&__detail {
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+		}
+		&__locat {
+			margin-top: 8px;
+			border-radius: 10px;
 			border: 1px solid $fontLightColor;
 			box-sizing: border-box;
 			color: $fontLightColor;
-			margin-right: 10px;
+			width: fit-content;
+			padding: 0 6px;
+			font-size: 12px;
+			line-height: 20px;
+			transition: all 0.2s;
+			cursor: pointer;
+			&:hover {
+				color: #fff;
+				background-color: $fontLightColor;
+			}
 		}
 	}
-	&-num {
-		font-size: 2rem;
-		line-height: 2rem;
-		color: $fontLightColor;
+	.houses__price {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		padding-top: 10px;
+		&-des {
+			display: flex;
+			p {
+				border-radius: 6px;
+				padding: 2px 6px;
+				font-size: 12px;
+				border: 1px solid $fontLightColor;
+				box-sizing: border-box;
+				color: $fontLightColor;
+				margin-right: 10px;
+			}
+		}
+		&-num {
+			font-size: 2rem;
+			line-height: 2rem;
+			color: $fontLightColor;
+		}
 	}
-}
-.arrhouses {
-	position: relative;
-}
-.arrhouses::after {
-	content: "";
-	display: block;
-	clear: both;
-}
+	.arrhouses {
+		position: relative;
+		min-height: 400px;
+		&::after {
+			content: "";
+			display: block;
+			clear: both;
+		}
+		&::before {
+			content: "";
+			display: table;
+		}
+	}
 </style>

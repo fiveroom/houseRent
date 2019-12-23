@@ -10,16 +10,17 @@ const Axios = axiosExtra.create({
         retry: 2,
         retryIsJump: true
     },
-
 })
 Axios.defaults.headers.post["Content-Type"] =
     "application/x-www-form-urlencoded";
 Axios.interceptors.request.use(config => {
-    if (!config.data.noLoading) {
+    if (!config.data.noLoading && config.data.toString() != '[object FormData]') {
         showLoading()
     }
     delete config.data.noLoading;
-    config.data = Qs.stringify(config.data);
+    if (config.data.toString() != '[object FormData]') {
+        config.data = Qs.stringify(config.data);
+    }
     return config;
 }, err => {
     return Promise.reject(err);
@@ -27,10 +28,8 @@ Axios.interceptors.request.use(config => {
 
 Axios.interceptors.response.use(res => {
     tryHideLoading()
-    // Vue.$myLoadding.hide()
     return res
 }, err => {
-    // Vue.$myLoadding.hide()
     tryHideLoading()
     return Promise.reject(err);
 });

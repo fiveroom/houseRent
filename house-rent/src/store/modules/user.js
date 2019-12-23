@@ -53,7 +53,6 @@ const mutations = {
         state.user_name = obj.user_name;
         state.tel = obj.tel;
         state.userAvater = obj.user_avaterPath;
-        console.log(state.userAvater);
     },
     [types.LOGIN_OUT](state, obj) {
         state.user_id = '';
@@ -62,6 +61,9 @@ const mutations = {
         state.userEmail = '';
         state.userAvaterPath = '';
         sessionStorage.clear()
+    },
+    [types.UP_AVATOR](state, url) {
+        state.userAvater = url
     }
 }
 

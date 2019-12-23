@@ -16,7 +16,10 @@ import {
     Loading,
     Backtop,
     Notification,
-    Icon
+    Icon,
+    Table,
+    TableColumn,
+    MessageBox
 } from 'element-ui';
 
 export default {
@@ -38,6 +41,10 @@ export default {
         Vue.use(Loading);
         Vue.use(Backtop);
         Vue.use(Icon);
+        Vue.use(Table);
+        Vue.use(TableColumn);
+
         Vue.prototype.$notify = Notification;
+        Vue.prototype.$msgBox = MessageBox;
     }
 }

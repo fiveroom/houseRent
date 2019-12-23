@@ -4,20 +4,20 @@
 			<i class="el-icon-edit-outline"></i>
 			<span>编辑个人资料</span>
 		</header>
-		<section class="edit-body">
-			<div class="user-avator">
-				<img :src="userAvater || avator" alt />
-			</div>
+		<section class="edit-body" ref="preData">
+			<el-upload
+				ref="editUserAvator"
+				class="user-avator"
+				action="#"
+				:show-file-list="false"
+				:before-upload="beforeAvatarUpload"
+				accept="image/*"
+				:http-request="()=>{}"
+			>
+				<img :src="userAvaterCP || userAvater || avator " class="avatar" />
+			</el-upload>
 			<div class="edit-body__form">
-				<MyInput
-					placeholder="账号"
-					lable="userNameBk"
-					v-model="userNameBk"
-					:required="true"
-					@inputStatus="(status)=>{userNameBkStatus = status}"
-					:upStatus="updateStatus"
-					:regStr="userNameRex"
-				/>
+				<MyInput placeholder="账号" lable="userName" v-model="userName" :readonly="true" />
 				<div class="form-gender">
 					<p class="form-gender__title">性别</p>
 					<div class="form-gender__check">
@@ -54,73 +54,82 @@
 					</div>
 				</div>
 				<div class="form-tonext">
-					<MyInput placeholder="手机号" lable="telDealBk" v-model="telDealBk" :readonly="true" />
+					<MyInput placeholder="手机号" lable="telDeal" v-model="telDeal" :readonly="true" />
 					<router-link class="form-tonext--to" to="/userDetail/editPhone">更改手机号</router-link>
 				</div>
-				<div class="form-tonext">
-					<MyInput placeholder="邮箱" lable="emailBk" v-model="userEmailBk" :readonly="true" />
-					<router-link class="form-tonext--to" to="/userDetail/editEmail">更改邮箱号</router-link>
-				</div>
-				<Mybutton class="form-but" @clickTo="updateInfo" title="保存" />
+				<Mybutton class="form-but" @clickTo="subUpdate" title="保存" />
 			</div>
 		</section>
 	</div>
 </template>
 
 <script>
-	import { mapActions, mapGetters } from "vuex";
-	import * as userApi from "@/api/user";
+	import { mapActions, mapGetters, mapMutations } from "vuex";
+	import { uploadAvator } from "@/api/user";
 	export default {
 		data() {
 			let avator = require("@/assets/avator.jpg");
-			let userNameRex = {
-				reg: /^([a-zA-Z0-9_-]|[\u4E00-\u9FA5]){4,16}$/,
-				hint: "4位以上，特殊字符可包含-_"
-			};
 			return {
 				avator,
-				telDealBk: null,
-				userNameBk: null,
-				userNameRex,
-				userNameBkStatus: null,
 				userGender: "0",
-				userEmailBk: null,
-				updateStatus: true
+				updateStatus: true,
+				imgFile: null, // 头像文件
+				ntfObj: { duration: 1500, title: "资料修改", showClose: false },
+				userAvaterCP: null,
+				statusEdit: false
 			};
 		},
 		computed: {
-			...mapGetters([
-				"userId",
-				"telDeal",
-				"userName",
-				"userEmail",
-				"userAvater"
-			])
+			...mapGetters(["userId", "telDeal", "userName", "userAvater"])
 		},
 		methods: {
-			...mapActions(["updateUser"]),
-			cpValue() {
-				this.telDealBk = this.telDeal;
-				this.userNameBk = this.userName;
-				this.userEmailBk = this.userEmail;
-				this.userNameBkStatus = !!this.userName;
-				console.log(this.userAvater);
+			...mapMutations(["upAvator"]),
+			beforeAvatarUpload(file) {
+				this.statusEdit = true;
+				this.imgFile = file;
+				var fileReader = new FileReader();
+				fileReader.readAsDataURL(this.imgFile);
+				// 读取操作完成触发
+				fileReader.onload = e => {
+					this.userAvaterCP = e.target.result;
+				};
 			},
-			updateInfo() {
-				this.updateStatus = this.userNameBkStatus;
-				if (this.updateStatus) {
-					this.updateUser({
-						user_name: this.userNameBk,
-						user_gender: this.userGender
-					}).then(res => {
-						console.log(res, "更新个人信息");
+			updateAvator() {
+				let fromData = new FormData();
+				fromData.append("user_id", this.userId);
+				fromData.append("file", this.imgFile);
+				this.$myLoadding.open(this.$refs.preData);
+				uploadAvator(fromData).then(res => {
+					let hintObj = { ...this.ntfObj, message: res.msg };
+					if (res.status) {
+						this.upAvator(res.url);
+						this.$notify.success(hintObj);
+						this.statusEdit = false;
+					} else {
+						this.$notify.error(hintObj);
+					}
+					this.$myLoadding.hide();
+				});
+			},
+			editUserAvator() {},
+			subUpdate() {
+				if (this.statusEdit) {
+					this.$msgBox
+						.confirm("确认修改头像", "资料修改", {
+							confirmButtonText: "确认",
+							cancelButtonText: "放弃"
+						})
+						.then(() => {
+							this.updateAvator();
+						})
+						.catch(() => {});
+				} else {
+					this.$notify.warning({
+						message: "你未更改信息",
+						...this.ntfObj
 					});
 				}
 			}
-		},
-
-		created() {
-			this.cpValue();
 		}
 	};
 </script>
@@ -153,6 +162,7 @@
 		}
 	}
 	.edit-body {
+		position: relative;
 		padding-top: 5rem;
 		&__form {
 			width: 35rem;
@@ -187,5 +197,9 @@
 		&--to {
 			color: $fontLightColor;
 		}
+	}
+	::v-deep .el-upload {
+		width: 100%;
+		height: 100%;
 	}
 </style>

@@ -40,9 +40,9 @@
 }
 .loadding-con {
 	position: absolute;
-	top: 50%;
+	top: 100px;
 	left: 50%;
-	transform: translate(-50%, -50%);
+	transform: translateX(-50%);
 	&__img{
 		width: 120px;
 		height: 120px;

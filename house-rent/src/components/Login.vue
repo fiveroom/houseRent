@@ -1,7 +1,7 @@
 <template>
 	<section class="login-from">
 		<div class="login-from__left"></div>
-		<div class="login-from__right">
+		<div class="login-from__right" ref="fromRight">
 			<div class="form">
 				<el-tabs v-model="activeName" class="mytab" @tab-click="handleClick">
 					<el-tab-pane label="账号手机号登录" name="first">
@@ -32,7 +32,7 @@
 							:required="true"
 							placeholder="手机号"
 							@inputStatus="(status)=>{userPhoneStatus = status}"
-							:upStatus="loginCodeStatus"
+							:upStatus="allowGetCode && loginCodeStatus"
 						/>
 						<div class="code">
 							<MyInput
@@ -44,15 +44,18 @@
 								@inputStatus="(status)=>{codeStatus = status}"
 								:upStatus="getCodeStatus || loginCodeStatus"
 							/>
-							<div @click="getCodeJudge" class="code__get">
-								<span>{{timeOut?`重新获取${timeOut}`:'获取验证码'}}</span>
-							</div>
+							<Mybutton
+								@clickTo="getResCode"
+								class="code__get"
+								:disabled="!userPhoneStatus"
+								:authCode="true"
+							/>
 						</div>
 					</el-tab-pane>
 				</el-tabs>
 				<Mybutton title="登录" @clickTo="loginWeb" />
 				<div class="form__bootm">
-					<router-link to="/user/register">免费注册</router-link>
+					<router-link to="/user/register" replace>免费注册</router-link>
 					<router-link to="/editCode">忘记密码</router-link>
 				</div>
 			</div>
@@ -61,8 +64,7 @@
 </template>
 
 <script>
-	import { mapActions } from "vuex";
-	import { Message } from "element-ui";
+	import { mapActions, mapMutations } from "vuex";
 	import { login, getCode, logByCode } from "@/api/user";
 	import SlidVal from "./SlidVal";
 	export default {
@@ -89,6 +91,7 @@
 				slidStatus: false,
 				loginStatus: true,
 				loginCodeStatus: true,
+				allowGetCode: true,
 				activeName: "first",
 				timeOut: 0,
 				hmg
@@ -99,56 +102,70 @@
 		},
 		methods: {
 			...mapActions(["loginUser"]),
+			...mapMutations(['saveUser']),
 			loginTo() {
-				this.loginUser({
-					loginInfo: this.userName,
-					user_pwd: this.pwd
-				}).then(res => {
+				let obj = { loginInfo: this.userName, user_pwd: this.pwd };
+				this.loginUser(obj).then(res => {
+					let objHint = {
+						duration: 1500,
+						message: res.msg,
+						title: "登录状态"
+					};
 					if (res.status) {
-						Message({ ...this.hmg, type: "success", message: res.msg });
-						console.log(window.history);
+						this.$notify.success(objHint);
+						if (window.history.length <= 2) {
+							this.$router.push({ name: "home" });
+						} else {
+							console.log('asdfasdfasdf---------');
+							this.$router.go(-1);
+						}
+					} else {
+						this.$notify.warning(objHint);
+					}
+				});
+			},
+			// 手机验证码登录
+			loginCode() {
+				let boj = { telephone: this.userPhone, code: this.code };
+				logByCode(boj).then(res => {
+					let objHint = {
+						duration: 1500,
+						message: res.msg,
+						title: "登录"
+					};
+					if (res.status) {
+						this.$notify.success(objHint);
+						this.saveUser()
 						if (window.history.length <= 2) {
 							this.$router.push({ name: "home" });
 						} else {
 							this.$router.go(-1);
 						}
 					} else {
-						Message({ ...this.hmg, type: "error", message: res.msg });
+						this.$notify.error(objHint);
 					}
 				});
 			},
-			// 手机验证码登录
-			async loginCode() {
-				console.log("验证码登录");
-				let data = await logByCode(
-					{
-						telephone: this.userPhone,
-						code: this.code
-					},
-					res => {
-						console.log(res, "验证码验证");
-					}
-				);
-			},
 			handleClick(item) {},
-			getCodeJudge() {
-				this.loginCodeStatus = this.userPhoneStatus;
-				if (!this.timeOut && this.userPhoneStatus) {
-					getCode(
-						{
-							telephone: this.userPhone
-						},
-						res => {
-							console.log(res, "验证码");
+			// 获取验证码
+			getResCode(status) {
+				this.allowGetCode = this.userPhoneStatus;
+				if (status && this.userPhoneStatus) {
+					let obj = { telephone: this.userPhone, noLoading: true};
+					this.$myLoadding.open(this.$refs.fromRight);
+					getCode(obj).then(res => {
+						let objHint = {
+							duration: 1500,
+							message: res.msg,
+							title: "验证码"
+						};
+						if (res.status) {
+							this.$notify.success(objHint);
+						} else {
+							this.$notify.warning(objHint);
 						}
-					);
-					this.timeOut = 60;
-					let timer = setInterval(() => {
-						this.timeOut--;
-						if (this.timeOut === 0) {
-							clearInterval(timer);
-						}
-					}, 1000);
+						this.$myLoadding.hide();
+					});
 				}
 			},
 			loginWeb() {
@@ -168,86 +185,72 @@
 </script>
 
 <style lang="scss" scoped>
-.login-from {
-	width: 100rem;
-	height: 56rem;
-	display: flex;
-	border-radius: 0.8rem;
-	overflow: hidden;
-	box-shadow: 0 6px 20px 5px rgba(40, 120, 255, 0.1),
-		0 16px 24px 2px rgba(0, 0, 0, 0.05);
-	&__left {
-		flex-shrink: 0;
-		width: 44rem;
-		background-color: skyblue;
-	}
-	&__right {
-		flex-grow: 1;
-		box-sizing: border-box;
-	}
-}
-.form {
-	width: 33rem;
-	margin: 0 auto;
-	&__title {
-		font-size: 3.6rem;
-		font-weight: bolder;
-		color: #2878ff;
-		margin: 81px 0 60px 0;
-		text-align: center;
-	}
-	&__slid {
-		margin: 2rem 0 3rem;
-	}
-	&__bootm {
+	.login-from {
+		width: 100rem;
+		height: 56rem;
 		display: flex;
-		font-size: 1.2rem;
-		align-items: center;
-		padding: 1rem 0;
-		justify-content: space-between;
-		a:first-of-type {
-			color: #396afe;
+		border-radius: 0.8rem;
+		overflow: hidden;
+		box-shadow: 0 6px 20px 5px rgba(40, 120, 255, 0.1),
+			0 16px 24px 2px rgba(0, 0, 0, 0.05);
+		&__left {
+			flex-shrink: 0;
+			width: 44rem;
+			background-color: skyblue;
 		}
-		a:last-of-type {
-			color: #9fa2a8;
+		&__right {
+			flex-grow: 1;
+			box-sizing: border-box;
+			position: relative;
 		}
 	}
-}
+	.form {
+		width: 33rem;
+		margin: 0 auto;
+		&__title {
+			font-size: 3.6rem;
+			font-weight: bolder;
+			color: #2878ff;
+			margin: 81px 0 60px 0;
+			text-align: center;
+		}
+		&__slid {
+			margin: 2rem 0 3rem;
+		}
+		&__bootm {
+			display: flex;
+			font-size: 1.2rem;
+			align-items: center;
+			padding: 1rem 0;
+			justify-content: space-between;
+			a:first-of-type {
+				color: #396afe;
+			}
+			a:last-of-type {
+				color: #9fa2a8;
+			}
+		}
+	}
 
-.code {
-	display: flex;
-	justify-content: space-between;
-	margin-bottom: 2rem;
-	&__input {
-		width: 17.4rem;
-		text-align: center;
-		input {
-			font-size: 2rem;
-		}
-	}
-	&__get {
-		cursor: pointer;
-		background-color: skyblue;
-		border-radius: 0.4rem;
-		margin-left: 1.8rem;
+	.code {
 		display: flex;
+		justify-content: space-between;
 		align-items: center;
-		color: #fff;
-		padding: 0 1rem;
-		height: 4rem;
-		box-shadow: 0 1px 6px rgba(0, 0, 0, 0.117647),
-			0 1px 4px rgba(0, 0, 0, 0.117647);
-		&:hover {
-			background-color: red;
+		margin-bottom: 2rem;
+		&__input {
+			width: 17.4rem;
+			text-align: center;
+			input {
+				font-size: 2rem;
+			}
 		}
-		&:active {
-			box-shadow: 2px 5px 8px rgba(0, 0, 0, 0.2),
-				-2px 0px 6px rgba(0, 0, 0, 0.2);
+		&__get {
+			color: #fff;
+			width: 124px;
+			margin-bottom: 9px;
 		}
-		margin-top: 1.1rem;
 	}
-}
-.mytab {
-	margin-top: 10rem;
-}
+	.mytab {
+		margin-top: 10rem;
+	}
 </style>

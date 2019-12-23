@@ -73,7 +73,7 @@
 					items: [
 						{
 							title: "我的合同",
-							url: "#"
+							url: "/userDetail/myContract"
 						},
 						{
 							title: "租房问题",
@@ -109,97 +109,97 @@
 </script>
 
 <style lang="scss" scoped>
-$hoverColor: #00bfc8;
-$fontLightColor: #3dbcc6;
-.user-detail {
-	// height: 100%;
-	&__con {
-		background-color: #f8f8f8;
-		padding-bottom: 4rem;
-		// min-height: 100%;
-		// min-height: 100vh;
+	$hoverColor: #00bfc8;
+	$fontLightColor: #3dbcc6;
+	.user-detail {
+		// height: 100%;
+		&__con {
+			background-color: #f8f8f8;
+			padding-bottom: 4rem;
+			// min-height: 100%;
+			// min-height: 100vh;
+			box-sizing: border-box;
+		}
+		// &__footer {
+		// 	margin-top: -100px;
+		// }
+		// &__empt {
+		// 	height: 100px;
+		// }
+	}
+	// .user-container {
+	// 	height:100vh;
+	// }
+	.user-deal {
+		width: 116.8rem;
+		margin: 0 auto;
+		&__header {
+			height: 5rem;
+			display: flex;
+			align-items: center;
+		}
+		&__body {
+			display: flex;
+			min-height: calc(100vh - 16.5rem);
+		}
+	}
+	::v-deep .el-breadcrumb__inner {
+		color: #999999;
+		font-size: 1.2px;
+	}
+	.body__left {
+		width: 20rem;
+		padding: 15px 30px 30px 0;
+		background: #fff;
 		box-sizing: border-box;
-	}
-	// &__footer {
-	// 	margin-top: -100px;
-	// }
-	// &__empt {
-	// 	height: 100px;
-	// }
-}
-// .user-container {
-// 	height:100vh;
-// }
-.user-deal {
-	width: 116.8rem;
-	margin: 0 auto;
-	&__header {
-		height: 5rem;
-		display: flex;
-		align-items: center;
-	}
-	&__body {
-		display: flex;
-		min-height: calc(100vh - 16.5rem);
-	}
-}
-::v-deep .el-breadcrumb__inner {
-	color: #999999;
-	font-size: 1.2px;
-}
-.body__left {
-	width: 20rem;
-	padding: 15px 30px 30px 0;
-	background: #fff;
-	box-sizing: border-box;
-	&--h2 {
-		font-size: 1.8rem;
-		position: relative;
-		padding: 0.5rem 0 0.5rem 3rem;
-		margin-top: 1rem;
-		color: #333;
-		font-weight: 400;
-	}
-	&--item {
-		font-weight: normal;
-		position: relative;
-		padding: 5px 0 5px 30px;
-		margin-top: 10px;
-		font-size: 1.4rem;
-		transition: color 0.3s;
-		& > a:hover > i {
-			background-color: $fontLightColor;
+		&--h2 {
+			font-size: 1.8rem;
+			position: relative;
+			padding: 0.5rem 0 0.5rem 3rem;
+			margin-top: 1rem;
+			color: #333;
+			font-weight: 400;
+		}
+		&--item {
+			font-weight: normal;
+			position: relative;
+			padding: 5px 0 5px 30px;
+			margin-top: 10px;
+			font-size: 1.4rem;
+			transition: color 0.3s;
+			& > a:hover > i {
+				background-color: $fontLightColor;
+			}
 		}
 	}
-}
-.item__a {
-	color: #666;
-	&:hover {
-		color: $fontLightColor;
-	}
-	&:hover > i {
-		background-color: $fontLightColor;
-	}
-	&--light {
-		color: $fontLightColor;
-		i {
+	.item__a {
+		color: #666;
+		&:hover {
+			color: $fontLightColor;
+		}
+		&:hover > i {
 			background-color: $fontLightColor;
 		}
+		&--light {
+			color: $fontLightColor;
+			i {
+				background-color: $fontLightColor;
+			}
+		}
 	}
-}
-.body__right {
-	margin-left: 20px;
-	padding: 30px;
-	background-color: #fff;
-	flex-grow: 1;
-}
-.side {
-	transition: background-color 0.3s;
-	position: absolute;
-	height: 1.9rem;
-	top: 50%;
-	left: 0;
-	transform: translateY(-50%);
-	width: 2px;
-}
+	.body__right {
+		margin-left: 20px;
+		padding: 30px;
+		background-color: #fff;
+		flex-grow: 1;
+	}
+	.side {
+		transition: background-color 0.3s;
+		position: absolute;
+		height: 1.9rem;
+		top: 50%;
+		left: 0;
+		transform: translateY(-50%);
+		width: 2px;
+	}
 </style>

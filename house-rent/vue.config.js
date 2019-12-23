@@ -3,6 +3,7 @@ module.exports = {
         proxy: {
             // 192.168.3.5
             // 39.106.122.19
+            // 192.168.3.26
             "/UserMgeSvr.assx": {
                 target: "http://39.106.122.19:8888/",
                 changeOrigin: true,
@@ -20,7 +21,13 @@ module.exports = {
                 changeOrigin: true,
                 autoRewite: true,
                 cookieDomainRewrite: true
-            }
+            },
+            "/upImage": {
+                target: "http://39.106.122.19:8888/",
+                changeOrigin: true,
+                autoRewite: true,
+                cookieDomainRewrite: true
+            },
             // "/UserMgeSvr.assx": {
             //     target: "http://192.168.3.33:8888/",
             //     changeOrigin: true,

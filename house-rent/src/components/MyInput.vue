@@ -34,7 +34,7 @@
 			regStr: Object,
 			upStatus: Boolean,
 			readonly: null,
-			judgeNum: null
+			judgeNum: null,
 		},
 		data() {
 			return {
@@ -84,7 +84,7 @@
 			handleInput(e) {
 				this.$emit("input", e.target.value);
 			},
-			verifyValue() {
+			verifyValue(status) {
 				this.focusStatus = false;
 				this.judgeRequired =
 					!this.haveValue && !this.focusStatus && this.required;
@@ -100,6 +100,7 @@
 					"inputStatus",
 					this.regStr ? !this.valueStatus : !this.judgeRequired
 				);
+				status && this.$emit('blurJudge');
 			},
 			downInput(){
 				this.$emit('keyDownTo')

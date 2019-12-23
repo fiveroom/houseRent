@@ -56,6 +56,9 @@
 								</div>
 								<div class="down-co">下载</div>
 							</li>
+							<li>
+								<router-link :to="`/userDetail/myOrder?Con_id=${item.Con_id}`">查看订单</router-link>
+							</li>
 						</ul>
 					</li>
 					<li v-for="item in contractList" :key="item.Con_id + 2">
@@ -183,13 +186,11 @@
 					}
 				);
 			},
-			showBig(url){
+			showBig(url) {
 				this.showConImageUrl = url;
-				this.showConImage = true
+				this.showConImage = true;
 			},
-			downloadCon(url){
-
-			}
+			downloadCon(url) {}
 		},
 		mounted() {
 			// this.getCtractIn();
@@ -217,186 +218,186 @@
 </script>
 
 <style lang="scss" scoped>
-$hoverColor: #00bfc8;
-$fontLightColor: #3dbcc6;
-$bacHoerClr: #3dbcc6;
-$NoHover: #999999;
-.header {
-	display: flex;
-	padding: 0 0 4rem 2rem;
-	border-bottom: 1px solid #f1f1f1;
-	&__left {
-		width: 12rem;
-		height: 12rem;
-		border-radius: 50%;
-		border: 0.2rem solid $fontLightColor;
-		overflow: hidden;
-		img {
-			height: 100%;
-			width: 100%;
+	$hoverColor: #00bfc8;
+	$fontLightColor: #3dbcc6;
+	$bacHoerClr: #3dbcc6;
+	$NoHover: #999999;
+	.header {
+		display: flex;
+		padding: 0 0 4rem 2rem;
+		border-bottom: 1px solid #f1f1f1;
+		&__left {
+			width: 12rem;
+			height: 12rem;
+			border-radius: 50%;
+			border: 0.2rem solid $fontLightColor;
+			overflow: hidden;
+			img {
+				height: 100%;
+				width: 100%;
+			}
+		}
+		&__right {
+			flex-grow: 1;
+			display: flex;
+			padding: 20px 0 0 40px;
+			justify-content: space-between;
+			&--name {
+				font-size: 2rem;
+				color: #000;
+				margin-bottom: 1rem;
+			}
+			&--hint {
+				color: $NoHover;
+			}
+			&__next {
+				font-size: 1.4rem;
+				color: $fontLightColor;
+				a {
+					color: $fontLightColor;
+				}
+			}
 		}
 	}
-	&__right {
-		flex-grow: 1;
-		display: flex;
-		padding: 20px 0 0 40px;
-		justify-content: space-between;
-		&--name {
-			font-size: 2rem;
-			color: #000;
-			margin-bottom: 1rem;
+	.contract-box {
+		position: relative;
+	}
+	.contract {
+		&-title {
+			padding: 3rem 0 2.4rem;
+			font-size: 1.8rem;
+			line-height: 2.1rem;
+			color: #333;
+			span {
+				margin-left: 1.4rem;
+			}
 		}
-		&--hint {
-			color: $NoHover;
+		&--have {
+			border-bottom: 1px solid #f1f1f1;
+		}
+		&--no {
+			height: 200px;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			flex-direction: column;
+		}
+	}
+	.contract--no {
+		&__title {
+			font-size: 16px;
+			color: #999;
 		}
 		&__next {
-			font-size: 1.4rem;
-			color: $fontLightColor;
-			a {
-				color: $fontLightColor;
-			}
-		}
-	}
-}
-.contract-box {
-	position: relative;
-}
-.contract {
-	&-title {
-		padding: 3rem 0 2.4rem;
-		font-size: 1.8rem;
-		line-height: 2.1rem;
-		color: #333;
-		span {
-			margin-left: 1.4rem;
-		}
-	}
-	&--have {
-		border-bottom: 1px solid #f1f1f1;
-	}
-	&--no {
-		height: 200px;
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		flex-direction: column;
-	}
-}
-.contract--no {
-	&__title {
-		font-size: 16px;
-		color: #999;
-	}
-	&__next {
-		display: block;
-		background-color: #fff;
-		min-width: 180px;
-		width: auto;
-		height: 50px;
-		font-size: 1.8rem;
-		line-height: 4.6rem;
-		text-align: center;
-		border: 2px solid #3dbcc6;
-		border-radius: 33px;
-		box-sizing: border-box;
-		color: $hoverColor;
-		padding: 0 30px;
-		transition: all 0.2s;
-		margin-top: 2rem;
-		&:hover {
-			background-color: $bacHoerClr;
-			color: #fff;
-		}
-	}
-}
-.con-body {
-	display: flex;
-	justify-content: space-between;
-
-	flex-wrap: wrap;
-	& > li {
-		width: 30%;
-		height: 384px;
-		flex-shrink: 0;
-		box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
-	}
-	&__img {
-		width: 100%;
-		height: 250px;
-		background-color: skyblue;
-		position: relative;
-		text-align: center;
-		margin-bottom: 15px;
-		img {
-			height: 100%;
-			width: 100%;
-		}
-	}
-	&__icon {
-		cursor: pointer;
-		position: absolute;
-		bottom: 5px;
-		right: 5px;
-		font-size: 24px;
-		color: #666666;
-		i {
-			transition: color 0.3s;
-			font-weight: bolder;
+			display: block;
+			background-color: #fff;
+			min-width: 180px;
+			width: auto;
+			height: 50px;
+			font-size: 1.8rem;
+			line-height: 4.6rem;
+			text-align: center;
+			border: 2px solid #3dbcc6;
+			border-radius: 33px;
+			box-sizing: border-box;
+			color: $hoverColor;
+			padding: 0 30px;
+			transition: all 0.2s;
+			margin-top: 2rem;
 			&:hover {
-				color: #3dbcc6;
+				background-color: $bacHoerClr;
+				color: #fff;
 			}
 		}
-		i:first-child {
+	}
+	.con-body {
+		display: flex;
+		justify-content: space-between;
+
+		flex-wrap: wrap;
+		& > li {
+			width: 30%;
+			height: 384px;
+			flex-shrink: 0;
+			box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+		}
+		&__img {
+			width: 100%;
+			height: 250px;
+			background-color: skyblue;
+			position: relative;
+			text-align: center;
+			margin-bottom: 15px;
+			img {
+				height: 100%;
+				width: 100%;
+			}
+		}
+		&__icon {
+			cursor: pointer;
+			position: absolute;
+			bottom: 5px;
+			right: 5px;
+			font-size: 24px;
+			color: #666666;
+			i {
+				transition: color 0.3s;
+				font-weight: bolder;
+				&:hover {
+					color: #3dbcc6;
+				}
+			}
+			i:first-child {
+				margin-right: 10px;
+			}
+		}
+	}
+	.user-info {
+		width: 244px;
+		margin: 0 auto;
+		& > li {
+			display: flex;
+		}
+		&--t {
+			width: 50px;
+			flex-shrink: 0;
+			text-align: justify;
+			font-weight: bold;
+			overflow: hidden;
+			height: 30px;
+			font-size: 17px;
+			line-height: 30px;
+			&::after {
+				display: inline-block;
+				content: "";
+				width: 100%;
+				height: 0;
+			}
 			margin-right: 10px;
 		}
-	}
-}
-.user-info {
-	width: 244px;
-	margin: 0 auto;
-	& > li {
-		display: flex;
-	}
-	&--t {
-		width: 50px;
-		flex-shrink: 0;
-		text-align: justify;
-		font-weight: bold;
-		overflow: hidden;
-		height: 30px;
-		font-size: 17px;
-		line-height: 30px;
-		&::after {
-			display: inline-block;
-			content: "";
-			width: 100%;
-			height: 0;
+		&--i {
+			color: #000;
+			line-height: 30px;
 		}
-		margin-right: 10px;
-	}
-	&--i {
-		color: #000;
-		line-height: 30px;
-	}
-	&--rt {
-		font-size: 14px;
-		height: 30px;
-		line-height: 30px;
-		color: #00000066;
-		& > span:nth-of-type(2) {
-			margin: 0 5px;
+		&--rt {
+			font-size: 14px;
+			height: 30px;
+			line-height: 30px;
+			color: #00000066;
+			& > span:nth-of-type(2) {
+				margin: 0 5px;
+			}
 		}
 	}
-}
-.down-co {
-	cursor: pointer;
-	flex-grow: 1;
-	line-height: 30px;
-	color: #666666;
-	text-align: end;
-	transition: color 0.3s;
-	&:hover {
-		color: #3dbcc6;
+	.down-co {
+		cursor: pointer;
+		flex-grow: 1;
+		line-height: 30px;
+		color: #666666;
+		text-align: end;
+		transition: color 0.3s;
+		&:hover {
+			color: #3dbcc6;
+		}
 	}
-}
 </style>
