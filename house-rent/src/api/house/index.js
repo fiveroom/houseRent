@@ -9,10 +9,8 @@ export const searchHouse = (data, call) => {
 }
 
 // 根据标题搜索房屋
-
-export const queryByT = async (data) => {
+export const queryByT = async(data) => {
     return await axios.post('/UserMgeSvr.assx/queryHouseByTitle', data).then(res => {
-        console.log(res, 'dsafasdf');
         if (res.data.Code === "200") {
             return { status: true, data: res.data.Data._Items };
         } else {
@@ -26,6 +24,7 @@ export const queryByT = async (data) => {
 
 export const houseDetail = (data, call) => {
     return axios.post('/UserMgeSvr.assx/queryHouseById', data).then(res => {
+        console.log(res, '------------------------------------');
         if (res.data.Code === "200") {
             call && call({ status: true, Data: res.data.Data });
         } else {
@@ -42,7 +41,7 @@ export const houseDetail = (data, call) => {
 // {
 //    house_id: '22'
 // }
-export const queryHouseCollectAmount = async (data) => {
+export const queryHouseCollectAmount = async(data) => {
     return await axios.post('/UserMgeSvr.assx/queryHouseCollectAmount', data).then(res => {
         if (res.data.Code === "200") {
             return { num: res.data.Data }

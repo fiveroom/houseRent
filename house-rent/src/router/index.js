@@ -7,6 +7,7 @@ import UserEnt from '@/views/UserEnt'; // 用户登录注册
 import HouseDetail from '@/views/HouseDetail'; // 房子详情
 import UserDetail from '@/views/UserDetail'; // 房子详情
 import NoContent from '@/views/NoContent';
+import PayPage from '@/components/PayPage';
 import Login from '@/components/Login'; // 登录
 import Register from '@/components/Register'; // 注册
 import PersCenter from '@/components/PersCenter'; // 个人中心
@@ -112,9 +113,13 @@ const routes = [{
                 name: '我的合同',
                 path: '/userDetail/myContract',
                 component: MyContract
+            },
+            {
+                name: '订单支付',
+                path: '/userDetail/payPage',
+                component: PayPage
             }
         ]
-
     }
 ]
 

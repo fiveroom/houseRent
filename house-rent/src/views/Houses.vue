@@ -127,6 +127,7 @@
 					<p>未找到对应房源，换个条件试试</p>
 				</div>
 			</section>
+			<footer></footer>
 		</div>
 		<Footer />
 	</div>
@@ -195,7 +196,9 @@
 				area_str: [],
 				rent_str: [],
 				shape_str: [],
-				months_str: []
+				months_str: [],
+				skipNum: [1],
+				sizeNum: [10]
 			};
 			let arrHouses = [];
 			let noHouseImg = require("@/assets/img/no-house.png");
@@ -210,7 +213,9 @@
 				choiceSort: 0,
 				priceIndex: 1,
 				areaIndex: 1,
-				searchValue: null
+				searchValue: null,
+				skipNum: 1,  // '页数'
+				sizeNum: 10,   // '分页数'
 			};
 		},
 		computed: {
@@ -351,6 +356,8 @@
 				if (other) {
 					this.reqData["rent_str"] = other;
 				}
+				this.reqData.skipNum = [this.skipNum];
+				this.reqData.sizeNum = [this.sizeNum];
 				console.log(this.reqData);
 				this.getArrHouse();
 			},

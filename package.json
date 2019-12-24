@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "file-saver": "^2.0.2",
+    "install": "^0.13.0"
+  }
+}

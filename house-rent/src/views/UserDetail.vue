@@ -39,7 +39,7 @@
 			<!-- </section> -->
 			<!-- <div class="user-detail__empt"></div> -->
 		</div>
-		<!-- <Footer class="user-detail__footer" /> -->
+		<Footer />
 	</div>
 </template>
 
@@ -152,6 +152,7 @@
 		padding: 15px 30px 30px 0;
 		background: #fff;
 		box-sizing: border-box;
+		flex-shrink: 0;
 		&--h2 {
 			font-size: 1.8rem;
 			position: relative;

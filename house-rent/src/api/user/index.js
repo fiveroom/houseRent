@@ -174,11 +174,11 @@ export const queryOwnCollect = async(data) => {
     return await axios.post('/UserMgeSvr.assx/queryOwnCollect', data).then(res => {
         console.log('查询收藏', res);
         if (res.data.Code == 200) {
-            return { status: true, data: res.data.Data._Items}
+            return { status: true, data: res.data.Data._Items }
         }
-        return { status: false, data: []}
+        return { status: false, data: [] }
     }).catch(err => {
-        return { status: false, data: []}
+        return { status: false, data: [] }
     })
 }
 
@@ -198,7 +198,7 @@ export const queryCtractIn = async(data) => {
 // 查看订单
 export const queryOrder = data => {
     return axios.post('/UserMgeSvr.assx/queryOrderInfoOfUser', data).then(res => {
-        // console.log('查看订单', res);
+        console.log('查看订单', res);
         if (res.data.Code == 200) {
             return { status: true, data: res.data.Data._Items }
         }
@@ -209,7 +209,6 @@ export const queryOrder = data => {
 }
 
 // 上传头像
-let a = { "total": 1, "code": "200", "msg": "请求成功", "data": [{ "user_id": 35, "user_name": "hahaha", "user_pwd": "A123456", "user_realName": null, "user_age": null, "user_tel": "15182432853", "user_identity": null, "user_email": null, "user_isBreach": "N", "user_avaterPath": "http://39.106.122.19:8888/files/UserAvater/35_UserAvater.jpg" }] }
 export const uploadAvator = data => {
     return axios.post('/upImage/addUserAvater', data, {
         headers: {
@@ -223,5 +222,18 @@ export const uploadAvator = data => {
         return { status: false, msg: '头像上传失败，请稍后再试' }
     }).catch(err => {
         return { status: false, msg: '头像上传失败，请稍后再试' }
+    })
+}
+
+// 支付订单
+export const payOrder = data => {
+    return axios.post('/payController/pay', data).then(res => {
+        console.log(res);
+        if (res.status == 200) {
+            return { status: true, data: res.data }
+        }
+        return { status: false, data: '请检查订单信息，或选择订单' }
+    }).catch(err => {
+        return { status: false, msg: '请稍后再试' }
     })
 }
