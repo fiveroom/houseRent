@@ -16,6 +16,7 @@ import EditPhone from '@/components/EditPhone'; // 手机号码更改
 import MyOrder from '@/components/MyOrder'; // 订单
 import MyContract from '@/components/MyContract'; // 合同
 import MyCollect from '@/components/MyCollect'; // 合同
+import EditPwd from '@/components/EditPwd'; // 合同
 
 const originalPush = VueRouter.prototype.push
 VueRouter.prototype.push = function push(location) {
@@ -118,6 +119,10 @@ const routes = [{
                 name: '订单支付',
                 path: '/userDetail/payPage',
                 component: PayPage
+            },
+            {
+                path: '/userDetial/editPwd',
+                component: EditPwd
             }
         ]
     }

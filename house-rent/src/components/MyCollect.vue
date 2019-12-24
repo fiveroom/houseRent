@@ -7,6 +7,24 @@
 			</div>
 			<span class="edit-collect">管理收藏</span>
 		</header>
+		<ul>
+			<li v-if="arrCollect.length == 0"></li>
+			<li v-else v-for="item in  arrCollect" :key="item.House_id">
+				<div>
+					<div>
+						<img :src="item.House_coverPic" alt />
+					</div>
+					<div>
+						<div class="title">{{item.House_title}}</div>
+						<div></div>
+						<div class="addr">{{item.House_address}}</div>
+					</div>
+				</div>
+				<div>
+					<div class="status">{{item.House_isRented | getName}}</div>
+				</div>
+			</li>
+		</ul>
 	</div>
 </template>
 
@@ -25,13 +43,24 @@
 		methods: {
 			getOwnCollect() {
 				queryOwnCollect({ user_id: this.userId, noLoading: true }).then(
-					res => {}
+					res => {
+						this.arrCollect = res.data;
+					}
 				);
 			}
-        },
-        mounted () {
-            this.getOwnCollect();
-        },
+		},
+		mounted() {
+			this.getOwnCollect();
+		},
+		filters: {
+			getName(value) {
+				if (value === "N") {
+					return "未出租";
+				} else {
+					return "已出租";
+				}
+			}
+		}
 	};
 </script>
 
@@ -49,7 +78,7 @@
 	}
 }
 .edit-collect {
-    color: #3dbcc6;
+	color: #3dbcc6;
 	font-size: 14px;
 	cursor: pointer;
 }

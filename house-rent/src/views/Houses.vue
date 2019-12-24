@@ -82,43 +82,46 @@
 			<section class="arrhouses" ref="arrHouse">
 				<!-- 房源信息 -->
 				<div v-if="arrHouses.length!=0" class="houses">
-					<div class="houses-item" v-for="item in arrHouses" :key="item.House_id">
-						<router-link class="houses__img" :to="`/hdetail?House_id=${item.House_id}`">
-							<img :src="item.House_coverPic" alt />
-						</router-link>
-						<div class="houses__body">
-							<!-- 标题 -->
-							<router-link
-								class="houses__title"
-								:to="`/hdetail?House_id=${item.House_id}`"
-							>{{item.House_title}}</router-link>
-							<!-- 价格 -->
-							<div class="houses__price">
-								<div class="houses__price-des">
-									<p>{{item.House_shape}}</p>
-									<p>{{item.House_months | getChname}}</p>
-									<p>朝{{item.House_direction}}</p>
+					<div class="houses-container">
+						<div class="houses-item" v-for="item in arrHouses" :key="item.House_id">
+							<router-link class="houses__img" :to="`/hdetail?House_id=${item.House_id}`">
+								<img :src="item.House_coverPic" alt />
+							</router-link>
+							<div class="houses__body">
+								<!-- 标题 -->
+								<router-link
+									class="houses__title"
+									:to="`/hdetail?House_id=${item.House_id}`"
+								>{{item.House_title}}</router-link>
+								<!-- 价格 -->
+								<div class="houses__price">
+									<div class="houses__price-des">
+										<p>{{item.House_shape}}</p>
+										<p>{{item.House_months | getChname}}</p>
+										<p>朝{{item.House_direction}}</p>
+									</div>
+									<div class="houses__price-num">
+										<span>￥</span>
+										<span>{{item.House_rent}}</span>
+										<span>元/月</span>
+									</div>
 								</div>
-								<div class="houses__price-num">
-									<span>￥</span>
-									<span>{{item.House_rent}}</span>
-									<span>元/月</span>
+								<!-- 其他信息 -->
+								<div class="houses__size">
+									<span>{{item.House_area}}㎡</span>
+									<span class="houses__size__split">|</span>
+									<span>{{item.House_floor}}层</span>
 								</div>
-							</div>
-							<!-- 其他信息 -->
-							<div class="houses__size">
-								<span>{{item.House_area}}㎡</span>
-								<span class="houses__size__split">|</span>
-								<span>{{item.House_floor}}层</span>
-							</div>
-							<p class="houses__detail">{{item.House_detail}}</p>
-							<!-- 地理位置 -->
-							<div class="houses__locat">
-								<i class="el-icon-location-outline"></i>
-								<span>{{item.House_address}}</span>
+								<p class="houses__detail">{{item.House_detail}}</p>
+								<!-- 地理位置 -->
+								<div class="houses__locat">
+									<i class="el-icon-location-outline"></i>
+									<span>{{item.House_address}}</span>
+								</div>
 							</div>
 						</div>
 					</div>
+					<div class="paging"></div>
 				</div>
 				<div v-else class="nohouse">
 					<div class="nohouse-img">
@@ -692,6 +695,8 @@
 		}
 	}
 	.houses {
+		position: relative;
+		min-height: 400px;
 		&-item {
 			float: left;
 			width: 37rem;
@@ -763,6 +768,14 @@
 				background-color: $fontLightColor;
 			}
 		}
+		&-container::after{
+			content: "";
+			display: block;
+			clear: both;
+		}
+		&-container{
+			padding-bottom: 60px;
+		}
 	}
 	.houses__price {
 		display: flex;
@@ -799,5 +812,19 @@
 			content: "";
 			display: table;
 		}
+	}
+	.paging{
+		position: absolute;
+		bottom: 0;
+		left: 0;
+		width: 80%;
+		height: 40px;
+		left: 50%;
+		transform: translateX(-50%);
+		background-color: skyblue
+	}
+	.empt{
+		height: 40px;
+		
 	}
 </style>

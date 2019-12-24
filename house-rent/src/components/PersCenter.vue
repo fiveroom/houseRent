@@ -52,19 +52,20 @@
 					<el-table-column label="操作" width="200px">
 						<template slot-scope="scope">
 							<div class="user-do">
-								<el-link
+								<!-- <el-link
 									target="_blank"
 									:href="scope.row.Con_path"
 									:underline="false"
 									style="width: 250px !important;"
 								>
 									<div class="spacifical">
-										<!-- <div class="spacifical" > -->
 										<i class="el-icon-download"></i>
 									</div>
-								</el-link>
-								<!-- <div @click="downloadIamge(scope.row.Con_path, scope.row.Con_id)">下载合同</div> -->
+								</el-link>-->
+
+								<div @click="download(scope.row.Con_path, scope.row.Con_id)">下载合同</div>
 								<div @click="showBig(scope.row.Con_path)">查看合同</div>
+								<!-- <img :src="scope.row.Con_path" alt /> -->
 							</div>
 						</template>
 					</el-table-column>
@@ -145,7 +146,91 @@
 				this.showConImageUrl = url;
 				this.showConImage = true;
 			},
-			
+			downloadIamge(url) {
+				console.log(url);
+			},
+			createIframe(imgSrc) {
+				if (document.getElementById("IframeReportImg").length === 0) {
+					document.body.html(
+						`<iframe style="display:none;" id="IframeReportImg" name="IframeReportImg" onload="downloadImg();" width="0" height="0" src=${imgSrc}></iframe>`
+					);
+				}
+				if (
+					document.getElementById("IframeReportImg").attr("src") != imgSrc
+				) {
+					document.getElementById("IframeReportImg").attr("src");
+				} else {
+					this.downloadImg();
+				}
+			},
+			downloadImg() {
+				if (
+					document.getElementById("IframeReportImg").src != "about:blank"
+				) {
+					window.frames["IframeReportImg"].document.execCommand("SaveAs");
+				}
+			},
+
+			download(imgSrc, num) {
+				this.createIframe(imgSrc);
+			}
+
+			//
+			// getBase64(imgUrl) {
+			// 	return new Promise((resolve, reject) => {
+			// 		window.URL = window.URL || window.webkitURL;
+			// 		// 声明一个XMLHttpRequest
+			// 		const xhr = new XMLHttpRequest();
+			// 		// 获取图片
+			// 		xhr.open("get", imgUrl, true);
+			// 		xhr.responseType = "blob";
+			// 		xhr.send();
+			// 		xhr.onload = function() {
+			// 			if (this.status === 200) {
+			// 				// 得到一个blob对象
+			// 				const blob = this.response;
+			// 				const oFileReader = new FileReader();
+			// 				oFileReader.onloadend = function(e) {
+			// 					const base64 = e.target.result;
+			// 					//拿到base64 传出结果
+			// 					resolve(base64);
+			// 				};
+			// 				oFileReader.onerror = function(e) {
+			// 					reject();
+			// 				};
+			// 				oFileReader.readAsDataURL(blob);
+			// 			}
+			// 		};
+			// 	});
+			// },
+			// async test(imgSrc) {
+			// 	// const base64 = await this.getBase64(imgSrc);
+			// 	const img = new Image();
+			// 	img.src = imgSrc;
+			// 	// canvas 处理
+			// 	img.crossorigin = "Anonymous";
+			// 	img.onload = () => {
+			// 		let canvas = document.createElement("canvas");
+			// 		canvas.width = img.width;
+			// 		console.log(img);
+			// 		canvas.height = img.height;
+			// 		let ctx = canvas.getContext("2d");
+			// 		ctx.drawImage(img, 0, 0, img.width, img.height);
+			// 		canvas.toBlob(blob => {
+			// 			let url = URL.createObjectURL(blob);
+			// 			download(url, name);
+			// 			// 用完释放URL对象
+			// 			URL.revokeObjectURL(url);
+			// 		});
+			// 	};
+			// },
+			// download(href, name) {
+			// 	let eleLink = document.createElement("a");
+			// 	eleLink.download = name;
+			// 	eleLink.href = href;
+			// 	eleLink.click();
+			// 	eleLink.remove();
+			// }
 		},
 		mounted() {
 			this.getCtractIn();
@@ -179,117 +264,117 @@
 </script>
 
 <style lang="scss" scoped>
-	$hoverColor: #00bfc8;
-	$fontLightColor: #3dbcc6;
-	$bacHoerClr: #3dbcc6;
-	$NoHover: #999999;
-	.header {
+$hoverColor: #00bfc8;
+$fontLightColor: #3dbcc6;
+$bacHoerClr: #3dbcc6;
+$NoHover: #999999;
+.header {
+	display: flex;
+	padding: 0 0 4rem 2rem;
+	border-bottom: 1px solid #f1f1f1;
+	&__left {
+		width: 12rem;
+		height: 12rem;
+		border-radius: 50%;
+		border: 0.2rem solid $fontLightColor;
+		overflow: hidden;
+		img {
+			height: 100%;
+			width: 100%;
+		}
+	}
+	&__right {
+		flex-grow: 1;
 		display: flex;
-		padding: 0 0 4rem 2rem;
-		border-bottom: 1px solid #f1f1f1;
-		&__left {
-			width: 12rem;
-			height: 12rem;
-			border-radius: 50%;
-			border: 0.2rem solid $fontLightColor;
-			overflow: hidden;
-			img {
-				height: 100%;
-				width: 100%;
-			}
+		padding: 20px 0 0 40px;
+		justify-content: space-between;
+		&--name {
+			font-size: 2rem;
+			color: #000;
+			margin-bottom: 1rem;
 		}
-		&__right {
-			flex-grow: 1;
-			display: flex;
-			padding: 20px 0 0 40px;
-			justify-content: space-between;
-			&--name {
-				font-size: 2rem;
-				color: #000;
-				margin-bottom: 1rem;
-			}
-			&--hint {
-				color: $NoHover;
-			}
-			&__next {
-				font-size: 1.4rem;
-				color: $fontLightColor;
-				a {
-					color: $fontLightColor;
-				}
-			}
-		}
-	}
-	.contract-box {
-		position: relative;
-	}
-	.contract {
-		&-title {
-			padding: 3rem 0 2.4rem;
-			font-size: 1.8rem;
-			line-height: 2.1rem;
-			color: #333;
-			span {
-				margin-left: 1.4rem;
-			}
-		}
-		&--have {
-			border-bottom: 1px solid #f1f1f1;
-		}
-		&--no {
-			height: 200px;
-			display: flex;
-			justify-content: center;
-			align-items: center;
-			flex-direction: column;
-		}
-	}
-	.contract--no {
-		&__title {
-			font-size: 16px;
-			color: #999;
+		&--hint {
+			color: $NoHover;
 		}
 		&__next {
-			display: block;
-			background-color: #fff;
-			min-width: 180px;
-			width: auto;
-			height: 50px;
-			font-size: 1.8rem;
-			line-height: 4.6rem;
-			text-align: center;
-			border: 2px solid #3dbcc6;
-			border-radius: 33px;
-			box-sizing: border-box;
-			color: $hoverColor;
-			padding: 0 30px;
-			transition: all 0.2s;
-			margin-top: 2rem;
-			&:hover {
-				background-color: $bacHoerClr;
-				color: #fff;
+			font-size: 1.4rem;
+			color: $fontLightColor;
+			a {
+				color: $fontLightColor;
 			}
 		}
 	}
-	.user-do {
+}
+.contract-box {
+	position: relative;
+}
+.contract {
+	&-title {
+		padding: 3rem 0 2.4rem;
+		font-size: 1.8rem;
+		line-height: 2.1rem;
+		color: #333;
+		span {
+			margin-left: 1.4rem;
+		}
+	}
+	&--have {
+		border-bottom: 1px solid #f1f1f1;
+	}
+	&--no {
+		height: 200px;
 		display: flex;
+		justify-content: center;
 		align-items: center;
-		cursor: pointer;
-		width: 200px;
-		div {
-			flex-shrink: 0;
-			font-size: 14px;
-			transition: all 0.3s;
-			border: 1px solid #3dbcc6;
-			padding: 5px 10px;
-			border-radius: 2rem;
-			&:hover {
-				color: #fff;
-				background-color: #3dbcc6;
-			}
-		}
-		div:first-child {
-			margin-right: 10px;
+		flex-direction: column;
+	}
+}
+.contract--no {
+	&__title {
+		font-size: 16px;
+		color: #999;
+	}
+	&__next {
+		display: block;
+		background-color: #fff;
+		min-width: 180px;
+		width: auto;
+		height: 50px;
+		font-size: 1.8rem;
+		line-height: 4.6rem;
+		text-align: center;
+		border: 2px solid #3dbcc6;
+		border-radius: 33px;
+		box-sizing: border-box;
+		color: $hoverColor;
+		padding: 0 30px;
+		transition: all 0.2s;
+		margin-top: 2rem;
+		&:hover {
+			background-color: $bacHoerClr;
+			color: #fff;
 		}
 	}
+}
+.user-do {
+	display: flex;
+	align-items: center;
+	cursor: pointer;
+	width: 200px;
+	div {
+		flex-shrink: 0;
+		font-size: 14px;
+		transition: all 0.3s;
+		border: 1px solid #3dbcc6;
+		padding: 5px 10px;
+		border-radius: 2rem;
+		&:hover {
+			color: #fff;
+			background-color: #3dbcc6;
+		}
+	}
+	div:first-child {
+		margin-right: 10px;
+	}
+}
 </style>

@@ -64,7 +64,7 @@
 						},
 						{
 							title: "修改密码",
-							url: "#"
+							url: "/userDetial/editPwd"
 						}
 					]
 				},

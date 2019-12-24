@@ -67,7 +67,6 @@
 										<span class="topay" @click="toPayOrder(scope.row.Order_id,scope.row.judgePay.should)">线上支付</span>
 									</el-tooltip>
 								</div>
-								<!-- <router-link v-else-if="scope.row.judgePay.status == 2" to="#" class="topay"></router-link> -->
 								<router-link v-else to="#">去补交</router-link>
 								<div class="hint-status__icon" :style="hintStatusStlye(scope.row.judgePay.status)">
 									<i class="el-icon-check"></i>
@@ -94,18 +93,6 @@
 	import { houseDetail } from "@/api/house";
 	export default {
 		data() {
-			let a = {
-				Order_id: 1,
-				Con_id: 1,
-				Admin_id: 2,
-				User_id: 1,
-				House_months: 3,
-				House_pledge: 1200,
-				Order_shouldPay: 1200,
-				Order_alreadyPay: 1200,
-				Order_time: "2019-12-18 00:00:00.0000000",
-				Order_isPaid: "Y"
-			};
 			return {
 				orderList: [],
 				HousePicture: null,
