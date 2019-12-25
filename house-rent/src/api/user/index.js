@@ -287,3 +287,19 @@ export const orderTradeInfo = data => {
         return { status: false, data: null }
     })
 }
+
+/**
+ * 支付结果
+ * order_id 订单ID
+ */
+export const checkOrderIsPaid = data => {
+    return axios.post('/UserMgeSvr.assx/checkOrderIsPaid', {...data, noLoading: true}).then(res => {
+        console.log(res, '交易记录');
+        if (res.status == 200) {
+            return { status: true, data: res.data, _Items: res.data.Data._Items }
+        }
+        return { status: false, data: null }
+    }).catch(() => {
+        return { status: false, data: null }
+    })
+}

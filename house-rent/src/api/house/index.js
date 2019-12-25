@@ -10,7 +10,7 @@ export const searchHouse = (data, call) => {
 }
 
 // 根据标题搜索房屋
-export const queryByT = async(data) => {
+export const queryByT = async (data) => {
     return await axios.post('/UserMgeSvr.assx/queryHouseByTitle', data).then(res => {
         if (res.data.Code === "200") {
             return { status: true, data: res.data.Data._Items };
@@ -42,7 +42,7 @@ export const houseDetail = (data, call) => {
 // {
 //    house_id: '22'
 // }
-export const queryHouseCollectAmount = async(data) => {
+export const queryHouseCollectAmount = async (data) => {
     return await axios.post('/UserMgeSvr.assx/queryHouseCollectAmount', data).then(res => {
         if (res.data.Code === "200") {
             return { num: res.data.Data }
@@ -53,16 +53,38 @@ export const queryHouseCollectAmount = async(data) => {
     })
 }
 
-
-
+// 推荐房源
 export const queryHotH = () => {
-    return axios.post('/queryHouseByCollectAmount').then(res => {
-        console.log(res, '推荐');
+    return axios.get('/UserMgeSvr.assx/queryHouseByCollectAmount').then(res => {
+        // console.log(res, '推荐');
         if (res.data.Code === "200") {
-            return { num: res.data.Data }
+            return { status: true, data: res.data.Data }
         }
-        return { num: 0 }
+        return { status: false, data: [] }
     }).catch(err => {
-        return { num: 0 }
+        return { status: false, data: [] }
+    })
+}
+
+
+
+/**
+ * 上传合同签名
+ * con_id 合同id
+ * conPic 签名
+ */
+export const upConName = data => {
+    return axios.post('/contract/updateConPic', data, {
+        headers: {
+            "Content-Type": "multipart/form-data"
+        }
+    }).then(res => {
+        console.log(res, '上传合同');
+        if (res.data.Code === "200") {
+            return { status: true, data: res.data.Data }
+        }
+        return { status: false, data: [] }
+    }).catch(err => {
+        return { status: false, data: [] }
     })
 }

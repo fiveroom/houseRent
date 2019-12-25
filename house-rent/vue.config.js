@@ -39,7 +39,14 @@ module.exports = {
                 changeOrigin: true,
                 autoRewite: true,
                 cookieDomainRewrite: true
+            },
+            "/contract": {
+                target: "http://39.106.122.19:8888/",
+                changeOrigin: true,
+                autoRewite: true,
+                cookieDomainRewrite: true
             }
+            
             // "/UserMgeSvr.assx": {
             //     target: "http://192.168.3.33:8888/",
             //     changeOrigin: true,

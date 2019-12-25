@@ -109,7 +109,6 @@
 			download(imgSrc, num) {
 				this.createIframe(imgSrc);
 			}
-
 		},
 		mounted() {
 			this.getCtractIn();
@@ -143,94 +142,97 @@
 </script>
 
 <style lang="scss" scoped>
-	$hoverColor: #00bfc8;
-	$fontLightColor: #3dbcc6;
-	$bacHoerClr: #3dbcc6;
-	$NoHover: #999999;
-	.header {
-		padding-bottom: 3rem;
+$hoverColor: #00bfc8;
+$fontLightColor: #3dbcc6;
+$bacHoerClr: #3dbcc6;
+$NoHover: #999999;
+.header {
+	padding-bottom: 3rem;
+	font-size: 1.8rem;
+	line-height: 2.1rem;
+	border-bottom: 1px solid #f1f1f1;
+	color: #333;
+	display: flex;
+	justify-content: space-between;
+	span {
+		margin-left: 15px;
+	}
+}
+.contract-box {
+	position: relative;
+}
+.contract {
+	&-title {
+		padding: 3rem 0 2.4rem;
 		font-size: 1.8rem;
 		line-height: 2.1rem;
-		border-bottom: 1px solid #f1f1f1;
 		color: #333;
-		display: flex;
-		justify-content: space-between;
 		span {
-			margin-left: 15px;
+			margin-left: 1.4rem;
 		}
 	}
-	.contract-box {
-		position: relative;
+	&--have {
+		border-bottom: 1px solid #f1f1f1;
 	}
-	.contract {
-		&-title {
-			padding: 3rem 0 2.4rem;
-			font-size: 1.8rem;
-			line-height: 2.1rem;
-			color: #333;
-			span {
-				margin-left: 1.4rem;
-			}
-		}
-		&--have {
-			border-bottom: 1px solid #f1f1f1;
-		}
-		&--no {
-			height: 200px;
-			display: flex;
-			justify-content: center;
-			align-items: center;
-			flex-direction: column;
-		}
-	}
-	.contract--no {
-		&__title {
-			font-size: 16px;
-			color: #999;
-		}
-		&__next {
-			display: block;
-			background-color: #fff;
-			min-width: 180px;
-			width: auto;
-			height: 50px;
-			font-size: 1.8rem;
-			line-height: 4.6rem;
-			text-align: center;
-			border: 2px solid #3dbcc6;
-			border-radius: 33px;
-			box-sizing: border-box;
-			color: $hoverColor;
-			padding: 0 30px;
-			transition: all 0.2s;
-			margin-top: 2rem;
-			&:hover {
-				background-color: $bacHoerClr;
-				color: #fff;
-			}
-		}
-	}
-	.user-do {
+	&--no {
+		height: 200px;
 		display: flex;
+		justify-content: center;
 		align-items: center;
-		cursor: pointer;
-		div,
-		a {
-			display: block;
-			flex-shrink: 0;
-			font-size: 14px;
-			transition: all 0.3s;
-			border: 1px solid #3dbcc6;
-			padding: 5px 10px;
-			border-radius: 2rem;
-			color: #606266;
-			&:hover {
-				color: #fff;
-				background-color: #3dbcc6;
-			}
-		}
-		div {
-			margin-right: 10px;
+		flex-direction: column;
+	}
+}
+.contract--no {
+	&__title {
+		font-size: 16px;
+		color: #999;
+	}
+	&__next {
+		display: block;
+		background-color: #fff;
+		min-width: 180px;
+		width: auto;
+		height: 50px;
+		font-size: 1.8rem;
+		line-height: 4.6rem;
+		text-align: center;
+		border: 2px solid #3dbcc6;
+		border-radius: 33px;
+		box-sizing: border-box;
+		color: $hoverColor;
+		padding: 0 30px;
+		transition: all 0.2s;
+		margin-top: 2rem;
+		&:hover {
+			background-color: $bacHoerClr;
+			color: #fff;
 		}
 	}
+}
+.user-do {
+	display: flex;
+	align-items: center;
+	cursor: pointer;
+	div,
+	a {
+		font-size: 12px;
+		display: block;
+		flex-shrink: 0;
+		transition: all 0.3s;
+		border: 1px solid #3dbcc6;
+		padding: 2px 10px;
+		border-radius: 2rem;
+		color: #606266;
+		&:hover {
+			color: #fff;
+			background-color: #3dbcc6;
+		}
+		&:active {
+			background-color: #2fa4ad;
+		}
+	}
+	div {
+		margin-right: 10px;
+	}
+}
 </style>

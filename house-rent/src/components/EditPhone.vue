@@ -33,7 +33,6 @@
 
 <script>
 	import MySteps from "@/components/MySteps";
-	import GetAuthCode from "@/components/GetAuthCode";
 	import { mapGetters } from "vuex";
 	import { editAuthCode, updateUserInfo } from "@/api/user";
 	export default {
@@ -65,7 +64,6 @@
 		},
 		components: {
 			MySteps,
-			GetAuthCode,
 		},
 		computed: {
 			...mapGetters(["telDeal", "tel"])

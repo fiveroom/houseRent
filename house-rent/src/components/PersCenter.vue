@@ -49,11 +49,12 @@
 							<div>{{scope.row.Con_isSigned | judegStatus}}</div>
 						</template>
 					</el-table-column>
-					<el-table-column label="操作" width="300px">
+					<el-table-column label="操作" width="350px">
 						<template slot-scope="scope">
 							<div class="user-do">
-								<div @click="download(scope.row.Con_path, scope.row.Con_id)">下载合同</div>
+								<div>下载合同</div>
 								<div @click="showBig(scope.row.Con_path)">查看合同</div>
+								<div @click="writeName=true;currConId=scope.row.Con_id;canvEvent()">上传签名</div>
 								<router-link :to="`/userDetail/myOrder?Con_id=${scope.row.Con_id}`">查看订单</router-link>
 							</div>
 						</template>
@@ -63,6 +64,19 @@
 			<el-dialog :visible.sync="showConImage">
 				<img width="100%" :src="showConImageUrl" alt />
 			</el-dialog>
+			<el-dialog :visible.sync="writeName" class="mywrite">
+				<div class="mywrite-box">
+					<header class="mywrite-title">电子签名</header>
+					<div class="mywrite-con">
+						<canvas ref="mycanvas" width="700" height="300"></canvas>
+					</div>
+					<div class="mywrite-menu">
+						<Mybutton @clickTo="ctx.clearRect(0, 0, 700, 300)" title="重写" />
+						<Mybutton title="图片下载" />
+						<Mybutton title="上传" @clickTo="upToContract" />
+					</div>
+				</div>
+			</el-dialog>
 		</section>
 	</div>
 </template>
@@ -71,6 +85,7 @@
 	import { saveAs } from "file-saver";
 	import { mapGetters } from "vuex";
 	import { queryCtractIn, dowloadFile } from "@/api/user";
+	import { upConName } from "@/api/house";
 	export default {
 		data() {
 			let avator = require("@/assets/avator.jpg");
@@ -78,7 +93,11 @@
 				avator,
 				showConImage: false,
 				showConImageUrl: null,
-				contractList: []
+				contractList: [],
+				writeName: false,
+				cavMouseDown: false,
+				ctx: null,
+				currConId: null
 			};
 		},
 		computed: {
@@ -120,91 +139,67 @@
 			downloadIamge(url) {
 				console.log(url);
 			},
-			createIframe(imgSrc) {
-				if (document.getElementById("IframeReportImg").length === 0) {
-					document.body.html(
-						`<iframe style="display:none;" id="IframeReportImg" name="IframeReportImg" onload="downloadImg();" width="0" height="0" src=${imgSrc}></iframe>`
-					);
-				}
-				if (
-					document.getElementById("IframeReportImg").attr("src") != imgSrc
-				) {
-					document.getElementById("IframeReportImg").attr("src");
-				} else {
-					this.downloadImg();
-				}
-			},
-			downloadImg() {
-				if (
-					document.getElementById("IframeReportImg").src != "about:blank"
-				) {
-					window.frames["IframeReportImg"].document.execCommand("SaveAs");
-				}
-			},
-
 			download(imgSrc, num) {
-				this.createIframe(imgSrc);
-			}
+				// this.createIframe(imgSrc);
+			},
+			// 签名
+			canvEvent() {
+				setTimeout(() => {
+					let timer = setTimeout(() => {
+						this.ctx = this.$refs.mycanvas.getContext("2d");
+						this.$refs.mycanvas.onmousedown = e => {
+							this.cavMouseDown = true;
+							this.ctx.beginPath();
+							this.ctx.moveTo(e.offsetX, e.offsetY);
+						};
+						this.$refs.mycanvas.onmouseup = e => {
+							this.cavMouseDown = false;
+						};
 
-			//
-			// getBase64(imgUrl) {
-			// 	return new Promise((resolve, reject) => {
-			// 		window.URL = window.URL || window.webkitURL;
-			// 		// 声明一个XMLHttpRequest
-			// 		const xhr = new XMLHttpRequest();
-			// 		// 获取图片
-			// 		xhr.open("get", imgUrl, true);
-			// 		xhr.responseType = "blob";
-			// 		xhr.send();
-			// 		xhr.onload = function() {
-			// 			if (this.status === 200) {
-			// 				// 得到一个blob对象
-			// 				const blob = this.response;
-			// 				const oFileReader = new FileReader();
-			// 				oFileReader.onloadend = function(e) {
-			// 					const base64 = e.target.result;
-			// 					//拿到base64 传出结果
-			// 					resolve(base64);
-			// 				};
-			// 				oFileReader.onerror = function(e) {
-			// 					reject();
-			// 				};
-			// 				oFileReader.readAsDataURL(blob);
-			// 			}
-			// 		};
-			// 	});
-			// },
-			// async test(imgSrc) {
-			// 	// const base64 = await this.getBase64(imgSrc);
-			// 	const img = new Image();
-			// 	img.src = imgSrc;
-			// 	// canvas 处理
-			// 	img.crossorigin = "Anonymous";
-			// 	img.onload = () => {
-			// 		let canvas = document.createElement("canvas");
-			// 		canvas.width = img.width;
-			// 		console.log(img);
-			// 		canvas.height = img.height;
-			// 		let ctx = canvas.getContext("2d");
-			// 		ctx.drawImage(img, 0, 0, img.width, img.height);
-			// 		canvas.toBlob(blob => {
-			// 			let url = URL.createObjectURL(blob);
-			// 			download(url, name);
-			// 			// 用完释放URL对象
-			// 			URL.revokeObjectURL(url);
-			// 		});
-			// 	};
-			// },
-			// download(href, name) {
-			// 	let eleLink = document.createElement("a");
-			// 	eleLink.download = name;
-			// 	eleLink.href = href;
-			// 	eleLink.click();
-			// 	eleLink.remove();
-			// }
+						document.body.addEventListener(
+							"mousemove",
+							this.drawingLine
+						);
+						clearTimeout(timer);
+					});
+				}, 1000);
+			},
+			drawingLine(e) {
+				if (this.cavMouseDown) {
+					this.ctx.lineTo(e.offsetX, e.offsetY);
+					this.ctx.stroke();
+				}
+				e.preventDefault();
+			},
+			dataURLtoBlob(dataurl) {
+				let arr = dataurl.split(","),
+					mime = arr[0].match(/:(.*?);/)[1],
+					bstr = atob(arr[1]),
+					n = bstr.length,
+					u8arr = new Uint8Array(n);
+				while (n--) {
+					u8arr[n] = bstr.charCodeAt(n);
+				}
+				return new Blob([u8arr], { type: mime });
+			},
+
+			upToContract() {
+				let dataUrl = this.$refs.mycanvas.toDataURL();
+				this.$refs.mycanvas.toBlob(blobObj=>{
+					let formData = new FormData();
+					formData.append("conPic", blobObj);
+					formData.append("con_id", this.currConId);
+					upConName(formData).then(res => {
+						console.log(res);
+					});
+				});
+			}
 		},
 		mounted() {
 			this.getCtractIn();
+		},
+		beforeDestroy() {
+			document.body.removeEventListener("mousemove", this.drawingLine);
 		},
 		filters: {
 			getTime(value) {
@@ -331,22 +326,58 @@ $NoHover: #999999;
 	display: flex;
 	align-items: center;
 	cursor: pointer;
-	div,a {
+	div,
+	a {
+		font-size: 12px;
 		display: block;
 		flex-shrink: 0;
-		font-size: 14px;
 		transition: all 0.3s;
 		border: 1px solid #3dbcc6;
-		padding: 5px 10px;
+		padding: 2px 10px;
 		border-radius: 2rem;
 		color: #606266;
 		&:hover {
 			color: #fff;
 			background-color: #3dbcc6;
 		}
+		&:active {
+			background-color: #2fa4ad;
+		}
 	}
-	div{
+	div {
 		margin-right: 10px;
 	}
+}
+
+.mywrite {
+	// width: 600px;
+	&-box {
+	}
+	&-title {
+		font-size: 30px;
+		font-weight: bold;
+		width: fit-content;
+		margin: 0 auto 20px;
+	}
+	&-con {
+		width: fit-content;
+		flex-shrink: 0;
+		margin: 0 auto;
+		border: 1px solid #dddddd;
+	}
+	&-menu {
+		display: flex;
+		width: fit-content;
+		margin: 20px auto 0;
+		div {
+			width: 100px;
+		}
+		div:nth-of-type(2) {
+			margin: 0 20px;
+		}
+	}
+}
+::v-deep .el-dialog__header {
+	padding: 0;
 }
 </style>

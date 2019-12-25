@@ -21,7 +21,8 @@ import {
     TableColumn,
     MessageBox,
     Tooltip,
-    Link
+    Link,
+    Image
 } from 'element-ui';
 
 export default {
@@ -47,6 +48,7 @@ export default {
         Vue.use(TableColumn);
         Vue.use(Tooltip);
         Vue.use(Link);
+        Vue.use(Image);
 
         Vue.prototype.$notify = Notification;
         Vue.prototype.$msgBox = MessageBox;

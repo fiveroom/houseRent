@@ -20,7 +20,7 @@
 					</el-table-column>
 					<el-table-column label="预约房源">房源信息</el-table-column>
 					<el-table-column label="联系人" width="150"></el-table-column>
-					<el-table-column label="操作" width="150"></el-table-column> -->
+					<el-table-column label="操作" width="150"></el-table-column>-->
 				</el-table>
 			</li>
 		</ul>
@@ -28,7 +28,7 @@
 </template>
 
 <script>
-	import { orderTradeInfo } from "@/api/user";
+	import { orderTradeInfo, queryOrder } from "@/api/user";
 	import { mapGetters } from "vuex";
 	export default {
 		data() {
@@ -49,8 +49,11 @@
 					noLoading: true
 				}).then(res => {
 					if (res.status) {
-                        console.log(res.Data);
+						console.log(res.Data);
 						this.orderReArr = res._Items;
+						let getOrder = res._Items.map(item => {
+							return;
+						});
 						this.total = res.Total;
 					}
 
@@ -68,56 +71,56 @@
 </script>
 
 <style lang="scss" scoped>
-	$hoverColor: #00bfc8;
-	$fontLightColor: #3dbcc6;
-	$bacHoerClr: #3dbcc6;
-	$NoHover: #999999;
-	.header {
-		padding-bottom: 3rem;
+$hoverColor: #00bfc8;
+$fontLightColor: #3dbcc6;
+$bacHoerClr: #3dbcc6;
+$NoHover: #999999;
+.header {
+	padding-bottom: 3rem;
+	font-size: 1.8rem;
+	line-height: 2.1rem;
+	border-bottom: 1px solid #f1f1f1;
+	color: #333;
+	display: flex;
+	justify-content: space-between;
+	span {
+		margin-left: 15px;
+	}
+}
+.orderre-box {
+	min-height: 500px;
+	position: relative;
+}
+.orderre-box--no {
+	height: 200px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-direction: column;
+	&__title {
+		font-size: 16px;
+		color: #999;
+	}
+	&__next {
+		display: block;
+		background-color: #fff;
+		min-width: 180px;
+		width: auto;
+		height: 50px;
 		font-size: 1.8rem;
-		line-height: 2.1rem;
-		border-bottom: 1px solid #f1f1f1;
-		color: #333;
-		display: flex;
-		justify-content: space-between;
-		span {
-			margin-left: 15px;
+		line-height: 4.6rem;
+		text-align: center;
+		border: 2px solid #3dbcc6;
+		border-radius: 33px;
+		box-sizing: border-box;
+		color: $hoverColor;
+		padding: 0 30px;
+		transition: all 0.2s;
+		margin-top: 2rem;
+		&:hover {
+			background-color: $bacHoerClr;
+			color: #fff;
 		}
 	}
-	.orderre-box {
-		min-height: 500px;
-		position: relative;
-	}
-	.orderre-box--no {
-		height: 200px;
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		flex-direction: column;
-		&__title {
-			font-size: 16px;
-			color: #999;
-		}
-		&__next {
-			display: block;
-			background-color: #fff;
-			min-width: 180px;
-			width: auto;
-			height: 50px;
-			font-size: 1.8rem;
-			line-height: 4.6rem;
-			text-align: center;
-			border: 2px solid #3dbcc6;
-			border-radius: 33px;
-			box-sizing: border-box;
-			color: $hoverColor;
-			padding: 0 30px;
-			transition: all 0.2s;
-			margin-top: 2rem;
-			&:hover {
-				background-color: $bacHoerClr;
-				color: #fff;
-			}
-		}
-	}
+}
 </style>

@@ -1,7 +1,40 @@
 <template>
-	<section class="slide">
+	<section class="slide-all">
 		<header-nav />
-		<SlideshowH />
+		<!-- 上方轮播图 -->
+		<section class="container">
+			<div
+				class="container-bgci"
+				:style="{'background-image': `url(${imgList[showIndex].House_coverPic})`}"
+			></div>
+			<div class="slide">
+				<div
+					v-for="(item, index) in imgList"
+					:key="index"
+					:class="['slide-cir', showIndex==index?'slide-cir--show':'']"
+					@click="$router.push(`/hdetail?house_id=${item.House_id}`)"
+				>
+					<el-image :src="item.House_coverPic" style="width: 100%; height: 100%" :lazy="true">
+						<div
+							slot="error"
+							style="position: absolute;left: 0;display:flex;top: 0;font-size: 40px;background-color: #f5f7fa;color: #909399;width:100%;height:100%"
+						>
+							<i style="margin:auto;" class="el-icon-picture-outline"></i>
+						</div>
+					</el-image>
+				</div>
+				<ul class="slide__nav">
+					<li
+						v-for="(item, index) in imgList"
+						:style="showIndex == index?choiceitem:''"
+						:key="item.House_id"
+						@click="changIndexTop(index)"
+					></li>
+				</ul>
+				<i class="slide-left" @click="lastHouse"></i>
+				<i class="slide-right" @click="nextHouse"></i>
+			</div>
+		</section>
 		<section class="search">
 			<div class="search-box">
 				<SearchHouse />
@@ -97,8 +130,8 @@
 				<div class="recom-body">
 					<div class="recom-body__l">
 						<ul class="recom-body__c" :style="{transform: `translateX(${-857*houseRecomChoice}px)`}">
-							<li v-for="(item, index) in houseRecom" :key="index">
-								<img :src="item" alt />
+							<li v-for="item in imgList" :key="item.House_id">
+								<img :src="item.House_coverPic" alt />
 							</li>
 						</ul>
 						<div class="recom-body__ch recom-body__ch--l" @click="changeIndex(0, 'houseRecomChoice', 2)">
@@ -131,7 +164,8 @@
 	// @ is an alias to /src
 	import SlideshowH from "@/components/SlideshowH";
 	import SearchHouse from "@/components/SearchHouse";
-	import moduleName from 'module';
+	import { queryHotH } from "@/api/house";
+	import { clearInterval } from "timers";
 	export default {
 		name: "home",
 		data() {
@@ -205,14 +239,54 @@
 					require("@/assets/img/house2-3.jpg")
 				]
 			];
+			let choiceitem = {
+				"background-color": " rgb(255, 255, 255)",
+				"border-color": "rgb(146, 154, 159)"
+			};
+			let hotHouses = [
+				{
+					House_id: null,
+					House_collectAmount: null,
+					House_coverPic: null,
+					House_picList: []
+				}
+			];
 			return {
+				arrHotHouseCover: [],
+				arrHouseMiniPic: [],
 				choiceServer: 0,
 				serverImg,
 				serverDes,
 				promInfo,
 				houseRecom,
 				minHouseRcom,
-				houseRecomChoice: 0
+				houseRecomChoice: 0,
+				choiceitem,
+				imgList: [
+					{
+						House_coverPic: require("../assets/img/xmad_1552553827586_JWbdT.jpg"),
+						House_id: 1
+					},
+					{
+						House_coverPic: require("../assets/img/xmad_1562317906034_yYDfN.jpg"),
+						House_id: 2
+					},
+					{
+						House_coverPic: require("../assets/img/xmad_15621496998423_jWLlF.jpg"),
+						House_id: 3
+					},
+					{
+						House_coverPic: require("../assets/img/xmad_15623260229891_iSOkA.jpg"),
+						House_id: 4
+					},
+					{
+						House_coverPic: require("../assets/img/xmad_15625509375452_mExAO.jpg"),
+						House_id: 5
+					}
+				],
+				showIndex: 0, // 上方轮播索引
+				hotHouses,
+				timerS: null // 自动播放
 			};
 		},
 		components: {
@@ -248,16 +322,151 @@
 					this[attr] = num - 1;
 				}
 				this[attr] = this[attr] % num;
+			},
+			getHotHouse() {
+				queryHotH().then(res => {
+					console.log(res);
+					if (res.status) {
+						this.hotHouses = res.data;
+						this.autoLunBo();
+					}
+				});
+			},
+			lastHouse() {
+				window.clearInterval(this.timerS)
+				this.showIndex =
+					Math.abs(--this.showIndex + 1) % this.imgList.length == 0
+						? 4
+						: this.showIndex;
+			},
+			nextHouse() {
+				window.clearInterval(this.timerS)
+				this.showIndex =
+					Math.abs(++this.showIndex) % this.imgList.length == 0
+						? 0
+						: this.showIndex;
+			},
+			autoLunBo() {
+				this.timerS = setInterval(() => {
+					this.showIndex++;
+					if (this.showIndex == this.imgList.length - 1) {
+						window.clearInterval(this.timerS);
+					}
+				}, 1500);
+			},
+			changIndexTop(index){
+				this.showIndex = index;
+				window.clearInterval(this.timerS);
 			}
 		},
 		mounted() {
 			// this.$myLoadding.open();
 			// console.log(this.$myLoadding);
+		},
+		created() {
+			this.getHotHouse();
 		}
 	};
 </script>
 
 <style lang="scss" scoped>
+// 上方轮播
+
+.no-image {
+	position: absolute;
+	left: 0;
+	top: 0;
+	font-size: 40px;
+	background-color: #f5f7fa;
+	color: #909399;
+}
+@mixin cut {
+	display: flex;
+	position: absolute;
+	width: 41px;
+	height: 69px;
+	cursor: pointer;
+	top: 50%;
+	transform: translateY(-50%);
+	background: url(../assets/img/icon-slides.png) no-repeat;
+}
+.container {
+	position: relative;
+	background-size: contain;
+	background-repeat: no-repeat;
+	&-bgci {
+		position: absolute;
+		height: 100%;
+		width: 100%;
+		top: 0;
+		left: 0;
+		filter: blur(5px);
+		z-index: -1;
+	}
+}
+.slide {
+	cursor: pointer;
+	width: 116.8rem;
+	margin: 0 auto;
+	height: 400px;
+	position: relative;
+	&:hover > &-left {
+		background-position: 0;
+	}
+	&:hover > &-right {
+		background-position: -41px;
+	}
+	&-cir {
+		width: 100%;
+		height: 100%;
+		// background-size: 100% 100%;
+		// background-repeat: no-repeat;
+		position: absolute;
+		transition: all 0.4s;
+		top: 0;
+		left: 0;
+		opacity: 0;
+		&--show {
+			opacity: 1;
+		}
+	}
+	&-left {
+		@include cut;
+		left: 0;
+		background-position: -84px;
+		border-top-right-radius: 0.3rem;
+		border-bottom-right-radius: 0.3rem;
+	}
+	&-right {
+		@include cut;
+		right: 0;
+		background-position: -124px;
+		border-top-left-radius: 0.3rem;
+		border-bottom-left-radius: 0.3rem;
+	}
+	&__nav {
+		position: absolute;
+		display: flex;
+		bottom: 1rem;
+		right: 0.8rem;
+		transform: translate(-50%, -50%);
+		li {
+			cursor: pointer;
+			width: 0.6rem;
+			height: 0.6rem;
+			border-radius: 50%;
+			background-color: #999999;
+			border: 0.2rem solid #abb2b3;
+			margin: 0.5rem;
+			transition: all 0.2s;
+			&:hover {
+				background-color: #ffffff;
+				border-color: #929a9f;
+			}
+		}
+	}
+}
+
 .search {
 	background-color: #fbfbfb;
 	border-bottom: 1px solid #f3f3f3;
@@ -266,7 +475,6 @@
 		width: 116.8rem;
 		margin: 0 auto;
 	}
-
 }
 .other,
 .prom,

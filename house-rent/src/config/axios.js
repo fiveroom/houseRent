@@ -14,12 +14,16 @@ const Axios = axiosExtra.create({
 Axios.defaults.headers.post["Content-Type"] =
     "application/x-www-form-urlencoded";
 Axios.interceptors.request.use(config => {
-    if (!config.data.noLoading && config.data.toString() != '[object FormData]') {
+    if (config.method !== 'get') {
+        if (!config.data.noLoading && config.data.toString() != '[object FormData]') {
+            showLoading()
+        }
+        delete config.data.noLoading;
+        if (config.data.toString() != '[object FormData]') {
+            config.data = Qs.stringify(config.data);
+        }
+    } else {
         showLoading()
-    }
-    delete config.data.noLoading;
-    if (config.data.toString() != '[object FormData]') {
-        config.data = Qs.stringify(config.data);
     }
     return config;
 }, err => {
