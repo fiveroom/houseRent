@@ -27,6 +27,7 @@ export default {
         //     document.body.appendChild(Profile.$el);
         // }
         //定义显示隐藏的方法  open 会传入一个text 字符串。如果有则赋值给组件内默认值。
+        let timer = null;
         const myLoadingMethod = {
             open(el, text) {
                 console.log(el);
@@ -42,10 +43,11 @@ export default {
                 }
             },
             hide() {
-                let timer = setTimeout(() => {
+                clearTimeout(timer)
+                timer = setTimeout(() => {
                     Profile.show = false;
                     clearTimeout(timer)
-                }, 500)
+                }, 100)
             }
         };
         Vue.prototype.$myLoadding = myLoadingMethod;

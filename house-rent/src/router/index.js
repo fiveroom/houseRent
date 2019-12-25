@@ -17,6 +17,8 @@ import MyOrder from '@/components/MyOrder'; // 订单
 import MyContract from '@/components/MyContract'; // 合同
 import MyCollect from '@/components/MyCollect'; // 合同
 import EditPwd from '@/components/EditPwd'; // 合同
+import MySubs from '@/components/MySubs'; // 合同
+import MyOrderRecord from '@/components/MyOrderRecord'; // 合同
 
 const originalPush = VueRouter.prototype.push
 VueRouter.prototype.push = function push(location) {
@@ -123,6 +125,14 @@ const routes = [{
             {
                 path: '/userDetial/editPwd',
                 component: EditPwd
+            },
+            {
+                path: '/userDetail/mySubs',
+                component: MySubs
+            },
+            {
+                path: '/userDetail/myOrderRecord',
+                component: MyOrderRecord
             }
         ]
     }

@@ -7,7 +7,7 @@ const Axios = axiosExtra.create({
     axios,
     timeout: 2000,
     queueOptions: {
-        retry: 2,
+        retry: 0, // 重试次数
         retryIsJump: true
     },
 })
@@ -30,6 +30,7 @@ Axios.interceptors.response.use(res => {
     tryHideLoading()
     return res
 }, err => {
+    console.log(err, '----------------');
     tryHideLoading()
     return Promise.reject(err);
 });

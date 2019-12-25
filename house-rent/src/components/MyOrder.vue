@@ -43,6 +43,7 @@
 					:data="orderList"
 					:border="true"
 					ref="orderTable"
+					height="400"
 					@selection-change="(value)=>{checkOrderCon = value}"
 				>
 					<el-table-column type="selection"></el-table-column>

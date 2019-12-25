@@ -123,14 +123,50 @@ export const updateUserInfo = (data) => {
 // 预约
 export const addBespeak = (data, call) => {
     return axios.post('/UserMgeSvr.assx/addBespeak', data).then(res => {
+        console.log(res);
         if (res.data.Code === "200") {
-            call && call({ status: true, Data: res.data.Data });
-        } else {
-            call && call({ status: false, Data: res.data.Msg });
+            return { status: true, msg: '预约成功' }
         }
-        return res
+        return { status: false, msg: '预约失败请稍后再试' }
     }).catch(err => {
-        return err
+        return { status: false, msg: '预约失败请稍后再试' }
+    })
+}
+
+// 查看预约消息
+export const queryBespeak = data => {
+    return axios.post('/UserMgeSvr.assx/queryOwnBespeak', data).then(res => {
+        console.log(res, '查看预约消息');
+        if (res.data.Code == '200') {
+            return { data: res.data.Data.bespeakList._Items }
+        }
+        return { data: [] }
+    }).catch(() => {
+        return { data: [] }
+    })
+}
+
+// 删除预约消息
+export const delBespeak = data => {
+    return axios.post('/UserMgeSvr.assx/deleteBespeak', data).then(res => {
+        if (res.data.Code == '200') {
+            return { status: true }
+        }
+        return { status: false, msg: `${data.bs_id}预约消息移除失败，请稍后再试` }
+    }).catch(() => {
+        return { status: false, msg: `${data.bs_id}预约消息移除失败，请稍后再试` }
+    })
+}
+
+// 修改预约消息
+export const updateBespeak = data => {
+    return axios.post('/UserMgeSvr.assx/updateBespeakTime', data).then(res => {
+        if (res.data.Code == '200') {
+            return { status: true, msg: res.data.Msg }
+        }
+        return { staus: false, msg: '编辑预约信息失败,请稍后再试' }
+    }).catch(() => {
+        return { staus: false, msg: '编辑预约信息失败,请稍后再试' }
     })
 }
 
@@ -172,7 +208,7 @@ export const deleteOwnCollectBatch = (data, call) => {
 // }
 export const queryOwnCollect = async(data) => {
     return await axios.post('/UserMgeSvr.assx/queryOwnCollect', data).then(res => {
-        console.log('查询收藏', res);
+        // console.log('查询收藏', res);
         if (res.data.Code == 200) {
             return { status: true, data: res.data.Data._Items }
         }
@@ -198,7 +234,7 @@ export const queryCtractIn = async(data) => {
 // 查看订单
 export const queryOrder = data => {
     return axios.post('/UserMgeSvr.assx/queryOrderInfoOfUser', data).then(res => {
-        console.log('查看订单', res);
+        // console.log('查看订单', res);
         if (res.data.Code == 200) {
             return { status: true, data: res.data.Data._Items }
         }
@@ -215,7 +251,7 @@ export const uploadAvator = data => {
             "Content-Type": "multipart/form-data"
         }
     }).then(res => {
-        console.log(res);
+        // console.log(res);
         if (res.data.code == "200") {
             return { status: true, msg: '头像修改成功', url: res.data.data[0].user_avaterPath }
         }
@@ -228,12 +264,26 @@ export const uploadAvator = data => {
 // 支付订单
 export const payOrder = data => {
     return axios.post('/payController/pay', data).then(res => {
-        console.log(res);
+        // console.log(res);
         if (res.status == 200) {
             return { status: true, data: res.data }
         }
         return { status: false, data: '请检查订单信息，或选择订单' }
     }).catch(err => {
         return { status: false, msg: '请稍后再试' }
+    })
+}
+
+
+// 支付记录
+export const orderTradeInfo = data => {
+    return axios.post('/UserMgeSvr.assx/queryOrderTradeInfoOfUser', data).then(res => {
+        console.log(res, '交易记录');
+        if (res.status == 200) {
+            return { status: true, data: res.data, _Items: res.data.Data._Items }
+        }
+        return { status: false, data: null }
+    }).catch(err => {
+        return { status: false, data: null }
     })
 }

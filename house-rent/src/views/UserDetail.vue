@@ -76,9 +76,13 @@
 							url: "/userDetail/myContract"
 						},
 						{
-							title: "租房问题",
-							url: "#"
-						}
+							title: "我的预约",
+							url: "/userDetail/mySubs"
+						},
+						{
+							title: "订单交易记录",
+							url: "/userDetail/myOrderRecord"
+						},
 					]
 				},
 				{

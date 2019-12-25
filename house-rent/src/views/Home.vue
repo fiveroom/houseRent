@@ -131,6 +131,7 @@
 	// @ is an alias to /src
 	import SlideshowH from "@/components/SlideshowH";
 	import SearchHouse from "@/components/SearchHouse";
+	import moduleName from 'module';
 	export default {
 		name: "home",
 		data() {

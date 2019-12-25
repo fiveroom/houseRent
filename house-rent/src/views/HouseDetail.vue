@@ -8,7 +8,7 @@
 						<!-- 未处理鼠标滚动 -->
 						<div class="view-img">
 							<img :src="showImg.showBigImg" alt />
-							<i v-show="showImgIndex != 0" class="el-icon-arrow-left to-left"></i>
+							<i v-show="showImgIndex != 0" @click="toLeft" class="el-icon-arrow-left to-left"></i>
 							<i
 								v-show="showImgIndex != showImg.showImgLen - 1"
 								class="el-icon-arrow-right to-right"
@@ -141,7 +141,7 @@
 					</div>
 					<div class="admin">
 						<div class="admin-avator">
-							<img :src="Admin.Admin_avaterPath" alt />
+							<img :src="Admin.Admin_avaterPath || defaultAvator" alt />
 						</div>
 						<div class="admin-info">
 							<p>{{Admin.Admin_realName}}</p>
@@ -235,7 +235,9 @@
 				require("@/assets/img/server02.png"),
 				require("@/assets/img/server03.png")
 			];
+			let defaultAvator = require("@/assets/avator.jpg");
 			return {
+				defaultAvator,
 				HousePicture: [],
 				House: {},
 				Admin: {},
@@ -259,7 +261,8 @@
 				detailIndex: 0,
 				detailFiexd: false,
 				subscribeShow: false,
-				subscribePosi: false
+				subscribePosi: false,
+				hintI: { duration: 1500, title: "收藏" }
 			};
 		},
 		filters: {
@@ -314,7 +317,7 @@
 						if (res.status) {
 							this.HousePicture = res.Data.HousePicture;
 							this.House = res.Data.House;
-							this.Admin = res.Data.Admin;
+							this.Admin = res.Data.Admin || {};
 							houseApi
 								.houseCollectNum({
 									house_id: this.House.House_id
@@ -338,30 +341,32 @@
 				this.subfromStatus =
 					this.userTel.includes("****") || this.userPhoneStatus;
 				if (this.subfromStatus) {
-					userApi.addBespeak(
-						{
-							bespeak: JSON.stringify({
-								Bs_type: 1,
-								User_id: this.userId,
-								User_tel: this.cpUserTel,
-								House_id: this.House.House_id,
-								Admin_id: this.House.Admin_id,
-								Bs_time: this.subDate,
-								Bs_isDeal: false,
-								Bs_content: this.userRemark || "无"
-							})
-						},
-						res => {
-							if (res.status) {
-								this.nitifyInfo("预约", res.msg, "success");
-								// Notification.success({ ...obj, message: res.msg });
-							} else {
-								this.nitifyInfo("预约", res.msg);
-								// Notification.warning({ ...obj, message: res.msg });
-							}
-							this.subscribeEdit = false;
+					let obj = {
+						bespeak: JSON.stringify({
+							Bs_type: 1,
+							User_id: this.userId,
+							User_tel: this.cpUserTel,
+							House_id: this.House.House_id,
+							Admin_id: this.House.Admin_id,
+							Bs_time: this.subDate,
+							Bs_isDeal: false,
+							Bs_content: this.userRemark || "无"
+						})
+					};
+					userApi.addBespeak(obj).then(res => {
+						let hint = {
+							title: "预约",
+							duration: 1500,
+							showClose: false,
+							message: res.msg
+						};
+						if (res.status) {
+							this.$notify.success(hint);
+						} else {
+							this.$notify.error(hint);
 						}
-					);
+						this.subscribeEdit = false;
+					});
 				}
 			},
 			showPhone(value) {
@@ -395,7 +400,11 @@
 				if (this.userId) {
 					let res = userApi.queryOwnCollect({ user_id: this.userId });
 					res.then(data => {
-						this.userCollect = data.status;
+						console.log(data, '我的收藏');
+						this.userCollect = data.data.some(item => {
+							return item.House_id == this.$route.query.House_id;
+						});
+						console.log(this.userCollect);
 					});
 				}
 			},
@@ -404,26 +413,47 @@
 				if (this.judgeUser()) {
 					let res = null;
 					let obj = {
-						house_id: this.House.House_id,
 						user_id: this.userId,
 						noLoading: true
 					};
 					if (this.userCollect) {
-						userApi.deleteOwnCollectBatch(obj).then(res => {
-							if (!res.status) {
-								this.nitifyInfo("用户收藏", res.msg);
-							} else {
-								this.userCollect = !this.userCollect;
-							}
-						});
+						userApi
+							.deleteOwnCollectBatch({
+								...obj,
+								house_idStr: `${this.House.House_id}`
+							})
+							.then(res => {
+								let obj = {
+									title: "收藏",
+									duration: 1500,
+									message: res.msg
+								};
+								if (!res.status) {
+									this.$notify.error(obj);
+								} else {
+									this.$notify.success(obj);
+									this.userCollect = !this.userCollect;
+								}
+							});
 					} else {
-						userApi.addOwnCollect(obj).then(res => {
-							if (!res.status) {
-								this.nitifyInfo("用户收藏", res.msg);
-							} else {
-								this.userCollect = !this.userCollect;
-							}
-						});
+						userApi
+							.addOwnCollect({
+								...obj,
+								house_id: this.House.House_id
+							})
+							.then(res => {
+								let obj = {
+									title: "收藏",
+									duration: 1500,
+									message: res.msg
+								};
+								if (!res.status) {
+									this.$notify.error(obj);
+								} else {
+									this.userCollect = !this.userCollect;
+									this.$notify.success(obj);
+								}
+							});
 					}
 				}
 			},
@@ -454,7 +484,7 @@
 			this.judgeCollect();
 		},
 		mounted() {
-			this.addScrollEvent()
+			this.addScrollEvent();
 		},
 		beforeDestroy() {
 			window.removeEventListener("scroll", this.judgeheight);

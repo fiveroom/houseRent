@@ -49,23 +49,12 @@
 							<div>{{scope.row.Con_isSigned | judegStatus}}</div>
 						</template>
 					</el-table-column>
-					<el-table-column label="操作" width="200px">
+					<el-table-column label="操作" width="300px">
 						<template slot-scope="scope">
 							<div class="user-do">
-								<!-- <el-link
-									target="_blank"
-									:href="scope.row.Con_path"
-									:underline="false"
-									style="width: 250px !important;"
-								>
-									<div class="spacifical">
-										<i class="el-icon-download"></i>
-									</div>
-								</el-link>-->
-
 								<div @click="download(scope.row.Con_path, scope.row.Con_id)">下载合同</div>
 								<div @click="showBig(scope.row.Con_path)">查看合同</div>
-								<!-- <img :src="scope.row.Con_path" alt /> -->
+								<router-link :to="`/userDetail/myOrder?Con_id=${scope.row.Con_id}`">查看订单</router-link>
 							</div>
 						</template>
 					</el-table-column>
@@ -85,24 +74,6 @@
 	export default {
 		data() {
 			let avator = require("@/assets/avator.jpg");
-			let oneCon = {
-				Con_id: 5,
-				House_id: 1,
-				User_id: 1,
-				Admin_id: 1,
-				Con_isSigned: "Y",
-				Con_signTime: "2019-10-10T00:00:00",
-				User_realName: "余展鹏",
-				User_identity: "511111111111111111",
-				House_address: "那里",
-				Con_startTime: "2019-10-11T00:00:00",
-				Con_endTime: "2019-12-11T00:00:00",
-				House_rent: 2000,
-				House_months: 2,
-				User_tel: "13547971976",
-				Con_path:
-					"http://39.106.122.19:8888/files/contract/con_id520191221142314.jpg"
-			};
 			return {
 				avator,
 				showConImage: false,
@@ -360,20 +331,21 @@ $NoHover: #999999;
 	display: flex;
 	align-items: center;
 	cursor: pointer;
-	width: 200px;
-	div {
+	div,a {
+		display: block;
 		flex-shrink: 0;
 		font-size: 14px;
 		transition: all 0.3s;
 		border: 1px solid #3dbcc6;
 		padding: 5px 10px;
 		border-radius: 2rem;
+		color: #606266;
 		&:hover {
 			color: #fff;
 			background-color: #3dbcc6;
 		}
 	}
-	div:first-child {
+	div{
 		margin-right: 10px;
 	}
 }

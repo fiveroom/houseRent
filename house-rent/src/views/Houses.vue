@@ -121,7 +121,26 @@
 							</div>
 						</div>
 					</div>
-					<div class="paging"></div>
+					<div class="paging">
+						<div class="paging-l">
+							<div class="paging-to">上一页</div>
+							<ul class="paging-ul">
+								<li
+									v-for="(item, index) in getPageNum"
+									:key="index"
+									:class="['paging-to paging-li', skipNum==item?' paging-li__act':'']"
+								>{{item}}</li>
+							</ul>
+							<div class="paging-to">下一页</div>
+							<div class="paging-all">共{{getPageNum}}页</div>
+						</div>
+						<div class="paging-inpbox">
+							<span>到&nbsp;</span>
+							<input class="paging-to paging-inp" v-model="nextNum" type="text" />
+							<span>&nbsp;页</span>
+						</div>
+						<div class="paging-to paging-confim" @click="nextPageSearch">确定</div>
+					</div>
 				</div>
 				<div v-else class="nohouse">
 					<div class="nohouse-img">
@@ -217,8 +236,11 @@
 				priceIndex: 1,
 				areaIndex: 1,
 				searchValue: null,
-				skipNum: 1,  // '页数'
-				sizeNum: 10,   // '分页数'
+				skipNum: 1, // '页数'
+				sizeNum: 10, // '分页数'
+				pagingIndex: [],
+				Total: null,
+				nextNum: null // 选择的页数
 			};
 		},
 		computed: {
@@ -258,7 +280,14 @@
 					});
 				});
 				return items;
-			}
+			},
+			getPageNum() {
+				if (this.Total) {
+					return Math.ceil(this.Total / this.sizeNum);
+				}
+				return 1;
+			},
+			
 		},
 		methods: {
 			...mapActions(["getCurLocat"]),
@@ -390,6 +419,7 @@
 				this.$myLoadding.open(this.$refs.arrHouse);
 				houseApi.searchHouse(this.reqData, data => {
 					if (data.Code == "200") {
+						this.Total = data.Total;
 						this.arrHouses = data.Data._Items;
 					}
 					this.$myLoadding.hide();
@@ -469,6 +499,7 @@
 					this.areaIndex = 1;
 				}
 			},
+			// 根据标题查询
 			searchHouseByT() {
 				let data = { house_title: this.searchValue };
 				this.$myLoadding.open(this.$refs.arrHouse);
@@ -477,7 +508,9 @@
 					this.arrHouses = res.data;
 					this.$myLoadding.hide();
 				});
-			}
+			},
+			// 根据页码查询
+			nextPageSearch() {}
 		},
 		created() {
 			this.getDistrict();
@@ -768,12 +801,12 @@
 				background-color: $fontLightColor;
 			}
 		}
-		&-container::after{
+		&-container::after {
 			content: "";
 			display: block;
 			clear: both;
 		}
-		&-container{
+		&-container {
 			padding-bottom: 60px;
 		}
 	}
@@ -813,18 +846,79 @@
 			display: table;
 		}
 	}
-	.paging{
+	.paging {
 		position: absolute;
 		bottom: 0;
 		left: 0;
-		width: 80%;
+		width: fit-content;
 		height: 40px;
 		left: 50%;
 		transform: translateX(-50%);
-		background-color: skyblue
+		display: flex;
+		justify-content: flex-end;
+		color: #666;
+		align-items: center;
+		font-size: 14px;
+		&-l {
+			display: flex;
+			align-items: center;
+		}
+		&-to {
+			background: #fff;
+			border: 1px solid #ddd;
+			border-radius: 3px;
+			padding: 0 12px;
+			height: 28px;
+			line-height: 28px;
+			margin: 0 2px;
+			cursor: pointer;
+		}
+		&-ul {
+			font-size: 0;
+			width: max-content;
+			& > li {
+				display: inline-block;
+			}
+		}
+		&-inpbox {
+			display: flex;
+			align-items: center;
+			font-size: 0;
+			span {
+				font-size: 14px;
+				margin: 0 7px;
+			}
+		}
+		&-inp {
+			font-size: 14px;
+			color: #000;
+			outline: none;
+			cursor: initial;
+			width: 62px;
+			padding: 0;
+			text-align: center;
+		}
+		&-confim {
+			background-color: #e0e0e0;
+			&:hover {
+				color: #000;
+			}
+		}
+		&-li {
+			font-size: 14px;
+			margin: 0 6px;
+			background: rgba(0, 0, 0, 0.06);
+			&__act {
+				background-color: #ffa000;
+				color: #fff;
+				border-color: #ffa000;
+			}
+		}
+		&-all {
+			margin: 0 15px 0 10px;
+		}
 	}
-	.empt{
+	.empt {
 		height: 40px;
-		
 	}
 </style>

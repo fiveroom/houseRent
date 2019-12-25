@@ -2,6 +2,7 @@ import axios from '@/config/axios';
 // 条件搜索房源
 export const searchHouse = (data, call) => {
     return axios.post('/UserMgeSvr.assx/queryHouseByColumn', data).then(res => {
+        console.log(res, '房屋信息');
         call && call(res.data)
     }).catch(err => {
         call && call(err)
@@ -43,6 +44,20 @@ export const houseDetail = (data, call) => {
 // }
 export const queryHouseCollectAmount = async(data) => {
     return await axios.post('/UserMgeSvr.assx/queryHouseCollectAmount', data).then(res => {
+        if (res.data.Code === "200") {
+            return { num: res.data.Data }
+        }
+        return { num: 0 }
+    }).catch(err => {
+        return { num: 0 }
+    })
+}
+
+
+
+export const queryHotH = () => {
+    return axios.post('/queryHouseByCollectAmount').then(res => {
+        console.log(res, '推荐');
         if (res.data.Code === "200") {
             return { num: res.data.Data }
         }
