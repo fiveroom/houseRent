@@ -53,7 +53,7 @@
 
 <script>
 	import { editAuthCode, upPwdUser } from "@/api/user";
-	import { mapGetters } from "vuex";
+	import { mapGetters,mapMutations } from "vuex";
 	export default {
 		data() {
 			let pwdRex = {
@@ -76,12 +76,13 @@
 			...mapGetters(["tel"])
 		},
 		methods: {
+			...mapMutations(["loginOut"]),
 			editPwd() {
 				console.log("编辑");
 				this.allowEdit = !this.allowEdit;
 				if (this.affirmPwdStatus && this.pwdStatus && this.codeStatus) {
 					let obj = {
-						telephone: this.tel,
+						telephone: '15182432853',
 						code: this.code,
 						noLoading: true,
 						password: this.pwd
@@ -89,9 +90,10 @@
 					upPwdUser(obj).then(res => {
 						console.log(res);
 						if (res.status) {
+							this.loginOut();
 							this.$router.push("/");
 						} else {
-							this.$notify({
+							this.$notify.error({
 								title: "密码修改",
 								duration: 1500,
 								message: res.msg,
@@ -105,7 +107,7 @@
 				if (this.affirmPwdStatus && this.pwdStatus) {
 					console.log("发送验证码");
 
-					let obj = { telephone: this.tel, noLoading: true };
+					let obj = { telephone: '15182432853', noLoading: true };
 					editAuthCode(obj).then(res => {
 						let hint = {
 							title: "密码修改",

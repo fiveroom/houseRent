@@ -46,7 +46,7 @@
 		transform: translate(50%, -50%);
 	}
 }
-// left在离开的时候，类名已经变成right所以离开完成状态因为right-leave-to
+// left在离开的时候，类名已经变成right所以离开完成状态应为right-leave-to
 .right-leave-to,
 .left-enter {
 	top: 100%;

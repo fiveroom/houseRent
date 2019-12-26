@@ -7,15 +7,15 @@
 			</div>
 		</header>
 		<ul class="subs-box" ref="subsBox">
-			<li v-if="arrSubs.length == 0" class="subs-box--no">
+			<!-- <li v-if="arrSubs.length == 0" class="subs-box--no">
 				<p class="subs-box--no__title">您还没有预约看房，快去添加吧！～</p>
 				<router-link class="subs-box--no__next" to="/h">去找房</router-link>
-			</li>
-			<li v-else>
+			</li>-->
+			<li>
 				<el-table
 					:data="arrSubs"
 					ref="collTable"
-					height="400"
+					height="600"
 					@selection-change="(value)=>{checkSubs = value}"
 				>
 					<el-table-column type="selection"></el-table-column>
@@ -43,13 +43,13 @@
 							</div>
 						</template>
 					</el-table-column>
-					<el-table-column label="处理" width="110">
+					<el-table-column label="状态" width="110">
 						<template slot-scope="scope">
 							<div class="hint-status">
-								<span>{{scope.row.bs_isDeal == 'N'?'未处理':'已处理'}}</span>
+								<span>{{getDealStu(scope.row.bs_isDeal).msg}}</span>
 								<div
 									class="hint-status__icon"
-									:style="{'background-color':scope.row.bs_isDeal == 'N'?'':'rgb(103, 194, 58)'}"
+									:style="{'background-color':getDealStu(scope.row.bs_isDeal).color}"
 								>
 									<i class="el-icon-check"></i>
 								</div>
@@ -69,7 +69,8 @@
 					<el-table-column label="操作" width="70">
 						<template slot-scope="scope">
 							<div
-								:class="['editdo',scope.row.bs_isDeal == 'N'? 'editdo--can':'']"
+								:class="['editdo',scope.row.bs_isDeal == 'N'?  'editdo--can':'']"
+								:style="{}"
 								@click="openDiag(scope.row)"
 							>编辑</div>
 						</template>
@@ -80,6 +81,7 @@
 						<option value="0">所有</option>
 						<option value="1">已处理</option>
 						<option value="2">未处理</option>
+						<option value="3">已看房</option>
 					</select>
 					<div class="eidt-mycol__do">
 						<div @click="$refs.collTable.clearSelection()">取消</div>
@@ -164,17 +166,20 @@
 					if (this.typeSubs == "0") {
 						this.arrSubs = res.data;
 					} else if (this.typeSubs == "1") {
-						console.log(res.data, "------");
 						this.arrSubs = res.data.filter(item => {
 							return item.bs_isDeal == "Y";
 						});
-					} else {
+					} else if (this.typeSubs == "2") {
 						this.arrSubs = res.data.filter(item => {
 							return item.bs_isDeal == "N";
 						});
+					} else {
+						this.arrSubs = res.data.filter(item => {
+							return item.bs_isDeal == "S";
+						});
 					}
 					this.arrSubs.sort((a, b) => {
-						return  new Date(b.bs_time) - new Date(a.bs_time);
+						return new Date(b.bs_time) - new Date(a.bs_time);
 					});
 					this.$myLoadding.hide();
 				});
@@ -202,16 +207,21 @@
 						...this.hintMs,
 						message: "未选择预约消息"
 					});
-				} else if(this.checkSubs.some(item=>{return item.bs_isDeal == 'N'})) {
+				} else if (
+					this.checkSubs.some(item => {
+						return item.bs_isDeal == "N";
+					})
+				) {
 					this.$msgBox({
 						title: "预约移除提示",
-						message: "当前选择中存在未处理预约，若移除将不再处理。是否继续？",
+						message:
+							"当前选择中存在未处理预约，若移除将不再处理。是否继续？",
 						showCancelButton: true,
 						confirmButtonText: "继续",
 						cancelButtonText: "取消",
 						beforeClose: (action, instance, done) => {
 							if (action === "confirm") {
-								done()
+								done();
 								this.delMySubs();
 							} else {
 								done();
@@ -220,7 +230,7 @@
 					}).then(() => {});
 					// this.delMySubs();
 				} else {
-					this.delMySubs()
+					this.delMySubs();
 				}
 			},
 			handleClose(done) {
@@ -286,12 +296,30 @@
 					this.currBsId = row.bs_id;
 				}
 			},
-			getTwo(value){
-				return `${value}`.padStart(2, '0');
+			getTwo(value) {
+				return `${value}`.padStart(2, "0");
 			},
 			getTimeCh(value) {
 				let date = new Date(value);
-				return `${date.getFullYear()}-${this.getTwo(date.getMonth() + 1)}-${this.getTwo(date.getDate())} ${this.getTwo(date.getHours())}:${this.getTwo(date.getMinutes())}:${this.getTwo(date.getSeconds())}`;
+				return `${date.getFullYear()}-${this.getTwo(
+					date.getMonth() + 1
+				)}-${this.getTwo(date.getDate())} ${this.getTwo(
+					date.getHours()
+				)}:${this.getTwo(date.getMinutes())}:${this.getTwo(
+					date.getSeconds()
+				)}`;
+			},
+			getDealStu(value) {
+				switch (value) {
+					case "N":
+						return { msg: "未处理", color: "" };
+					case "Y":
+						return { msg: "已处理", color: "#67c23a" };
+					case "S":
+						return { msg: "已看房", color: "#3dbcc6" };
+					default:
+						return { msg: "未知", color: "" };
+				}
 			}
 		},
 		mounted() {
@@ -306,218 +334,219 @@
 </script>
 
 <style lang="scss" scoped>
-	$hoverColor: #00bfc8;
-	$fontLightColor: #3dbcc6;
-	$bacHoerClr: #3dbcc6;
-	$NoHover: #999999;
-	.header {
-		padding-bottom: 3rem;
-		font-size: 1.8rem;
-		line-height: 2.1rem;
-		border-bottom: 1px solid #f1f1f1;
-		color: #333;
-		display: flex;
-		justify-content: space-between;
-		span {
-			margin-left: 15px;
-		}
-	}
-	.mytab {
-		position: relative;
-	}
-	.subs-box {
-		min-height: 500px;
-		position: relative;
-	}
-	.subs-box--no {
-		height: 200px;
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		flex-direction: column;
-		&__title {
-			font-size: 16px;
-			color: #999;
-		}
-		&__next {
-			display: block;
-			background-color: #fff;
-			min-width: 180px;
-			width: auto;
-			height: 50px;
-			font-size: 1.8rem;
-			line-height: 4.6rem;
-			text-align: center;
-			border: 2px solid #3dbcc6;
-			border-radius: 33px;
-			box-sizing: border-box;
-			color: $hoverColor;
-			padding: 0 30px;
-			transition: all 0.2s;
-			margin-top: 2rem;
-			&:hover {
-				background-color: $bacHoerClr;
-				color: #fff;
-			}
-		}
-	}
-	.eidt-mycol {
-		margin-top: 15px;
-		display: flex;
-		height: 30px;
-		justify-content: space-between;
-		transition: height 0.1s;
-		overflow: hidden;
-		&__do {
-			font-size: 0;
-			div {
-				display: inline-block;
-				font-size: 14px;
-				color: #23527c;
-				padding: 0 14px;
-				border-radius: 2em;
-				border: 1px solid #3dbcc6;
-				line-height: 28px;
-				cursor: pointer;
-				transition: all 0.2s;
-				&:hover {
-					color: #fff;
-					background-color: #49ced8;
-				}
-				&:active {
-					color: #fff;
-					background-color: #43cbd4;
-				}
-			}
-			div:first-child {
-				margin-right: 15px;
-			}
-		}
-		&-choice:active {
-			border-color: #3dbcc6;
-			& > option {
-				border-color: #3dbcc6;
-			}
-		}
-	}
-	.hint-status {
-		display: flex;
-		align-items: center;
-		&__icon {
-			height: 20px;
-			line-height: 20px;
-			width: 34px;
-			text-align: center;
-			border-radius: 2em;
-			font-size: 16px;
-			color: #fff;
-			margin-left: 10px;
-			i {
-				font-weight: bolder;
-			}
-			background-color: rgba(0, 0, 0, 0.2);
-			&--succuss {
-				background-color: rgb(103, 194, 58);
-			}
-		}
-	}
-	.subfrom {
-		padding: 0 12px;
-		input {
-			border: 0;
-			outline: none;
-		}
-		&-div {
-			display: flex;
-			justify-content: space-between;
-			align-items: center;
-			&__cho {
-				font-size: 22px;
-				cursor: pointer;
-				margin-left: 15px;
-			}
-			&__inp {
-				flex-grow: 1;
-			}
-			&-choice {
-				margin-bottom: 2rem;
-			}
-		}
-	}
-	::v-deep .el-input--prefix .el-input__inner {
-		border: 0;
-		border-bottom: 1px solid #999999;
-		font-size: 16px;
-		outline: none;
-		border-radius: 0;
-		padding: 0;
-	}
-	::v-deep .el-date-editor {
-		width: 100%;
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-	}
-	::v-deep .el-date-editor.el-input {
-		width: auto;
-	}
-	::v-deep .el-icon-date::before {
-		content: "\e6df";
-	}
-	::v-deep .el-input__prefix {
-		position: static;
-		cursor: pointer;
-		font-size: 22px;
+$hoverColor: #00bfc8;
+$fontLightColor: #3dbcc6;
+$bacHoerClr: #3dbcc6;
+$NoHover: #999999;
+.header {
+	padding-bottom: 3rem;
+	font-size: 1.8rem;
+	line-height: 2.1rem;
+	border-bottom: 1px solid #f1f1f1;
+	color: #333;
+	display: flex;
+	justify-content: space-between;
+	span {
 		margin-left: 15px;
 	}
-	.editdo {
-		width: 48px;
+}
+.mytab {
+	position: relative;
+}
+.subs-box {
+	min-height: 500px;
+	position: relative;
+}
+.subs-box--no {
+	height: 200px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-direction: column;
+	&__title {
+		font-size: 16px;
+		color: #999;
+	}
+	&__next {
+		display: block;
+		background-color: #fff;
+		min-width: 180px;
+		width: auto;
+		height: 50px;
+		font-size: 1.8rem;
+		line-height: 4.6rem;
 		text-align: center;
-		border-radius: 2em;
-		font-size: 12px;
-		height: 24px;
-		line-height: 22px;
-		color: #fff;
-		border: 1px solid transparent;
-		background-color: rgba(0, 0, 0, 0.2);
-		&--can {
+		border: 2px solid #3dbcc6;
+		border-radius: 33px;
+		box-sizing: border-box;
+		color: $hoverColor;
+		padding: 0 30px;
+		transition: all 0.2s;
+		margin-top: 2rem;
+		&:hover {
+			background-color: $bacHoerClr;
+			color: #fff;
+		}
+	}
+}
+.eidt-mycol {
+	margin-top: 15px;
+	display: flex;
+	height: 30px;
+	justify-content: space-between;
+	transition: height 0.1s;
+	overflow: hidden;
+	&__do {
+		font-size: 0;
+		div {
+			display: inline-block;
+			font-size: 14px;
+			color: #49ced8;
+			padding: 0 14px;
+			border-radius: 2em;
+			border: 1px solid #3dbcc6;
+			line-height: 28px;
 			cursor: pointer;
-			color: #235290;
-			border-color: #3dbcc6;
-			background-color: #fff;
 			transition: all 0.2s;
 			&:hover {
 				color: #fff;
-				background-color: #3dbcc6;
+				background-color: #49ced8;
 			}
+			&:active {
+				color: #fff;
+				background-color: #43cbd4;
+			}
+		}
+		div:first-child {
+			margin-right: 15px;
 		}
 	}
-	.house-info {
-		font-size: 12px;
-		display: flex;
-		&__img {
-			flex-shrink: 0;
-			display: block;
-			height: 91px;
-			width: 137px;
-			img {
-				width: 100%;
-				height: 100%;
-			}
+	&-choice:active {
+		border-color: #3dbcc6;
+		& > option {
+			border-color: #3dbcc6;
 		}
-		&__d {
+	}
+}
+.hint-status {
+	display: flex;
+	align-items: center;
+	&__icon {
+		height: 20px;
+		line-height: 20px;
+		width: 34px;
+		text-align: center;
+		border-radius: 2em;
+		font-size: 16px;
+		color: #fff;
+		margin-left: 10px;
+		i {
+			font-weight: bolder;
+		}
+		background-color: rgba(0, 0, 0, 0.2);
+		&--succuss {
+			background-color: rgb(103, 194, 58);
+		}
+	}
+}
+.subfrom {
+	padding: 0 12px;
+	input {
+		border: 0;
+		outline: none;
+	}
+	&-div {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		&__cho {
+			font-size: 22px;
+			cursor: pointer;
 			margin-left: 15px;
 		}
-		&__t {
-			display: inline-block;
-			width: 100px;
-			color: #606266;
-			text-overflow: ellipsis;
-			overflow: hidden;
-			white-space: nowrap;
-			&:hover {
-				color: #3dbcc6;
-			}
+		&__inp {
+			flex-grow: 1;
+		}
+		&-choice {
+			margin-bottom: 2rem;
 		}
 	}
+}
+::v-deep .el-input--prefix .el-input__inner {
+	border: 0;
+	border-bottom: 1px solid #999999;
+	font-size: 16px;
+	outline: none;
+	border-radius: 0;
+	padding: 0;
+}
+::v-deep .el-date-editor {
+	width: 100%;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+::v-deep .el-date-editor.el-input {
+	width: auto;
+}
+::v-deep .el-icon-date::before {
+	content: "\e6df";
+}
+::v-deep .el-input__prefix {
+	position: static;
+	cursor: pointer;
+	font-size: 22px;
+	margin-left: 15px;
+}
+.editdo {
+	width: 48px;
+	text-align: center;
+	border-radius: 2em;
+	font-size: 12px;
+	height: 24px;
+	line-height: 22px;
+	color: #fff;
+	border: 1px solid transparent;
+	background-color: rgba(0, 0, 0, 0.2);
+	cursor: default;
+	&--can {
+		cursor: pointer;
+		color: #3dbcc6;
+		border-color: #3dbcc6;
+		background-color: #fff;
+		transition: all 0.2s;
+		&:hover {
+			color: #fff;
+			background-color: #3dbcc6;
+		}
+	}
+}
+.house-info {
+	font-size: 12px;
+	display: flex;
+	&__img {
+		flex-shrink: 0;
+		display: block;
+		height: 91px;
+		width: 137px;
+		img {
+			width: 100%;
+			height: 100%;
+		}
+	}
+	&__d {
+		margin-left: 15px;
+	}
+	&__t {
+		display: inline-block;
+		width: 100px;
+		color: #606266;
+		text-overflow: ellipsis;
+		overflow: hidden;
+		white-space: nowrap;
+		&:hover {
+			color: #3dbcc6;
+		}
+	}
+}
 </style>

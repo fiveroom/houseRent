@@ -52,24 +52,28 @@
 					<el-table-column label="操作" width="350px">
 						<template slot-scope="scope">
 							<div class="user-do">
-								<div class="user-do--base user-do--ok" @click="downFile(scope.row.Con_path)">下载合同</div>
-								<router-link :to="`/userDetail/contractDetail?con_id${scope.row.Con_id}`" class="user-do--base user-do--ok">查看详情</router-link>
 								<div
-									@click="canvEvent(scope.row.Con_isSigned, scope.row.Con_id)"
-									:class="['user-do--base', /N/.test(scope.row.Con_isSigned)?'user-do--ok':'user-do--no']"
-								>上传签名</div>
-								<router-link
 									class="user-do--base user-do--ok"
-									:to="`/userDetail/myOrder?Con_id=${scope.row.Con_id}`"
-								>查看订单</router-link>
+									@click="downFile(scope.row.Con_path)"
+								>{{scope.row.active?"下载合同":'下载模板'}}</div>
+								<div
+									@click="conDetialInfo(scope.row.Con_path)"
+									class="user-do--base user-do--ok"
+								>{{scope.row.active?"查看详情":'查看模板'}}</div>
+								<div
+									@click="canvEvent(scope.row.active, scope.row.Con_id)"
+									:class="['user-do--base', scope.row.active?'user-do--no':'user-do--ok']"
+								>上传签名</div>
+								<div
+									:class="['user-do--base',scope.row.active?'user-do--ok':'user-do--no']"
+									@click="showMyOrder(scope.row.active, scope.row.Con_id, scope.row.House_id)"
+								>查看订单</div>
+								<!-- :to="`/userDetail/myOrder?Con_id=${scope.row.Con_id}`" -->
 							</div>
 						</template>
 					</el-table-column>
 				</el-table>
 			</div>
-			<el-dialog :visible.sync="showConImage">
-				<img width="100%" :src="showConImageUrl" alt />
-			</el-dialog>
 			<el-dialog
 				:visible.sync="writeName"
 				ref="myWrite"
@@ -102,13 +106,13 @@
 			let avator = require("@/assets/avator.jpg");
 			return {
 				avator,
-				showConImage: false,
-				showConImageUrl: null,
 				contractList: [],
 				writeName: false,
 				cavMouseDown: false,
 				ctx: null,
-				currConId: null
+				currConId: null,
+				currConFielSrc: null,
+				showConFIle: true
 			};
 		},
 		computed: {
@@ -132,31 +136,32 @@
 			}
 		},
 		methods: {
+			// 获取合同
 			getCtractIn() {
-				// 获取合同
 				this.$myLoadding.open(this.$refs.contract);
 				queryCtractIn({ user_id: this.userId, noLoading: true }).then(
 					res => {
+						if (res.status) {
+							res.data.forEach(item => {
+								if (/N/.test(item.Con_isSigned)) {
+									item.active = false;
+								} else {
+									item.active = true;
+								}
+							});
+						}
 						this.contractList = res.data;
 						this.$myLoadding.hide();
 					}
 				);
 			},
-			// 展示图片
-			showBig(url) {
-				this.showConImageUrl = url;
-				this.showConImage = true;
-			},
-			downloadIamge(url) {
-				console.log(url);
-			},
+			// 下载合同
 			downFile(fileSrc, num) {
-				// this.createIframe(imgSrc);
-				window.open(fileSrc)
+				window.open(fileSrc);
 			},
 			// 签名
 			canvEvent(status, id) {
-				if (/N/.test(status)) {
+				if (!status) {
 					this.writeName = true;
 					this.currConId = id;
 					setTimeout(() => {
@@ -198,8 +203,9 @@
 				}
 				return new Blob([u8arr], { type: mime });
 			},
+			// 签名上传
 			upToContract() {
-				this.$myLoadding.open("", "合同上传中", true);
+				this.$myLoadding.open("", "合同签名合成中", true);
 				let dataUrl = this.$refs.mycanvas.toDataURL();
 				this.$refs.mycanvas.toBlob(blobObj => {
 					let formData = new FormData();
@@ -226,20 +232,50 @@
 					});
 				});
 			},
+			// 关闭写字板
 			closeWriteName(done) {
 				this.writeName = false;
 				this.ctx.clearRect(0, 0, 500, 300);
 				done();
 			},
-			getTwo(value){
-				return `${value}`.padStart(2, '0');
+			// 时间格式化
+			getTwo(value) {
+				return `${value}`.padStart(2, "0");
 			},
+			// 时间格式化
 			getTimeCh(value) {
 				let date = new Date(value);
-				return `${date.getFullYear()}-${this.getTwo(date.getMonth() + 1)}-${this.getTwo(date.getDate())}`;
+				return `${date.getFullYear()}-${this.getTwo(
+					date.getMonth() + 1
+				)}-${this.getTwo(date.getDate())}`;
 			},
-			lookDetailCont(){
-
+			lookDetailCont() {},
+			// 合同详情查看
+			conDetialInfo(fileUrl) {
+				let hint = {
+					duration: 1500,
+					title: "合同",
+					message: "合同格式有误请联系管理员,可在订单中查看"
+				};
+				if (fileUrl) {
+					if (["docx", "pdf"].includes(fileUrl.split(".").pop())) {
+						window.open(
+							`https://view.officeapps.live.com/op/view.aspx?src=${fileUrl}`
+						);
+					} else {
+						this.$notify.error(hint);
+					}
+				} else {
+					this.$notify.error(hint);
+				}
+			},
+			// 查看订单
+			showMyOrder(status, con_id, house_id) {
+				if (status) {
+					this.$router.push(
+						`/userDetail/myOrder?con_id=${con_id}&house_id=${house_id}`
+					);
+				}
 			}
 		},
 		mounted() {
@@ -267,7 +303,7 @@
 				}
 			},
 			judegStatus(value) {
-				let [type, stu] = value.split('_');
+				let [type, stu] = value.split("_");
 				if (stu == "Y") {
 					return "生效";
 				}
@@ -278,158 +314,161 @@
 </script>
 
 <style lang="scss" scoped>
-	$hoverColor: #00bfc8;
-	$fontLightColor: #3dbcc6;
-	$bacHoerClr: #3dbcc6;
-	$NoHover: #999999;
-	.header {
+$hoverColor: #00bfc8;
+$fontLightColor: #3dbcc6;
+$bacHoerClr: #3dbcc6;
+$NoHover: #999999;
+.header {
+	display: flex;
+	padding: 0 0 4rem 2rem;
+	border-bottom: 1px solid #f1f1f1;
+	&__left {
+		width: 12rem;
+		height: 12rem;
+		border-radius: 50%;
+		border: 0.2rem solid $fontLightColor;
+		overflow: hidden;
+		img {
+			height: 100%;
+			width: 100%;
+		}
+	}
+	&__right {
+		flex-grow: 1;
 		display: flex;
-		padding: 0 0 4rem 2rem;
-		border-bottom: 1px solid #f1f1f1;
-		&__left {
-			width: 12rem;
-			height: 12rem;
-			border-radius: 50%;
-			border: 0.2rem solid $fontLightColor;
-			overflow: hidden;
-			img {
-				height: 100%;
-				width: 100%;
-			}
+		padding: 20px 0 0 40px;
+		justify-content: space-between;
+		&--name {
+			font-size: 2rem;
+			color: #000;
+			margin-bottom: 1rem;
 		}
-		&__right {
-			flex-grow: 1;
-			display: flex;
-			padding: 20px 0 0 40px;
-			justify-content: space-between;
-			&--name {
-				font-size: 2rem;
-				color: #000;
-				margin-bottom: 1rem;
-			}
-			&--hint {
-				color: $NoHover;
-			}
-			&__next {
-				font-size: 1.4rem;
-				color: $fontLightColor;
-				a {
-					color: $fontLightColor;
-				}
-			}
-		}
-	}
-	.contract-box {
-		position: relative;
-	}
-	.contract {
-		&-title {
-			padding: 3rem 0 2.4rem;
-			font-size: 1.8rem;
-			line-height: 2.1rem;
-			color: #333;
-			span {
-				margin-left: 1.4rem;
-			}
-		}
-		&--have {
-			border-bottom: 1px solid #f1f1f1;
-		}
-		&--no {
-			height: 200px;
-			display: flex;
-			justify-content: center;
-			align-items: center;
-			flex-direction: column;
-		}
-	}
-	.contract--no {
-		&__title {
-			font-size: 16px;
-			color: #999;
+		&--hint {
+			color: $NoHover;
 		}
 		&__next {
-			display: block;
-			background-color: #fff;
-			min-width: 180px;
-			width: auto;
-			height: 50px;
-			font-size: 1.8rem;
-			line-height: 4.6rem;
-			text-align: center;
-			border: 2px solid #3dbcc6;
-			border-radius: 33px;
-			box-sizing: border-box;
-			color: $hoverColor;
-			padding: 0 30px;
-			transition: all 0.2s;
-			margin-top: 2rem;
-			&:hover {
-				background-color: $bacHoerClr;
-				color: #fff;
+			font-size: 1.4rem;
+			color: $fontLightColor;
+			a {
+				color: $fontLightColor;
 			}
 		}
 	}
-	.user-do {
+}
+.contract-box {
+	position: relative;
+}
+.contract {
+	&-title {
+		padding: 3rem 0 2.4rem;
+		font-size: 1.8rem;
+		line-height: 2.1rem;
+		color: #333;
+		span {
+			margin-left: 1.4rem;
+		}
+	}
+	&--have {
+		border-bottom: 1px solid #f1f1f1;
+	}
+	&--no {
+		height: 200px;
 		display: flex;
+		justify-content: center;
 		align-items: center;
-		cursor: pointer;
-		&--base {
-			font-size: 12px;
-			display: block;
-			flex-shrink: 0;
-			transition: all 0.3s;
-			border: 1px solid #3dbcc6;
-			padding: 2px 10px;
-			border-radius: 2rem;
-			color: #606266;
-		}
-		&--ok {
-			&:hover {
-				color: #fff;
-				background-color: #3dbcc6;
-			}
-			&:active {
-				background-color: #2fa4ad;
-			}
-		}
-		div {
-			margin-right: 10px;
-		}
-		&--no {
-			background-color: rgba(0, 0, 0, 0.1);
-			border-color: #606266;
+		flex-direction: column;
+	}
+}
+.contract--no {
+	&__title {
+		font-size: 16px;
+		color: #999;
+	}
+	&__next {
+		display: block;
+		background-color: #fff;
+		min-width: 180px;
+		width: auto;
+		height: 50px;
+		font-size: 1.8rem;
+		line-height: 4.6rem;
+		text-align: center;
+		border: 2px solid #3dbcc6;
+		border-radius: 33px;
+		box-sizing: border-box;
+		color: $hoverColor;
+		padding: 0 30px;
+		transition: all 0.2s;
+		margin-top: 2rem;
+		&:hover {
+			background-color: $bacHoerClr;
+			color: #fff;
 		}
 	}
+}
+.user-do {
+	display: flex;
+	align-items: center;
+	cursor: pointer;
+	&--base {
+		font-size: 12px;
+		display: block;
+		flex-shrink: 0;
+		transition: all 0.3s;
+		border: 1px solid #3dbcc6;
+		padding: 2px 10px;
+		border-radius: 2rem;
+		color: #00bfc8;
+	}
+	&--ok {
+		&:hover {
+			color: #fff;
+			background-color: #3dbcc6;
+		}
+		&:active {
+			background-color: #2fa4ad;
+		}
+	}
+	div {
+		margin-right: 10px;
+	}
+	&--no {
+		cursor: default;
+		background-color: rgba(0, 0, 0, 0.1);
+		background-color: rgba(0, 0, 0, 0.1);
+		color: #fff;
+		border-color: #dcdee1;;
+	}
+}
 
-	.mywrite {
-		&-box {
+.mywrite {
+	&-box {
+	}
+	&-title {
+		font-size: 30px;
+		font-weight: bold;
+		width: fit-content;
+		margin: 0 auto 20px;
+	}
+	&-con {
+		width: fit-content;
+		flex-shrink: 0;
+		margin: 0 auto;
+		border: 1px solid #dddddd;
+	}
+	&-menu {
+		display: flex;
+		width: fit-content;
+		margin: 20px auto 0;
+		div {
+			width: 100px;
 		}
-		&-title {
-			font-size: 30px;
-			font-weight: bold;
-			width: fit-content;
-			margin: 0 auto 20px;
-		}
-		&-con {
-			width: fit-content;
-			flex-shrink: 0;
-			margin: 0 auto;
-			border: 1px solid #dddddd;
-		}
-		&-menu {
-			display: flex;
-			width: fit-content;
-			margin: 20px auto 0;
-			div {
-				width: 100px;
-			}
-			div:nth-of-type(2) {
-				margin: 0 20px;
-			}
+		div:nth-of-type(2) {
+			margin: 0 20px;
 		}
 	}
-	::v-deep .el-dialog__header {
-		padding: 0;
-	}
+}
+::v-deep .el-dialog__header {
+	padding: 0;
+}
 </style>

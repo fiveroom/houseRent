@@ -82,7 +82,7 @@ const routes = [{
                 // 个人中心
                 name: '个人中心',
                 path: '/userDetail/persCenter',
-                component: PersCenter
+                component: PersCenter,
             },
             {
                 // 我的收藏
@@ -94,7 +94,11 @@ const routes = [{
                 // 资料修改
                 name: '编辑个人资料',
                 path: '/userDetail/editInfo',
-                component: EditPerData
+                component: EditPerData,
+                meta: {
+                    index: 2,
+                    last: true
+                }
             },
             {
                 // 修改手机号
@@ -111,7 +115,9 @@ const routes = [{
             {
                 name: '我的账单',
                 path: '/userDetail/myOrder',
-                component: MyOrder
+                component: MyOrder,
+                // props: true,
+                props: (route) => ({ con_id: route.query.con_id,house_id: route.query.house_id})
             },
             // {
             //     name: '我的合同',

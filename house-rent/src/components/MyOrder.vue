@@ -4,7 +4,8 @@
 			<i class="el-icon-edit-outline"></i>
 			<span>我的订单</span>
 		</header>
-		<div class="house-info">
+
+		<div v-if="orderList.length != 0" class="house-info">
 			<div class="house-info__l">
 				<div class="house-info__cov">
 					<img :src="House.House_coverPic" alt />
@@ -82,7 +83,7 @@
 						<span></span>
 					</div>
 					<div>支付</div>
-				</div> -->
+				</div>-->
 			</div>
 		</section>
 	</section>
@@ -93,6 +94,7 @@
 	import * as userApi from "@/api/user";
 	import { houseDetail } from "@/api/house";
 	export default {
+		props: { con_id: null, house_id: null },
 		data() {
 			return {
 				orderList: [],
@@ -111,7 +113,7 @@
 				userApi
 					.queryOrder({
 						user_id: this.userId,
-						con_id: this.$route.query.Con_id,
+						con_id: this.con_id,
 						noLoading: true
 					})
 					.then(res => {
@@ -155,13 +157,13 @@
 			getHouseInfo() {
 				houseDetail(
 					{
-						house_id: this.$route.query.House_id
+						house_id: this.house_id
 					},
 					res => {
 						if (res.status) {
 							this.HousePicture = res.Data.HousePicture;
 							this.House = res.Data.House;
-							this.Admin = res.Data.Admin;
+							this.Admin = res.Data.Admin || {};
 						}
 					}
 				);
@@ -180,10 +182,12 @@
 						};
 				}
 			},
-			toPayOrder(con_id, payAmount){
-				this.$myLoadding.open(this.$refs.MyOrder, '等待支付中');
-				window.open(`http://192.168.3.5:8888/payController/pay?order_id=${con_id}&payAmount=${payAmount}`, '_self');
-
+			toPayOrder(con_id, payAmount) {
+				this.$myLoadding.open(this.$refs.MyOrder, "等待支付中");
+				window.open(
+					`http://192.168.3.5:8888/payController/pay?order_id=${con_id}&payAmount=${payAmount}`,
+					"_self"
+				);
 			}
 		},
 
@@ -213,165 +217,166 @@
 	};
 </script>
 <style lang="scss" scoped>
-	$hoverColor: #00bfc8;
-	$fontLightColor: #3dbcc6;
-	$bacHoerClr: #3dbcc6;
-	$NoHover: #999999;
-	.header {
-		padding-bottom: 3rem;
-		font-size: 1.8rem;
-		line-height: 2.1rem;
-		border-bottom: 1px solid #f1f1f1;
-		color: #333;
-		span {
-			margin-left: 15px;
-		}
+$hoverColor: #00bfc8;
+$fontLightColor: #3dbcc6;
+$bacHoerClr: #3dbcc6;
+$NoHover: #999999;
+.header {
+	padding-bottom: 3rem;
+	font-size: 1.8rem;
+	line-height: 2.1rem;
+	border-bottom: 1px solid #f1f1f1;
+	color: #333;
+	span {
+		margin-left: 15px;
 	}
-	.house-info {
-		margin-left: 10px;
-		height: 130px;
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		&__cov {
-			width: 150px;
-			height: 90px;
-			background-color: red;
-			img {
-				width: 100%;
-				height: 100%;
-			}
-		}
-		&__l {
-			display: flex;
-		}
-	}
-	.house-detail {
-		margin-left: 16px;
-		display: flex;
-		flex-direction: column;
-		justify-content: space-between;
-		&__t {
-			font-size: 22px;
-			font-weight: bold;
-			cursor: pointer;
-			transition: color 0.3;
-			&:hover {
-				color: rgb(61, 188, 198);
-			}
-		}
-	}
-	.house-price {
-		font-size: 20px;
-		&__pledge {
-			font-size: 16px;
-			color: rgb(102, 102, 102);
-			&--l {
-				margin-left: 10px;
-			}
-		}
-	}
-	.order-box {
-		position: relative;
-	}
-	.order {
-		&--have {
-			border-bottom: 1px solid #f1f1f1;
-		}
-		&--no {
-			height: 200px;
-			display: flex;
-			justify-content: center;
-			align-items: center;
-			flex-direction: column;
-		}
-	}
-	.order--no {
-		&__title {
-			font-size: 16px;
-			color: #999;
-		}
-		&__next {
-			display: block;
-			background-color: #fff;
-			min-width: 180px;
-			width: auto;
-			height: 50px;
-			font-size: 1.8rem;
-			line-height: 4.6rem;
-			text-align: center;
-			border: 2px solid #3dbcc6;
-			border-radius: 33px;
-			box-sizing: border-box;
-			color: $hoverColor;
-			padding: 0 30px;
-			transition: all 0.2s;
-			margin-top: 2rem;
-			&:hover {
-				background-color: $bacHoerClr;
-				color: #fff;
-			}
-		}
-	}
+}
 
-	.admin {
+.house-info {
+	margin-left: 10px;
+	height: 130px;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	&__cov {
+		width: 150px;
+		height: 90px;
+		background-color: red;
+		img {
+			width: 100%;
+			height: 100%;
+		}
+	}
+	&__l {
 		display: flex;
-		margin-left: 10px;
-		&-info {
-			padding: 12px 12px 0;
-			p:first-of-type {
-				font-size: 18px;
-				color: #000;
-			}
-			p:last-of-type {
-				margin-top: 4px;
-				font-size: 15px;
-				color: #9f9f9f;
-			}
-		}
-		&-avator {
-			width: 60px;
-			height: 60px;
-			img {
-				border-radius: 50%;
-				overflow: hidden;
-				height: 100%;
-				width: 100%;
-			}
-		}
-		&-see {
-			margin-bottom: 20px;
-		}
 	}
-	.hint-status {
-		display: flex;
-		align-items: center;
-		&__icon {
-			height: 20px;
-			line-height: 20px;
-			width: 34px;
-			text-align: center;
-			border-radius: 2em;
-			font-size: 16px;
-			color: #fff;
-			margin-left: 10px;
-			i {
-				font-weight: bolder;
-			}
-			background-color: rgba(0, 0, 0, 0.2);
-			&--succuss {
-				background-color: rgb(103, 194, 58);
-			}
-		}
-	}
-	.table-order {
-		border: 1px solid #f1f1f1;
-		padding: 10px;
-	}
-	.topay {
-		color: #3dbcc6;
+}
+.house-detail {
+	margin-left: 16px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	&__t {
+		font-size: 22px;
+		font-weight: bold;
 		cursor: pointer;
+		transition: color 0.3;
+		&:hover {
+			color: rgb(61, 188, 198);
+		}
 	}
-	.many-item {
+}
+.house-price {
+	font-size: 20px;
+	&__pledge {
+		font-size: 16px;
+		color: rgb(102, 102, 102);
+		&--l {
+			margin-left: 10px;
+		}
 	}
+}
+.order-box {
+	position: relative;
+}
+.order {
+	&--have {
+		border-bottom: 1px solid #f1f1f1;
+	}
+	&--no {
+		height: 200px;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		flex-direction: column;
+	}
+}
+.order--no {
+	&__title {
+		font-size: 16px;
+		color: #999;
+	}
+	&__next {
+		display: block;
+		background-color: #fff;
+		min-width: 180px;
+		width: auto;
+		height: 50px;
+		font-size: 1.8rem;
+		line-height: 4.6rem;
+		text-align: center;
+		border: 2px solid #3dbcc6;
+		border-radius: 33px;
+		box-sizing: border-box;
+		color: $hoverColor;
+		padding: 0 30px;
+		transition: all 0.2s;
+		margin-top: 2rem;
+		&:hover {
+			background-color: $bacHoerClr;
+			color: #fff;
+		}
+	}
+}
+
+.admin {
+	display: flex;
+	margin-left: 10px;
+	&-info {
+		padding: 12px 12px 0;
+		p:first-of-type {
+			font-size: 18px;
+			color: #000;
+		}
+		p:last-of-type {
+			margin-top: 4px;
+			font-size: 15px;
+			color: #9f9f9f;
+		}
+	}
+	&-avator {
+		width: 60px;
+		height: 60px;
+		img {
+			border-radius: 50%;
+			overflow: hidden;
+			height: 100%;
+			width: 100%;
+		}
+	}
+	&-see {
+		margin-bottom: 20px;
+	}
+}
+.hint-status {
+	display: flex;
+	align-items: center;
+	&__icon {
+		height: 20px;
+		line-height: 20px;
+		width: 34px;
+		text-align: center;
+		border-radius: 2em;
+		font-size: 16px;
+		color: #fff;
+		margin-left: 10px;
+		i {
+			font-weight: bolder;
+		}
+		background-color: rgba(0, 0, 0, 0.2);
+		&--succuss {
+			background-color: rgb(103, 194, 58);
+		}
+	}
+}
+.table-order {
+	border: 1px solid #f1f1f1;
+	padding: 10px;
+}
+.topay {
+	color: #3dbcc6;
+	cursor: pointer;
+}
+.many-item {
+}
 </style>

@@ -6,7 +6,10 @@
 				<span>合同详情</span>
 			</div>
 		</header>
-		<section></section>
+		<section>
+			<!-- <iframe :src=""></iframe> -->
+			<!-- < :src="'https://docs.google.com/viewer?url="fileurl"></> -->
+		</section>
 	</div>
 </template>
 

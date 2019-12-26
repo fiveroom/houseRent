@@ -183,7 +183,7 @@
 						</div>
 						<div class="subfrom">
 							<div class="subfrom-div-choice">
-								<el-date-picker :clearable="false" v-model="subDate" type="date" placeholder="选择日期"></el-date-picker>
+								<el-date-picker :clearable="false" v-model="subDate" type="datetime" placeholder="选择日期"></el-date-picker>
 							</div>
 							<div class="subfrom-div">
 								<MyInput
@@ -316,9 +316,6 @@
 			}
 		},
 		mixins: [mixin],
-		beforeRouteEnter(to, from, next) {
-			next();
-		},
 		methods: {
 			getHouseDetail() {
 				houseApi.houseDetail(
@@ -338,7 +335,6 @@
 									this.houseCollectNumM = res.data;
 								});
 						}
-						// console.log(res, "房子详情");
 					}
 				);
 			},
@@ -349,6 +345,7 @@
 					this.subscribeEdit = true;
 				}
 			},
+			// 提交约看
 			confimSub() {
 				this.subfromStatus =
 					this.userTel.includes("****") || this.userPhoneStatus;
@@ -365,6 +362,7 @@
 							Bs_content: this.userRemark || "无"
 						})
 					};
+					console.log(this.subDate);
 					userApi.addBespeak(obj).then(res => {
 						let hint = {
 							title: "预约",
