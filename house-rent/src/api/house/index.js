@@ -10,7 +10,7 @@ export const searchHouse = (data, call) => {
 }
 
 // 根据标题搜索房屋
-export const queryByT = async (data) => {
+export const queryByT = async(data) => {
     return await axios.post('/UserMgeSvr.assx/queryHouseByTitle', data).then(res => {
         if (res.data.Code === "200") {
             return { status: true, data: res.data.Data._Items };
@@ -42,7 +42,7 @@ export const houseDetail = (data, call) => {
 // {
 //    house_id: '22'
 // }
-export const queryHouseCollectAmount = async (data) => {
+export const queryHouseCollectAmount = async(data) => {
     return await axios.post('/UserMgeSvr.assx/queryHouseCollectAmount', data).then(res => {
         if (res.data.Code === "200") {
             return { num: res.data.Data }
@@ -74,17 +74,17 @@ export const queryHotH = () => {
  * conPic 签名
  */
 export const upConName = data => {
-    return axios.post('/contract/updateConPic', data, {
+    return axios.post('/contract/upLoadWord', data, {
         headers: {
             "Content-Type": "multipart/form-data"
         }
     }).then(res => {
         console.log(res, '上传合同');
-        if (res.data.Code === "200") {
-            return { status: true, data: res.data.Data }
+        if (res.data.code === "200") {
+            return { status: true, msg: '合同上传成功' }
         }
-        return { status: false, data: [] }
+        return { status: false, msg: '合同上传失败' }
     }).catch(err => {
-        return { status: false, data: [] }
+        return { status: false, msg: '合同上传失败' }
     })
 }

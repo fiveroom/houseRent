@@ -15,7 +15,7 @@
 			let loaddingGif = require('@/assets/img/loadding.gif');
 			return {
 				show: false,
-				text: "拼命加载中",
+				text: "正在加载中",
 				el: false,
 				loaddingGif
 			};

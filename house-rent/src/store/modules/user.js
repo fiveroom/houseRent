@@ -63,6 +63,7 @@ const mutations = {
         sessionStorage.clear()
     },
     [types.UP_AVATOR](state, url) {
+        console.log(url, '=============');
         state.userAvater = url
     }
 }

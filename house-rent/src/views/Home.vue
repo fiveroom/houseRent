@@ -130,7 +130,7 @@
 				<div class="recom-body">
 					<div class="recom-body__l">
 						<ul class="recom-body__c" :style="{transform: `translateX(${-857*houseRecomChoice}px)`}">
-							<li v-for="item in imgList" :key="item.House_id">
+							<li v-for="item in hotHouses" :key="item.House_id">
 								<img :src="item.House_coverPic" alt />
 							</li>
 						</ul>
@@ -264,24 +264,24 @@
 				choiceitem,
 				imgList: [
 					{
-						House_coverPic: require("../assets/img/xmad_1552553827586_JWbdT.jpg"),
-						House_id: 1
+						House_coverPic:require("@/assets/img/house1.jpg"),
+						House_id: 12
 					},
 					{
-						House_coverPic: require("../assets/img/xmad_1562317906034_yYDfN.jpg"),
-						House_id: 2
+						House_coverPic: require("@/assets/img/house2.jpg"),
+						House_id: 11
 					},
 					{
-						House_coverPic: require("../assets/img/xmad_15621496998423_jWLlF.jpg"),
-						House_id: 3
+						House_coverPic: require("@/assets/img/house1.jpg"),
+						House_id: 60
 					},
 					{
-						House_coverPic: require("../assets/img/xmad_15623260229891_iSOkA.jpg"),
-						House_id: 4
+						House_coverPic: require("@/assets/img/house2.jpg"),
+						House_id: 59
 					},
 					{
-						House_coverPic: require("../assets/img/xmad_15625509375452_mExAO.jpg"),
-						House_id: 5
+						House_coverPic: require("@/assets/img/house1.jpg"),
+						House_id: 13
 					}
 				],
 				showIndex: 0, // 上方轮播索引
@@ -349,10 +349,10 @@
 			autoLunBo() {
 				this.timerS = setInterval(() => {
 					this.showIndex++;
-					if (this.showIndex == this.imgList.length - 1) {
+					if (this.showIndex == this.hotHouses.length - 1) {
 						window.clearInterval(this.timerS);
 					}
-				}, 1500);
+				}, 2000);
 			},
 			changIndexTop(index){
 				this.showIndex = index;

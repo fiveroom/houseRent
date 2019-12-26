@@ -38,7 +38,9 @@
 							<div
 								class="hover-div__box"
 								:style="{'backgroundImage': `url(${require('@/assets/img/box.png')})`}"
-							></div>
+							>
+								<img :src="weixin" alt />
+							</div>
 						</div>
 					</li>
 				</ul>
@@ -54,122 +56,129 @@
 </template>
 
 <script>
-	export default {};
+	export default {
+		data() {
+			let weixin = require("@/assets/house.jpg");
+			return {
+				weixin
+			};
+		}
+	};
 </script>
 
 <style lang="scss" scoped>
-.footer {
-	margin-top: 5rem;
-	padding: 4rem 0 5.4rem 0;
-	background-color: rgb(33, 33, 33);
-	.container {
-		width: 116.8rem;
-		margin: 0 auto;
+	.footer {
+		margin-top: 5rem;
+		padding: 4rem 0 5.4rem 0;
+		background-color: rgb(33, 33, 33);
+		.container {
+			width: 116.8rem;
+			margin: 0 auto;
+		}
 	}
-}
-.foot-top {
-	display: flex;
-	justify-content: space-between;
-	margin-bottom: 2.5rem;
-	&__dl {
+	.foot-top {
 		display: flex;
-		dl {
-			margin-right: 6rem;
-			&:last-of-type {
-				margin-right: 0;
+		justify-content: space-between;
+		margin-bottom: 2.5rem;
+		&__dl {
+			display: flex;
+			dl {
+				margin-right: 6rem;
+				&:last-of-type {
+					margin-right: 0;
+				}
+			}
+			dt {
+				display: block;
+				color: #aeaeae;
+				padding: 0 0 45px;
+				font-size: 20px;
+			}
+			dd {
+				color: #fff;
+				font-size: 22px;
+				white-space: nowrap;
+				font-weight: 700;
 			}
 		}
-		dt {
-			display: block;
+		&__ul {
+			li {
+				display: flex;
+				height: 100%;
+				flex-direction: column;
+				justify-content: flex-end;
+			}
+		}
+	}
+	.mini-img {
+		position: relative;
+		width: 46px;
+		height: 46px;
+		margin: 0 auto 5px;
+		&__name {
 			color: #aeaeae;
-			padding: 0 0 45px;
-			font-size: 20px;
+			text-align: center;
+			font-size: 14px;
 		}
-		dd {
-			color: #fff;
-			font-size: 22px;
-			white-space: nowrap;
-			font-weight: 700;
-		}
-	}
-	&__ul {
-		li {
-			display: flex;
-			height: 100%;
-			flex-direction: column;
-			justify-content: flex-end;
-		}
-	}
-}
-.mini-img {
-	position: relative;
-	width: 46px;
-	height: 46px;
-	margin: 0 auto 5px;
-	&__name {
-		color: #aeaeae;
-		text-align: center;
-		font-size: 14px;
-	}
-	&--hid {
-		transition: opacity 0.3s;
-		position: absolute;
-		width: 100%;
-		height: 100%;
-		left: 0;
-		top: 0;
-		opacity: 1;
-	}
-	& > div:first-of-type {
-		z-index: 1;
-	}
-	& > div:last-of-type {
-		z-index: 2;
-		opacity: 0;
-	}
-}
-.hover-div {
-	cursor: pointer;
-	position: relative;
-	transition: opacity 0.3s;
-	&__box {
-		position: absolute;
-		width: 115px;
-		height: 120px;
-		background-repeat: no-repeat;
-		left: 50%;
-		transform: translateX(-50%);
-		top: -126px;
-		opacity: 0;
-		transition: opacity 0.3s;
-		img {
+		&--hid {
+			transition: opacity 0.3s;
+			position: absolute;
 			width: 100%;
 			height: 100%;
+			left: 0;
+			top: 0;
+			opacity: 1;
+		}
+		& > div:first-of-type {
+			z-index: 1;
+		}
+		& > div:last-of-type {
+			z-index: 2;
+			opacity: 0;
 		}
 	}
-	&:hover > .mini-img > div:last-of-type,
-	&:hover > &__box {
-		opacity: 1;
+	.hover-div {
+		cursor: pointer;
+		position: relative;
+		transition: opacity 0.3s;
+		&__box {
+			position: absolute;
+			width: 115px;
+			height: 120px;
+			background-repeat: no-repeat;
+			left: 50%;
+			transform: translateX(-50%);
+			top: -126px;
+			opacity: 0;
+			transition: opacity 0.3s;
+			img {
+				width: 100%;
+				height: 100%;
+			}
+		}
+		&:hover > .mini-img > div:last-of-type,
+		&:hover > &__box {
+			opacity: 1;
+		}
+		&:hover > .mini-img__name {
+			color: #fff;
+		}
 	}
-	&:hover > .mini-img__name {
-		color: #fff;
+	.foot-bot {
+		display: flex;
+		align-items: center;
+		padding-top: 2rem;
+		& > div:first-of-type {
+			height: 32px;
+			font-size: 32px;
+			color: #fff;
+			line-height: 32px;
+		}
+		& > div:last-of-type {
+			margin-left: 2rem;
+			color: #fff;
+			font-size: 12px;
+		}
+		border-top: 1px dashed rgba(255, 255, 255, 0.1);
 	}
-}
-.foot-bot {
-	display: flex;
-    align-items: center;
-    padding-top: 2rem;
-	& > div:first-of-type {
-        height: 32px;
-        font-size: 32px;
-		color: #fff;
-		line-height: 32px;
-    }
-    & > div:last-of-type{
-        margin-left: 2rem;
-        color: #fff;
-        font-size: 12px;
-    }
-	border-top: 1px dashed rgba(255, 255, 255, 0.1);
-}
 </style>

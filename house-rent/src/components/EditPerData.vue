@@ -18,7 +18,7 @@
 			</el-upload>
 			<div class="edit-body__form">
 				<MyInput placeholder="账号" lable="userName" v-model="userName" :readonly="true" />
-				<div class="form-gender">
+				<!-- <div class="form-gender">
 					<p class="form-gender__title">性别</p>
 					<div class="form-gender__check">
 						<label>
@@ -52,7 +52,7 @@
 							<span>保密</span>
 						</label>
 					</div>
-				</div>
+				</div>-->
 				<div class="form-tonext">
 					<MyInput placeholder="手机号" lable="telDeal" v-model="telDeal" :readonly="true" />
 					<router-link class="form-tonext--to" to="/userDetail/editPhone">更改手机号</router-link>
@@ -98,10 +98,11 @@
 				let fromData = new FormData();
 				fromData.append("user_id", this.userId);
 				fromData.append("file", this.imgFile);
-				this.$myLoadding.open(this.$refs.preData);
+				this.$myLoadding.open(this.$refs.preData, '头像修改中');
 				uploadAvator(fromData).then(res => {
 					let hintObj = { ...this.ntfObj, message: res.msg };
 					if (res.status) {
+						console.log(res.url, "-----------------");
 						this.upAvator(res.url);
 						this.$notify.success(hintObj);
 						this.statusEdit = false;
@@ -129,6 +130,24 @@
 						...this.ntfObj
 					});
 				}
+			}
+		},
+		beforeRouteLeave(to, from, next) {
+			if (this.statusEdit) {
+				this.$msgBox
+					.confirm("是否保存修改?", "资料修改", {
+						confirmButtonText: "确认",
+						cancelButtonText: "放弃"
+					})
+					.then(() => {
+						this.updateAvator();
+						next()
+					})
+					.catch(() => {
+						next()
+					});
+			} else {
+				next()
 			}
 		}
 	};

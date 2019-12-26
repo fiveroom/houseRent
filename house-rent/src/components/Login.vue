@@ -116,7 +116,6 @@
 						if (window.history.length <= 2) {
 							this.$router.push({ name: "home" });
 						} else {
-							console.log('asdfasdfasdf---------');
 							this.$router.go(-1);
 						}
 					} else {
@@ -128,14 +127,14 @@
 			loginCode() {
 				let boj = { telephone: this.userPhone, code: this.code };
 				logByCode(boj).then(res => {
+					console.log(res);
 					let objHint = {
 						duration: 1500,
 						message: res.msg,
 						title: "登录"
 					};
 					if (res.status) {
-						this.$notify.success(objHint);
-						this.saveUser()
+						this.saveUser(res.data)
 						if (window.history.length <= 2) {
 							this.$router.push({ name: "home" });
 						} else {

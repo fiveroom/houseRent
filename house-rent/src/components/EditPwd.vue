@@ -38,7 +38,7 @@
 				<Mybutton
 					@clickTo="getResCode"
 					class="code__get"
-					:disabled="!affirmPwdStatus || !affirmPwd"
+					:disabled="!pwdStatus || !affirmPwdStatus"
 					:authCode="true"
 				/>
 			</div>
@@ -52,6 +52,8 @@
 </template>
 
 <script>
+	import { editAuthCode, upPwdUser } from "@/api/user";
+	import { mapGetters } from "vuex";
 	export default {
 		data() {
 			let pwdRex = {
@@ -70,54 +72,92 @@
 				allowEdit: true
 			};
 		},
+		computed: {
+			...mapGetters(["tel"])
+		},
 		methods: {
 			editPwd() {
-                console.log("编辑");
-                this.allowEdit = !this.allowEdit;
+				console.log("编辑");
+				this.allowEdit = !this.allowEdit;
 				if (this.affirmPwdStatus && this.pwdStatus && this.codeStatus) {
-					console.log("去修改");
+					let obj = {
+						telephone: this.tel,
+						code: this.code,
+						noLoading: true,
+						password: this.pwd
+					};
+					upPwdUser(obj).then(res => {
+						console.log(res);
+						if (res.status) {
+							this.$router.push("/");
+						} else {
+							this.$notify({
+								title: "密码修改",
+								duration: 1500,
+								message: res.msg,
+								showClose: false
+							});
+						}
+					});
 				}
 			},
 			getResCode() {
-				
+				if (this.affirmPwdStatus && this.pwdStatus) {
+					console.log("发送验证码");
+
+					let obj = { telephone: this.tel, noLoading: true };
+					editAuthCode(obj).then(res => {
+						let hint = {
+							title: "密码修改",
+							duration: 1500,
+							message: res.msg,
+							showClose: false
+						};
+						if (res.status) {
+							this.$notify.success(hint);
+						} else {
+							this.$notify.error(hint);
+						}
+					});
+				}
 			}
 		}
 	};
 </script>
 
 <style lang="scss" scoped>
-.header {
-	padding-bottom: 3rem;
-	font-size: 1.8rem;
-	line-height: 2.1rem;
-	border-bottom: 1px solid #f1f1f1;
-	color: #333;
-	span {
-		margin-left: 15px;
-	}
-}
-.form {
-	width: 350px;
-	margin: 70px auto 0;
-	&--bot {
-		margin-bottom: 2rem;
-	}
-}
-.code {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	&__input {
-		width: 17.4rem;
-		text-align: center;
-		input {
-			font-size: 2rem;
+	.header {
+		padding-bottom: 3rem;
+		font-size: 1.8rem;
+		line-height: 2.1rem;
+		border-bottom: 1px solid #f1f1f1;
+		color: #333;
+		span {
+			margin-left: 15px;
 		}
 	}
-	&__get {
-		color: #fff;
-		width: 124px;
-		margin-bottom: 9px;
+	.form {
+		width: 350px;
+		margin: 70px auto 0;
+		&--bot {
+			margin-bottom: 2rem;
+		}
 	}
-}
+	.code {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		&__input {
+			width: 17.4rem;
+			text-align: center;
+			input {
+				font-size: 2rem;
+			}
+		}
+		&__get {
+			color: #fff;
+			width: 124px;
+			margin-bottom: 9px;
+		}
+	}
 </style>

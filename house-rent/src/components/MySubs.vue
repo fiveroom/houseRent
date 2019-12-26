@@ -19,12 +19,12 @@
 					@selection-change="(value)=>{checkSubs = value}"
 				>
 					<el-table-column type="selection"></el-table-column>
-					<el-table-column label="预约时间" width="160px">
+					<el-table-column label="预约时间" width="110px">
 						<template slot-scope="scope">
-							<span>{{scope.row.bs_time | getTime}}</span>
+							<span>{{getTimeCh(scope.row.bs_time)}}</span>
 						</template>
 					</el-table-column>
-					<el-table-column label="预约房源">
+					<el-table-column label="预约房源" width="280px">
 						<template slot-scope="scope">
 							<div class="house-info">
 								<router-link class="house-info__img" :to="`/hdetail?House_id=${scope.row.House_id}`">
@@ -43,7 +43,7 @@
 							</div>
 						</template>
 					</el-table-column>
-					<el-table-column label="处理" width="130">
+					<el-table-column label="处理" width="110">
 						<template slot-scope="scope">
 							<div class="hint-status">
 								<span>{{scope.row.bs_isDeal == 'N'?'未处理':'已处理'}}</span>
@@ -56,17 +56,17 @@
 							</div>
 						</template>
 					</el-table-column>
-					<el-table-column label="联系人" width="150">
+					<el-table-column label="工作人员电话" width="120">
 						<template slot-scope="scope">
 							<span>{{scope.row.admin_tel}}</span>
 						</template>
 					</el-table-column>
-					<!-- <el-table-column label="备注" width="150">
+					<el-table-column label="备注" width="150">
 						<template slot-scope="scope">
-							<span>{{scope.row.admin_tel}}</span>
+							<span>{{scope.row.bs_content}}</span>
 						</template>
-					</el-table-column> -->
-					<el-table-column label="操作" width="100">
+					</el-table-column>
+					<el-table-column label="操作" width="70">
 						<template slot-scope="scope">
 							<div
 								:class="['editdo',scope.row.bs_isDeal == 'N'? 'editdo--can':'']"
@@ -76,9 +76,14 @@
 					</el-table-column>
 				</el-table>
 				<div class="eidt-mycol">
+					<select name v-model="typeSubs" class="edit-mycol-choice">
+						<option value="0">所有</option>
+						<option value="1">已处理</option>
+						<option value="2">未处理</option>
+					</select>
 					<div class="eidt-mycol__do">
 						<div @click="$refs.collTable.clearSelection()">取消</div>
-						<div @click="removeColl">移除已处理预约</div>
+						<div @click="removeColl">移除预约</div>
 					</div>
 				</div>
 			</li>
@@ -88,7 +93,7 @@
 				<el-date-picker :clearable="false" v-model="subDate" type="datetime" placeholder="选择日期"></el-date-picker>
 			</div>
 			<span slot="footer" class="dialog-footer">
-				<el-button @click="editSbus = false">取 消</el-button>
+				<el-button @click="editSbus = false">取消</el-button>
 				<el-button type="primary" @click="editSubsDo();editSbus = false">确 定</el-button>
 			</span>
 		</el-dialog>
@@ -137,7 +142,8 @@
 				editSbusId: null,
 				editSbus: false,
 				subDate: null, // 新的时间
-				oldDate: null // 旧的时间
+				oldDate: null, // 旧的时间
+				typeSubs: "0"
 			};
 		},
 		computed: {
@@ -155,8 +161,21 @@
 				this.arrSubs = [];
 				this.$myLoadding.open(this.$refs.subsBox);
 				userApi.queryBespeak(obj).then(res => {
-					this.arrSubs = res.data;
-					console.log(res);
+					if (this.typeSubs == "0") {
+						this.arrSubs = res.data;
+					} else if (this.typeSubs == "1") {
+						console.log(res.data, "------");
+						this.arrSubs = res.data.filter(item => {
+							return item.bs_isDeal == "Y";
+						});
+					} else {
+						this.arrSubs = res.data.filter(item => {
+							return item.bs_isDeal == "N";
+						});
+					}
+					this.arrSubs.sort((a, b) => {
+						return  new Date(b.bs_time) - new Date(a.bs_time);
+					});
 					this.$myLoadding.hide();
 				});
 			},
@@ -175,27 +194,36 @@
 					}
 				});
 				this.$myLoadding.hide();
+				this.querySubs();
 			},
 			removeColl() {
-				if (
-					this.checkSubs.some(item => {
-						return item.bs_isDeal == "N";
-					})
-				) {
-					this.$notify.warning({
-						...this.hintMs,
-						message: "不能移除未处理的预约消息"
-					});
-				} else if (this.checkSubs.length == 0) {
+				if (this.checkSubs.length == 0) {
 					this.$notify.warning({
 						...this.hintMs,
 						message: "未选择预约消息"
 					});
+				} else if(this.checkSubs.some(item=>{return item.bs_isDeal == 'N'})) {
+					this.$msgBox({
+						title: "预约移除提示",
+						message: "当前选择中存在未处理预约，若移除将不再处理。是否继续？",
+						showCancelButton: true,
+						confirmButtonText: "继续",
+						cancelButtonText: "取消",
+						beforeClose: (action, instance, done) => {
+							if (action === "confirm") {
+								done()
+								this.delMySubs();
+							} else {
+								done();
+							}
+						}
+					}).then(() => {});
+					// this.delMySubs();
 				} else {
-					this.delMySubs();
+					this.delMySubs()
 				}
 			},
-			handleClose() {
+			handleClose(done) {
 				if (this.oldDate != this.subDate) {
 					this.$msgBox({
 						title: "提示",
@@ -216,6 +244,7 @@
 						done();
 					});
 				}
+				done();
 			},
 			editSubsDo() {
 				let now = new Date();
@@ -249,21 +278,28 @@
 				}
 			},
 			openDiag(row) {
-				this.editSbusId = row.bs_id;
-				this.editSbus = true;
-				this.subDate = row.bs_time;
-				this.oldDate = row.bs_time;
-				this.currBsId = row.bs_id;
+				if (row.bs_isDeal == "N") {
+					this.editSbusId = row.bs_id;
+					this.editSbus = true;
+					this.subDate = row.bs_time;
+					this.oldDate = row.bs_time;
+					this.currBsId = row.bs_id;
+				}
+			},
+			getTwo(value){
+				return `${value}`.padStart(2, '0');
+			},
+			getTimeCh(value) {
+				let date = new Date(value);
+				return `${date.getFullYear()}-${this.getTwo(date.getMonth() + 1)}-${this.getTwo(date.getDate())} ${this.getTwo(date.getHours())}:${this.getTwo(date.getMinutes())}:${this.getTwo(date.getSeconds())}`;
 			}
 		},
 		mounted() {
 			this.querySubs();
 		},
-		filters: {
-			getTime(value) {
-				let date = new Date(value);
-				return `${date.getFullYear()}-${date.getMonth() +
-					1}-${date.getDate()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
+		watch: {
+			typeSubs(newValue, oldValue) {
+				this.querySubs();
 			}
 		}
 	};
@@ -329,7 +365,7 @@
 		margin-top: 15px;
 		display: flex;
 		height: 30px;
-		justify-content: flex-end;
+		justify-content: space-between;
 		transition: height 0.1s;
 		overflow: hidden;
 		&__do {
@@ -355,6 +391,12 @@
 			}
 			div:first-child {
 				margin-right: 15px;
+			}
+		}
+		&-choice:active {
+			border-color: #3dbcc6;
+			& > option {
+				border-color: #3dbcc6;
 			}
 		}
 	}
@@ -454,6 +496,7 @@
 		font-size: 12px;
 		display: flex;
 		&__img {
+			flex-shrink: 0;
 			display: block;
 			height: 91px;
 			width: 137px;
@@ -466,6 +509,8 @@
 			margin-left: 15px;
 		}
 		&__t {
+			display: inline-block;
+			width: 100px;
 			color: #606266;
 			text-overflow: ellipsis;
 			overflow: hidden;

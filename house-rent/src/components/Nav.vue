@@ -17,7 +17,12 @@
 						<router-link to="/h">租房</router-link>
 					</li>
 					<li>
-						<span>小程序</span>
+						<div class="min-wei">
+							小程序
+							<div class="min-wei--base">
+								<img :src="weixin" alt />
+							</div>
+						</div>
 					</li>
 				</ul>
 			</div>
@@ -43,8 +48,10 @@
 	export default {
 		data() {
 			const logoImg = require("@/assets/logo.png");
+			let weixin = require("@/assets/house.jpg");
 			return {
-				logoImg
+				logoImg,
+				weixin
 			};
 		},
 		computed: {
@@ -175,5 +182,41 @@
 		}
 	}
 	.confimCls {
+	}
+	.min-wei {
+		position: relative;
+		&--base {
+			position: absolute;
+			width: 200px;
+			left: 50%;
+			height: 200px;
+			display: none;
+			opacity: 0;
+			-webkit-transform: translateX(-50%);
+			transform: translateX(-50%);
+			box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+			top: 42px;
+			transition: all 0.3s;
+			overflow: hidden;
+			padding-top: 20px;
+			z-index: 20;
+			background-color: #fff;
+			img {
+				width: 100%;
+				height: 100%;
+			}
+		}
+		&:hover > &--base {
+			display: block;
+			animation: addMini 0.4s 0.2s forwards;
+		}
+	}
+	@keyframes addMini {
+		0% {
+			opacity: 0;
+		}
+		100% {
+			opacity: 1;
+		}
 	}
 </style>

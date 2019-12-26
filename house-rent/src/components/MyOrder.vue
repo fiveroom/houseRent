@@ -35,7 +35,7 @@
 		</div>
 		<section ref="MyOrder" class="order-box">
 			<div v-if="orderList.length === 0" class="order--no">
-				<p class="order--no__title">您还没有履行中的合同，快去签约吧！～</p>
+				<p class="order--no__title">您还没有订单，快去找房吧！～</p>
 				<router-link class="order--no__next" to="/h">去找房</router-link>
 			</div>
 			<div v-else>
@@ -182,7 +182,7 @@
 			},
 			toPayOrder(con_id, payAmount){
 				this.$myLoadding.open(this.$refs.MyOrder, '等待支付中');
-				window.open(`http://192.168.3.5:8888/payController/pay?order_id=${con_id}&payAmount=${payAmount}`);
+				window.open(`http://192.168.3.5:8888/payController/pay?order_id=${con_id}&payAmount=${payAmount}`, '_self');
 
 			}
 		},

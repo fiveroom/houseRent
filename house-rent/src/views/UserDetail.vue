@@ -71,10 +71,10 @@
 				{
 					title: "租客服务",
 					items: [
-						{
-							title: "我的合同",
-							url: "/userDetail/myContract"
-						},
+						// {
+						// 	title: "我的合同",
+						// 	url: "/userDetail/myContract"
+						// },
 						{
 							title: "我的预约",
 							url: "/userDetail/mySubs"
@@ -144,7 +144,7 @@
 		}
 		&__body {
 			display: flex;
-			min-height: calc(100vh - 16.5rem);
+			min-height: 624px;
 		}
 	}
 	::v-deep .el-breadcrumb__inner {

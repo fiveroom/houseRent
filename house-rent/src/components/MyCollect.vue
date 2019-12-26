@@ -101,6 +101,10 @@
 							item.houseCollectNumM = resArr[index].num;
 						});
 						this.arrCollect = res.data;
+						this.arrCollect.sort((a,b)=>{
+							// return a. 
+						
+						})
 						this.$myLoadding.hide();
 					}
 				);

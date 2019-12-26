@@ -29,7 +29,7 @@ export default {
         //定义显示隐藏的方法  open 会传入一个text 字符串。如果有则赋值给组件内默认值。
         let timer = null;
         const myLoadingMethod = {
-            open(el, text) {
+            open(el, text, stu) {
                 console.log(el);
                 Profile.show = true;
                 if (text) {
@@ -39,6 +39,9 @@ export default {
                     el.appendChild(Profile.$el);
                     Profile.el = true
                 } else {
+                    document.body.appendChild(Profile.$el);
+                }
+                if (stu) {
                     document.body.appendChild(Profile.$el);
                 }
             },

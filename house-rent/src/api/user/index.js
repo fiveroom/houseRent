@@ -31,7 +31,7 @@ export const getCode = data => {
 export const logByCode = data => {
     return axios.post('/LoginRegistMgeSvr.assx/loginByCode', data).then(res => {
         console.log(res, '验证码登录');
-        if (res.date.Code == '200') {
+        if (res.data.Code == '200') {
             return { status: true, msg: '登录成功', data: res.data.Data }
         }
         return { status: false, msg: '登录失败，验证码错误' }
@@ -68,7 +68,6 @@ export const registUserCode = async(data) => {
 
 
 // 查询用户电话
-
 export const queryTel = data => {
     return axios.post('/LoginRegistMgeSvr.assx/queryUserTel', data).then(res => {
         console.log(res, '手机号');
@@ -98,13 +97,31 @@ export const queryUName = data => {
 // 动态验证码
 export const editAuthCode = data => {
     return axios.post('/LoginRegistMgeSvr.assx/sendUpdateCode', data).then(res => {
-        console.log(res, '添加收藏');
+        console.log(res, '动态验证码');
         if (res.data.Code == "200") {
-            return { status: true, data: res.data.Data }
+            return { status: true, data: res.data.Data, msg: '验证码发送成功' }
         }
         return { status: false, msg: '验证码获取失败，请稍后再试' }
     }).catch(err => {
         return { status: false, msg: '验证码获取失败，请稍后再试' }
+    })
+}
+
+
+/**
+ * 密码修改
+ * 
+ * @param {telephone: String， code: String， password: String} data 
+ */
+export const upPwdUser = data => {
+    return axios.post('/LoginRegistMgeSvr.assx/UpdatePasswordCode', data).then(res => {
+        console.log(res, '密码修改');
+        if (res.data.Code == "200") {
+            return { status: true, data: res.data.Data, msg: '密码修改成功' }
+        }
+        return { status: false, msg: '密码修改失败，请稍后再试' }
+    }).catch(() => {
+        return { status: false, msg: '密码修改失败，请稍后再试' }
     })
 }
 
@@ -293,10 +310,27 @@ export const orderTradeInfo = data => {
  * order_id 订单ID
  */
 export const checkOrderIsPaid = data => {
-    return axios.post('/UserMgeSvr.assx/checkOrderIsPaid', {...data, noLoading: true}).then(res => {
+    return axios.post('/UserMgeSvr.assx/checkOrderIsPaid', {...data, noLoading: true }).then(res => {
         console.log(res, '交易记录');
         if (res.status == 200) {
             return { status: true, data: res.data, _Items: res.data.Data._Items }
+        }
+        return { status: false, data: null }
+    }).catch(() => {
+        return { status: false, data: null }
+    })
+}
+
+/**
+ * 查看合同详情
+ * 
+ * con_id
+ */
+export const queryContractInfoById = data => {
+    return axios.post('UserMgeSvr.assx/queryContractInfoById', data).then(res => {
+        console.log(res, '合同详情');
+        if (res.status == 200) {
+            return { status: true, data: res.data }
         }
         return { status: false, data: null }
     }).catch(() => {
