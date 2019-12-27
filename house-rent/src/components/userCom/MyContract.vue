@@ -10,7 +10,6 @@
 					<p class="contract--no__title">您还没有履行中的合同，快去签约吧！～</p>
 					<router-link class="contract--no__next" to="/h">去找房</router-link>
 				</div>
-				<!-- <ul v-else class="con-body"> -->
 				<el-table
 					:data="contractList"
 					:border="true"
@@ -39,7 +38,7 @@
 							<div class="user-do">
 								<div @click="download(scope.row.Con_path, scope.row.Con_id)">下载合同</div>
 								<div @click="showBig(scope.row.Con_path)">查看合同</div>
-								<router-link :to="`/userDetail/myOrder?Con_id=${scope.row.Con_id}`">查看订单</router-link>
+								<router-link :to="`/userDetail/myOrder?Con_id=${scope.row.Con_id}`">查看账单</router-link>
 							</div>
 						</template>
 					</el-table-column>

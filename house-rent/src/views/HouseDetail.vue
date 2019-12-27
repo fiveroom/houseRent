@@ -291,10 +291,10 @@
 			showImgIndex(newV, oldV) {
 				let distanceSmallImg = 120 * 2 - this.showImgIndex * 120;
 				if (this.showImgIndex > 1) {
-					if (this.showImgIndex > this.serverImg.length - 3) {
+					if (this.showImgIndex > this.showImg.length - 3) {
 						distanceSmallImg =
 							this.$refs.choiceImg.clientWidth -
-							(this.serverImg.length + 1) * 120;
+							(this.showImg.length + 1) * 120;
 					}
 					this.clickImageDis = distanceSmallImg;
 				}
@@ -309,9 +309,9 @@
 			// 分类
 			showImg() {
 				return {
-					showBigImg: this.serverImg[this.showImgIndex],
-					showSmallImg: this.serverImg,
-					showImgLen: this.serverImg.length
+					showBigImg: this.HousePicture[this.showImgIndex],
+					showSmallImg: this.HousePicture,
+					showImgLen: this.HousePicture.length
 				};
 			}
 		},
@@ -320,11 +320,11 @@
 			getHouseDetail() {
 				houseApi.houseDetail(
 					{
-						house_id: this.$route.query.House_id
+						house_id: this.$route.query.House_id || this.$route.query.house_id
 					},
 					res => {
 						if (res.status) {
-							this.HousePicture = res.Data.HousePicture;
+							this.HousePicture = res.Data.HousePicture._Items.map(item=>{return item.Pic_path});
 							this.House = res.Data.House;
 							this.Admin = res.Data.Admin || {};
 							houseApi
@@ -345,10 +345,24 @@
 					this.subscribeEdit = true;
 				}
 			},
+			getTwo(value) {
+				return `${value}`.padStart(2, "0");
+			},
+			getTimeCh(value) {
+				let date = new Date(value);
+				return `${date.getFullYear()}-${this.getTwo(
+					date.getMonth() + 1
+				)}-${this.getTwo(date.getDate())} ${this.getTwo(
+					date.getHours()
+				)}:${this.getTwo(date.getMinutes())}:${this.getTwo(
+					date.getSeconds()
+				)}`;
+			},
 			// 提交约看
 			confimSub() {
 				this.subfromStatus =
 					this.userTel.includes("****") || this.userPhoneStatus;
+
 				if (this.subfromStatus) {
 					let obj = {
 						bespeak: JSON.stringify({
@@ -356,8 +370,8 @@
 							User_id: this.userId,
 							User_tel: this.cpUserTel,
 							House_id: this.House.House_id,
-							Admin_id: 21,
-							Bs_time: this.subDate,
+							Admin_id: this.House.Admin_id,
+							Bs_time: this.getTimeCh(this.subDate),
 							Bs_isDeal: false,
 							Bs_content: this.userRemark || "无"
 						})
@@ -366,16 +380,16 @@
 					userApi.addBespeak(obj).then(res => {
 						let hint = {
 							title: "预约",
-							duration: 1500,
-							showClose: false,
+							duration: 1000,
+							showClose: true,
 							message: res.msg
 						};
+						this.subscribeEdit = false;
 						if (res.status) {
 							this.$notify.success(hint);
 						} else {
 							this.$notify.error(hint);
 						}
-						this.subscribeEdit = false;
 					});
 				}
 			},
@@ -397,7 +411,7 @@
 				}
 			},
 			toRight() {
-				if (this.showImgIndex + 1 != this.serverImg.length) {
+				if (this.showImgIndex + 1 != this.showImg.showImgLen) {
 					this.showImgIndex++;
 				}
 			},

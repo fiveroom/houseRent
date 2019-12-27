@@ -114,7 +114,7 @@ export const editAuthCode = data => {
  * @param {telephone: String， code: String， password: String} data 
  */
 export const upPwdUser = data => {
-    return axios.post('/LoginRegistMgeSvr.assx/UpdatePasswordCode', data).then(res => {
+    return axios.post('/LoginRegistMgeSvr.assx/updatePasswordCode', data).then(res => {
         console.log(res, '密码修改');
         if (res.data.Code == "200") {
             return { status: true, data: res.data.Data, msg: '密码修改成功' }
@@ -155,11 +155,11 @@ export const queryBespeak = data => {
     return axios.post('/UserMgeSvr.assx/queryOwnBespeak', data).then(res => {
         console.log(res, '查看预约消息');
         if (res.data.Code == '200') {
-            return { data: res.data.Data.bespeakList._Items }
+            return { status: true, data: res.data.Data.bespeakList._Items }
         }
-        return { data: [] }
+        return { status: false, data: [] }
     }).catch(() => {
-        return { data: [] }
+        return { status: false, data: [] }
     })
 }
 

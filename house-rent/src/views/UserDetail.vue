@@ -77,10 +77,10 @@
 							title: "我的预约",
 							url: "/userDetail/mySubs"
 						},
-						{
-							title: "订单交易记录",
-							url: "/userDetail/myOrderRecord"
-						}
+						// {
+						// 	title: "订单交易记录",
+						// 	url: "/userDetail/myOrderRecord"
+						// }
 					]
 				},
 				{
@@ -130,7 +130,7 @@ $fontLightColor: #3dbcc6;
 	}
 	&__body {
 		display: flex;
-		min-height: 840px;
+		min-height: 63rem;
 	}
 }
 ::v-deep .el-breadcrumb__inner {

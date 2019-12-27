@@ -118,9 +118,6 @@
 	width: 100%;
 	border-bottom: 1px solid #999999;
 	position: relative;
-	// padding-top: 1.8rem;
-	// margin-bottom: 2rem;
-	// input
 	&__ipt {
 		border: 0;
 		width: 100%;

@@ -16,12 +16,22 @@
 			</div>
 		</header>
 		<section class="contract">
-			<p class="contract-title">
-				<i class="el-icon-document"></i>
-				<span>我的合同</span>
-			</p>
+			<div class="contract-title">
+				<div class="contract-title__h">
+					<i class="el-icon-document"></i>
+					<span>我的合同</span>
+				</div>
+				<div class="contract-title__s">
+					<select v-model="contractStu">
+						<option value="0">所有</option>
+						<option value="1">已生效</option>
+						<option value="2">未生效</option>
+						<option value="3">最新</option>
+					</select>
+				</div>
+			</div>
 			<div class="contract-box" ref="contract">
-				<div v-if="contractList.length === 0" class="contract--no">
+				<div v-if="!haveData" class="contract--no">
 					<p class="contract--no__title">您还没有履行中的合同，快去签约吧！～</p>
 					<router-link class="contract--no__next" to="/h">去找房</router-link>
 				</div>
@@ -31,6 +41,7 @@
 					:border="true"
 					ref="orderTable"
 					@selection-change="(value)=>{checkOrderCon = value}"
+					height="380"
 				>
 					<el-table-column prop="Con_id" label="合同编号"></el-table-column>
 					<el-table-column prop="House_address" label="签约房源地址"></el-table-column>
@@ -44,7 +55,7 @@
 							<div>{{getTimeCh(scope.row.Con_endTime)}}</div>
 						</template>
 					</el-table-column>
-					<el-table-column label="合同状态">
+					<el-table-column label="合同状态" width="80px">
 						<template slot-scope="scope">
 							<div>{{scope.row.Con_isSigned | judegStatus}}</div>
 						</template>
@@ -67,7 +78,7 @@
 								<div
 									:class="['user-do--base',scope.row.active?'user-do--ok':'user-do--no']"
 									@click="showMyOrder(scope.row.active, scope.row.Con_id, scope.row.House_id)"
-								>查看订单</div>
+								>查看账单</div>
 								<!-- :to="`/userDetail/myOrder?Con_id=${scope.row.Con_id}`" -->
 							</div>
 						</template>
@@ -112,7 +123,9 @@
 				ctx: null,
 				currConId: null,
 				currConFielSrc: null,
-				showConFIle: true
+				showConFIle: true,
+				contractStu: 0,
+				haveData: false
 			};
 		},
 		computed: {
@@ -142,6 +155,7 @@
 				queryCtractIn({ user_id: this.userId, noLoading: true }).then(
 					res => {
 						if (res.status) {
+							this.haveData = true;
 							res.data.forEach(item => {
 								if (/N/.test(item.Con_isSigned)) {
 									item.active = false;
@@ -150,7 +164,25 @@
 								}
 							});
 						}
-						this.contractList = res.data;
+						if (this.contractStu == 0) {
+							this.contractList = res.data;
+						} else if (this.contractStu == 1) {
+							this.contractList = res.data.filter(item => {
+								return item.active;
+							});
+						} else if (this.contractStu == 2) {
+							this.contractList = res.data.filter(item => {
+								return !item.active;
+							});
+						} else if (this.contractStu == 3) {
+							res.data.sort((a, b) => {
+								return (
+									new Date(b.Con_endTime) -
+									new Date(a.Con_endTime)
+								);
+							});
+							this.contractList = res.data;
+						}
 						this.$myLoadding.hide();
 					}
 				);
@@ -221,8 +253,8 @@
 						console.log(res);
 						this.$myLoadding.hide();
 						this.writeName = false;
-						this.ctx = null;
 						this.ctx.clearRect(0, 0, 500, 300);
+						this.ctx = null;
 						this.getCtractIn();
 						if (res.status) {
 							this.$notify.success(hint);
@@ -309,166 +341,178 @@
 				}
 				return "待完成";
 			}
+		},
+		watch: {
+			contractStu() {
+				this.getCtractIn();
+			}
 		}
 	};
 </script>
 
 <style lang="scss" scoped>
-$hoverColor: #00bfc8;
-$fontLightColor: #3dbcc6;
-$bacHoerClr: #3dbcc6;
-$NoHover: #999999;
-.header {
-	display: flex;
-	padding: 0 0 4rem 2rem;
-	border-bottom: 1px solid #f1f1f1;
-	&__left {
-		width: 12rem;
-		height: 12rem;
-		border-radius: 50%;
-		border: 0.2rem solid $fontLightColor;
-		overflow: hidden;
-		img {
-			height: 100%;
-			width: 100%;
-		}
-	}
-	&__right {
-		flex-grow: 1;
+	$hoverColor: #00bfc8;
+	$fontLightColor: #3dbcc6;
+	$bacHoerClr: #3dbcc6;
+	$NoHover: #999999;
+	.header {
 		display: flex;
-		padding: 20px 0 0 40px;
-		justify-content: space-between;
-		&--name {
-			font-size: 2rem;
-			color: #000;
-			margin-bottom: 1rem;
+		padding: 0 0 2rem 2rem;
+		border-bottom: 1px solid #f1f1f1;
+		&__left {
+			width: 12rem;
+			height: 12rem;
+			border-radius: 50%;
+			border: 0.2rem solid $fontLightColor;
+			overflow: hidden;
+			img {
+				height: 100%;
+				width: 100%;
+			}
 		}
-		&--hint {
-			color: $NoHover;
-		}
-		&__next {
-			font-size: 1.4rem;
-			color: $fontLightColor;
-			a {
+		&__right {
+			flex-grow: 1;
+			display: flex;
+			padding: 20px 0 0 40px;
+			justify-content: space-between;
+			&--name {
+				font-size: 2rem;
+				color: #000;
+				margin-bottom: 1rem;
+			}
+			&--hint {
+				color: $NoHover;
+			}
+			&__next {
+				font-size: 1.4rem;
 				color: $fontLightColor;
+				a {
+					color: $fontLightColor;
+				}
 			}
 		}
 	}
-}
-.contract-box {
-	position: relative;
-}
-.contract {
-	&-title {
-		padding: 3rem 0 2.4rem;
-		font-size: 1.8rem;
-		line-height: 2.1rem;
-		color: #333;
-		span {
-			margin-left: 1.4rem;
-		}
+	.contract-box {
+		position: relative;
 	}
-	&--have {
-		border-bottom: 1px solid #f1f1f1;
-	}
-	&--no {
-		height: 200px;
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		flex-direction: column;
-	}
-}
-.contract--no {
-	&__title {
-		font-size: 16px;
-		color: #999;
-	}
-	&__next {
-		display: block;
-		background-color: #fff;
-		min-width: 180px;
-		width: auto;
-		height: 50px;
-		font-size: 1.8rem;
-		line-height: 4.6rem;
-		text-align: center;
-		border: 2px solid #3dbcc6;
-		border-radius: 33px;
-		box-sizing: border-box;
-		color: $hoverColor;
-		padding: 0 30px;
-		transition: all 0.2s;
-		margin-top: 2rem;
-		&:hover {
-			background-color: $bacHoerClr;
-			color: #fff;
-		}
-	}
-}
-.user-do {
-	display: flex;
-	align-items: center;
-	cursor: pointer;
-	&--base {
-		font-size: 12px;
-		display: block;
-		flex-shrink: 0;
-		transition: all 0.3s;
-		border: 1px solid #3dbcc6;
-		padding: 2px 10px;
-		border-radius: 2rem;
-		color: #00bfc8;
-	}
-	&--ok {
-		&:hover {
-			color: #fff;
-			background-color: #3dbcc6;
-		}
-		&:active {
-			background-color: #2fa4ad;
-		}
-	}
-	div {
-		margin-right: 10px;
-	}
-	&--no {
-		cursor: default;
-		background-color: rgba(0, 0, 0, 0.1);
-		background-color: rgba(0, 0, 0, 0.1);
-		color: #fff;
-		border-color: #dcdee1;;
-	}
-}
+	.contract {
+		&-title {
+			padding: 3rem 0 2.4rem;
+			display: flex;
+			justify-content: space-between;
+			&__h {
+				line-height: 2.1rem;
 
-.mywrite {
-	&-box {
+				span {
+					margin-left: 1.4rem;
+				}
+				font-size: 1.8rem;
+			}
+			color: #333;
+			&__s {
+			}
+		}
+		&--have {
+			border-bottom: 1px solid #f1f1f1;
+		}
+		&--no {
+			height: 200px;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			flex-direction: column;
+		}
 	}
-	&-title {
-		font-size: 30px;
-		font-weight: bold;
-		width: fit-content;
-		margin: 0 auto 20px;
+	.contract--no {
+		&__title {
+			font-size: 16px;
+			color: #999;
+		}
+		&__next {
+			display: block;
+			background-color: #fff;
+			min-width: 180px;
+			width: auto;
+			height: 50px;
+			font-size: 1.8rem;
+			line-height: 4.6rem;
+			text-align: center;
+			border: 2px solid #3dbcc6;
+			border-radius: 33px;
+			box-sizing: border-box;
+			color: $hoverColor;
+			padding: 0 30px;
+			transition: all 0.2s;
+			margin-top: 2rem;
+			&:hover {
+				background-color: $bacHoerClr;
+				color: #fff;
+			}
+		}
 	}
-	&-con {
-		width: fit-content;
-		flex-shrink: 0;
-		margin: 0 auto;
-		border: 1px solid #dddddd;
-	}
-	&-menu {
+	.user-do {
 		display: flex;
-		width: fit-content;
-		margin: 20px auto 0;
-		div {
-			width: 100px;
+		align-items: center;
+		cursor: pointer;
+		&--base {
+			font-size: 12px;
+			display: block;
+			flex-shrink: 0;
+			transition: all 0.3s;
+			border: 1px solid #3dbcc6;
+			padding: 2px 10px;
+			border-radius: 2rem;
+			color: #00bfc8;
 		}
-		div:nth-of-type(2) {
-			margin: 0 20px;
+		&--ok {
+			&:hover {
+				color: #fff;
+				background-color: #3dbcc6;
+			}
+			&:active {
+				background-color: #2fa4ad;
+			}
+		}
+		div {
+			margin-right: 10px;
+		}
+		&--no {
+			cursor: default;
+			background-color: rgba(0, 0, 0, 0.1);
+			background-color: rgba(0, 0, 0, 0.1);
+			color: #fff;
+			border-color: #dcdee1;
 		}
 	}
-}
-::v-deep .el-dialog__header {
-	padding: 0;
-}
+
+	.mywrite {
+		&-box {
+		}
+		&-title {
+			font-size: 30px;
+			font-weight: bold;
+			width: fit-content;
+			margin: 0 auto 20px;
+		}
+		&-con {
+			width: fit-content;
+			flex-shrink: 0;
+			margin: 0 auto;
+			border: 1px solid #dddddd;
+		}
+		&-menu {
+			display: flex;
+			width: fit-content;
+			margin: 20px auto 0;
+			div {
+				width: 100px;
+			}
+			div:nth-of-type(2) {
+				margin: 0 20px;
+			}
+		}
+	}
+	::v-deep .el-dialog__header {
+		padding: 0;
+	}
 </style>

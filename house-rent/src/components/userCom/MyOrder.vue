@@ -2,7 +2,7 @@
 	<section>
 		<header class="header">
 			<i class="el-icon-edit-outline"></i>
-			<span>我的订单</span>
+			<span>我的账单</span>
 		</header>
 
 		<div v-if="orderList.length != 0" class="house-info">
@@ -36,7 +36,7 @@
 		</div>
 		<section ref="MyOrder" class="order-box">
 			<div v-if="orderList.length === 0" class="order--no">
-				<p class="order--no__title">您还没有订单，快去找房吧！～</p>
+				<p class="order--no__title">您还没有账单，快去找房吧！～</p>
 				<router-link class="order--no__next" to="/h">去找房</router-link>
 			</div>
 			<div v-else>
@@ -48,7 +48,7 @@
 					@selection-change="(value)=>{checkOrderCon = value}"
 				>
 					<el-table-column type="selection"></el-table-column>
-					<el-table-column label="支付日期">
+					<el-table-column label="截止日期">
 						<template slot-scope="scope">
 							<span>{{scope.row.Order_time | getTime}}</span>
 						</template>
@@ -77,13 +77,6 @@
 						</template>
 					</el-table-column>
 				</el-table>
-				<!-- <div class="many-item">
-					<div>
-						<span>总计</span>
-						<span></span>
-					</div>
-					<div>支付</div>
-				</div>-->
 			</div>
 		</section>
 	</section>
@@ -199,7 +192,8 @@
 			getTime(value) {
 				let date = new Date(value);
 				let mouth = `${date.getMonth() + 1}`.padStart("2", "0");
-				return `${date.getFullYear()}.${mouth}.${date.getDate()}`;
+				let day = `${date.getDate()}`.padStart("2", "0");
+				return `${date.getFullYear()}.${mouth}.${day}`;
 			},
 			getChname(value) {
 				switch (true) {

@@ -83,8 +83,8 @@ export const upConName = data => {
         if (res.data.code === "200") {
             return { status: true, msg: '合同上传成功' }
         }
-        return { status: false, msg: '合同上传失败' }
+        return { status: false, msg: '合同上传失败，请稍后再试' }
     }).catch(err => {
-        return { status: false, msg: '合同上传失败' }
+        return { status: false, msg: '合同上传失败，请稍后再试' }
     })
 }

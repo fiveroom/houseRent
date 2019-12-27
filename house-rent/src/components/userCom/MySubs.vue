@@ -1,21 +1,29 @@
 <template>
 	<div>
 		<header class="header">
-			<div>
+			<div class="header__l">
 				<i class="myiconfont icon-shoucang"></i>
 				<span>我的预约</span>
 			</div>
+			<div class="header__r">
+				<select name v-model="typeSubs" class="edit-mycol-choice">
+					<option value="0">所有</option>
+					<option value="1">已处理</option>
+					<option value="2">未处理</option>
+					<option value="3">已看房</option>
+				</select>
+			</div>
 		</header>
 		<ul class="subs-box" ref="subsBox">
-			<!-- <li v-if="arrSubs.length == 0" class="subs-box--no">
+			<li v-if="!haveData" class="subs-box--no">
 				<p class="subs-box--no__title">您还没有预约看房，快去添加吧！～</p>
 				<router-link class="subs-box--no__next" to="/h">去找房</router-link>
-			</li>-->
-			<li>
+			</li>
+			<li v-else>
 				<el-table
 					:data="arrSubs"
 					ref="collTable"
-					height="600"
+					height="500"
 					@selection-change="(value)=>{checkSubs = value}"
 				>
 					<el-table-column type="selection"></el-table-column>
@@ -27,8 +35,8 @@
 					<el-table-column label="预约房源" width="280px">
 						<template slot-scope="scope">
 							<div class="house-info">
-								<router-link class="house-info__img" :to="`/hdetail?House_id=${scope.row.House_id}`">
-									<img :src="scope.row.House_coverPic" alt />
+								<router-link class="house-info__img" :to="`/hdetail?House_id=${scope.row.house_id}`">
+									<img :src="scope.row.house_coverPic" alt />
 								</router-link>
 								<div class="house-info__d">
 									<router-link class="house-info__t" :to="`/hdetail?House_id=${scope.row.house_id}`">
@@ -61,28 +69,22 @@
 							<span>{{scope.row.admin_tel}}</span>
 						</template>
 					</el-table-column>
-					<el-table-column label="备注" width="150">
+					<el-table-column label="备注">
 						<template slot-scope="scope">
 							<span>{{scope.row.bs_content}}</span>
 						</template>
 					</el-table-column>
-					<el-table-column label="操作" width="70">
+					<el-table-column label="操作" width="110">
 						<template slot-scope="scope">
 							<div
 								:class="['editdo',scope.row.bs_isDeal == 'N'?  'editdo--can':'']"
 								:style="{}"
 								@click="openDiag(scope.row)"
-							>编辑</div>
+							>修改预约时间</div>
 						</template>
 					</el-table-column>
 				</el-table>
 				<div class="eidt-mycol">
-					<select name v-model="typeSubs" class="edit-mycol-choice">
-						<option value="0">所有</option>
-						<option value="1">已处理</option>
-						<option value="2">未处理</option>
-						<option value="3">已看房</option>
-					</select>
 					<div class="eidt-mycol__do">
 						<div @click="$refs.collTable.clearSelection()">取消</div>
 						<div @click="removeColl">移除预约</div>
@@ -145,7 +147,8 @@
 				editSbus: false,
 				subDate: null, // 新的时间
 				oldDate: null, // 旧的时间
-				typeSubs: "0"
+				typeSubs: "0",
+				haveData: false
 			};
 		},
 		computed: {
@@ -163,6 +166,7 @@
 				this.arrSubs = [];
 				this.$myLoadding.open(this.$refs.subsBox);
 				userApi.queryBespeak(obj).then(res => {
+					this.haveData = res.status;
 					if (this.typeSubs == "0") {
 						this.arrSubs = res.data;
 					} else if (this.typeSubs == "1") {
@@ -334,219 +338,222 @@
 </script>
 
 <style lang="scss" scoped>
-$hoverColor: #00bfc8;
-$fontLightColor: #3dbcc6;
-$bacHoerClr: #3dbcc6;
-$NoHover: #999999;
-.header {
-	padding-bottom: 3rem;
-	font-size: 1.8rem;
-	line-height: 2.1rem;
-	border-bottom: 1px solid #f1f1f1;
-	color: #333;
-	display: flex;
-	justify-content: space-between;
-	span {
-		margin-left: 15px;
-	}
-}
-.mytab {
-	position: relative;
-}
-.subs-box {
-	min-height: 500px;
-	position: relative;
-}
-.subs-box--no {
-	height: 200px;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	flex-direction: column;
-	&__title {
-		font-size: 16px;
-		color: #999;
-	}
-	&__next {
-		display: block;
-		background-color: #fff;
-		min-width: 180px;
-		width: auto;
-		height: 50px;
+	$hoverColor: #00bfc8;
+	$fontLightColor: #3dbcc6;
+	$bacHoerClr: #3dbcc6;
+	$NoHover: #999999;
+	.header {
+		display: flex;
+		padding-bottom: 3rem;
+		&__l{
 		font-size: 1.8rem;
-		line-height: 4.6rem;
-		text-align: center;
-		border: 2px solid #3dbcc6;
-		border-radius: 33px;
-		box-sizing: border-box;
-		color: $hoverColor;
-		padding: 0 30px;
-		transition: all 0.2s;
-		margin-top: 2rem;
-		&:hover {
-			background-color: $bacHoerClr;
-			color: #fff;
+		line-height: 2.1rem;
+
+		span {
+			margin-left: 15px;
 		}
+		}
+		color: #333;
+		border-bottom: 1px solid #f1f1f1;
+		justify-content: space-between;
 	}
-}
-.eidt-mycol {
-	margin-top: 15px;
-	display: flex;
-	height: 30px;
-	justify-content: space-between;
-	transition: height 0.1s;
-	overflow: hidden;
-	&__do {
-		font-size: 0;
-		div {
-			display: inline-block;
-			font-size: 14px;
-			color: #49ced8;
-			padding: 0 14px;
-			border-radius: 2em;
-			border: 1px solid #3dbcc6;
-			line-height: 28px;
-			cursor: pointer;
+	.mytab {
+		position: relative;
+	}
+	.subs-box {
+		min-height: 500px;
+		position: relative;
+	}
+	.subs-box--no {
+		height: 200px;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		flex-direction: column;
+		&__title {
+			font-size: 16px;
+			color: #999;
+		}
+		&__next {
+			display: block;
+			background-color: #fff;
+			min-width: 180px;
+			width: auto;
+			height: 50px;
+			font-size: 1.8rem;
+			line-height: 4.6rem;
+			text-align: center;
+			border: 2px solid #3dbcc6;
+			border-radius: 33px;
+			box-sizing: border-box;
+			color: $hoverColor;
+			padding: 0 30px;
 			transition: all 0.2s;
+			margin-top: 2rem;
 			&:hover {
+				background-color: $bacHoerClr;
 				color: #fff;
-				background-color: #49ced8;
 			}
-			&:active {
-				color: #fff;
-				background-color: #43cbd4;
-			}
-		}
-		div:first-child {
-			margin-right: 15px;
 		}
 	}
-	&-choice:active {
-		border-color: #3dbcc6;
-		& > option {
+	.eidt-mycol {
+		margin-top: 15px;
+		display: flex;
+		height: 30px;
+		justify-content: flex-end;
+		transition: height 0.1s;
+		overflow: hidden;
+		&__do {
+			font-size: 0;
+			div {
+				display: inline-block;
+				font-size: 14px;
+				color: #49ced8;
+				padding: 0 14px;
+				border-radius: 2em;
+				border: 1px solid #3dbcc6;
+				line-height: 28px;
+				cursor: pointer;
+				transition: all 0.2s;
+				&:hover {
+					color: #fff;
+					background-color: #49ced8;
+				}
+				&:active {
+					color: #fff;
+					background-color: #43cbd4;
+				}
+			}
+			div:first-child {
+				margin-right: 15px;
+			}
+		}
+		&-choice:active {
 			border-color: #3dbcc6;
+			& > option {
+				border-color: #3dbcc6;
+			}
 		}
 	}
-}
-.hint-status {
-	display: flex;
-	align-items: center;
-	&__icon {
-		height: 20px;
-		line-height: 20px;
-		width: 34px;
-		text-align: center;
-		border-radius: 2em;
-		font-size: 16px;
-		color: #fff;
-		margin-left: 10px;
-		i {
-			font-weight: bolder;
-		}
-		background-color: rgba(0, 0, 0, 0.2);
-		&--succuss {
-			background-color: rgb(103, 194, 58);
+	.hint-status {
+		display: flex;
+		align-items: center;
+		&__icon {
+			height: 20px;
+			line-height: 20px;
+			width: 34px;
+			text-align: center;
+			border-radius: 2em;
+			font-size: 16px;
+			color: #fff;
+			margin-left: 10px;
+			i {
+				font-weight: bolder;
+			}
+			background-color: rgba(0, 0, 0, 0.2);
+			&--succuss {
+				background-color: rgb(103, 194, 58);
+			}
 		}
 	}
-}
-.subfrom {
-	padding: 0 12px;
-	input {
+	.subfrom {
+		padding: 0 12px;
+		input {
+			border: 0;
+			outline: none;
+		}
+		&-div {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			&__cho {
+				font-size: 22px;
+				cursor: pointer;
+				margin-left: 15px;
+			}
+			&__inp {
+				flex-grow: 1;
+			}
+			&-choice {
+				margin-bottom: 2rem;
+			}
+		}
+	}
+	::v-deep .el-input--prefix .el-input__inner {
 		border: 0;
+		border-bottom: 1px solid #999999;
+		font-size: 16px;
 		outline: none;
+		border-radius: 0;
+		padding: 0;
 	}
-	&-div {
+	::v-deep .el-date-editor {
+		width: 100%;
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-		&__cho {
-			font-size: 22px;
-			cursor: pointer;
-			margin-left: 15px;
-		}
-		&__inp {
-			flex-grow: 1;
-		}
-		&-choice {
-			margin-bottom: 2rem;
-		}
 	}
-}
-::v-deep .el-input--prefix .el-input__inner {
-	border: 0;
-	border-bottom: 1px solid #999999;
-	font-size: 16px;
-	outline: none;
-	border-radius: 0;
-	padding: 0;
-}
-::v-deep .el-date-editor {
-	width: 100%;
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-}
-::v-deep .el-date-editor.el-input {
-	width: auto;
-}
-::v-deep .el-icon-date::before {
-	content: "\e6df";
-}
-::v-deep .el-input__prefix {
-	position: static;
-	cursor: pointer;
-	font-size: 22px;
-	margin-left: 15px;
-}
-.editdo {
-	width: 48px;
-	text-align: center;
-	border-radius: 2em;
-	font-size: 12px;
-	height: 24px;
-	line-height: 22px;
-	color: #fff;
-	border: 1px solid transparent;
-	background-color: rgba(0, 0, 0, 0.2);
-	cursor: default;
-	&--can {
+	::v-deep .el-date-editor.el-input {
+		width: auto;
+	}
+	::v-deep .el-icon-date::before {
+		content: "\e6df";
+	}
+	::v-deep .el-input__prefix {
+		position: static;
 		cursor: pointer;
-		color: #3dbcc6;
-		border-color: #3dbcc6;
-		background-color: #fff;
-		transition: all 0.2s;
-		&:hover {
-			color: #fff;
-			background-color: #3dbcc6;
-		}
-	}
-}
-.house-info {
-	font-size: 12px;
-	display: flex;
-	&__img {
-		flex-shrink: 0;
-		display: block;
-		height: 91px;
-		width: 137px;
-		img {
-			width: 100%;
-			height: 100%;
-		}
-	}
-	&__d {
+		font-size: 22px;
 		margin-left: 15px;
 	}
-	&__t {
-		display: inline-block;
-		width: 100px;
-		color: #606266;
-		text-overflow: ellipsis;
-		overflow: hidden;
-		white-space: nowrap;
-		&:hover {
+	.editdo {
+		width: 86px;
+		text-align: center;
+		border-radius: 2em;
+		font-size: 12px;
+		height: 24px;
+		line-height: 22px;
+		color: #fff;
+		border: 1px solid transparent;
+		background-color: rgba(0, 0, 0, 0.2);
+		cursor: default;
+		&--can {
+			cursor: pointer;
 			color: #3dbcc6;
+			border-color: #3dbcc6;
+			background-color: #fff;
+			transition: all 0.2s;
+			&:hover {
+				color: #fff;
+				background-color: #3dbcc6;
+			}
 		}
 	}
-}
+	.house-info {
+		font-size: 12px;
+		display: flex;
+		&__img {
+			flex-shrink: 0;
+			display: block;
+			height: 91px;
+			width: 137px;
+			img {
+				width: 100%;
+				height: 100%;
+			}
+		}
+		&__d {
+			margin-left: 15px;
+		}
+		&__t {
+			display: inline-block;
+			width: 100px;
+			color: #606266;
+			text-overflow: ellipsis;
+			overflow: hidden;
+			white-space: nowrap;
+			&:hover {
+				color: #3dbcc6;
+			}
+		}
+	}
 </style>

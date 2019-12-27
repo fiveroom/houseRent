@@ -3,7 +3,7 @@ import App from '@/App.vue'
 import router from '@/router'
 import store from '@/store'
 import element from '@/element';
-import '@/router/permission'
+// import '@/router/permission'
 
 import Nav from '@/components/Nav.vue';
 import Footer from '@/components/Footer';
@@ -23,6 +23,23 @@ import Qs from 'qs';
 Vue.use(element)
 Vue.use(myLoadding)
 Vue.config.productionTip = false
+
+
+router.beforeEach((to, from, next) => {
+    if (to.matched.some(record => record.meta.requiresAuth)) {
+        if (store.state.user.user_id) {
+            next()
+        } else {
+            next({
+                path: '/user/login',
+                query: to.fullPath
+            })
+        }
+    } else {
+        next()
+    }
+
+})
 
 Vue.component('header-nav', Nav)
 Vue.component('Footer', Footer)

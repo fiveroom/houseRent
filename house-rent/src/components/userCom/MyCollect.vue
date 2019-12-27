@@ -60,7 +60,7 @@
 				</el-table>
 				<div class="eidt-mycol">
 					<div class="eidt-mycol__do">
-						<div @click="$refs.collTable[0].clearSelection()">取消</div>
+						<div @click="$refs.collTable.clearSelection()">取消</div>
 						<div @click="removeColl">移除收藏</div>
 					</div>
 				</div>
@@ -132,6 +132,12 @@
 						this.getOwnCollect();
 						this.editCollect = false;
 					});
+				} else {
+					this.$notify.error({
+							title: "收藏",
+							duration: 1000,
+							message: '当前未选取收藏房源'
+						});
 				}
 			}
 		},

@@ -82,7 +82,7 @@
 				this.allowEdit = !this.allowEdit;
 				if (this.affirmPwdStatus && this.pwdStatus && this.codeStatus) {
 					let obj = {
-						telephone: '15182432853',
+						telephone: this.tel,
 						code: this.code,
 						noLoading: true,
 						password: this.pwd
@@ -107,7 +107,7 @@
 				if (this.affirmPwdStatus && this.pwdStatus) {
 					console.log("发送验证码");
 
-					let obj = { telephone: '15182432853', noLoading: true };
+					let obj = { telephone: this.tel, noLoading: true };
 					editAuthCode(obj).then(res => {
 						let hint = {
 							title: "密码修改",

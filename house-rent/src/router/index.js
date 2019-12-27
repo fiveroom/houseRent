@@ -10,16 +10,17 @@ import NoContent from '@/views/NoContent';
 import PayPage from '@/components/PayPage';
 import Login from '@/components/Login'; // 登录
 import Register from '@/components/Register'; // 注册
-import PersCenter from '@/components/PersCenter'; // 个人中心
-import EditPerData from '@/components/EditPerData'; // 个人资料
-import EditPhone from '@/components/EditPhone'; // 手机号码更改
-import MyOrder from '@/components/MyOrder'; // 订单
-import MyContract from '@/components/MyContract'; // 合同
-import MyCollect from '@/components/MyCollect'; // 合同
-import EditPwd from '@/components/EditPwd'; // 合同
-import MySubs from '@/components/MySubs'; // 合同
-import MyOrderRecord from '@/components/MyOrderRecord'; // 合同
-import ContractDetail from '@/components/ContractDetail'; // 合同
+
+import PersCenter from '@/components/userCom/PersCenter'; // 个人中心
+import EditPerData from '@/components/userCom/EditPerData'; // 个人资料
+import EditPhone from '@/components/userCom/EditPhone'; // 手机号码更改
+import MyOrder from '@/components/userCom/MyOrder'; // 订单
+import MyContract from '@/components/userCom/MyContract'; // 我的合同
+import MyCollect from '@/components/userCom/MyCollect'; // 我的收藏
+import EditPwd from '@/components/userCom/EditPwd'; // 编辑密码
+import MySubs from '@/components/userCom/MySubs'; // 我的预约
+import MyOrderRecord from '@/components/userCom/MyOrderRecord'; // 合同
+import ContractDetail from '@/components/userCom/ContractDetail'; // 合同
 
 const originalPush = VueRouter.prototype.push
 VueRouter.prototype.push = function push(location) {
@@ -117,7 +118,7 @@ const routes = [{
                 path: '/userDetail/myOrder',
                 component: MyOrder,
                 // props: true,
-                props: (route) => ({ con_id: route.query.con_id,house_id: route.query.house_id})
+                props: (route) => ({ con_id: route.query.con_id, house_id: route.query.house_id })
             },
             // {
             //     name: '我的合同',
@@ -138,6 +139,7 @@ const routes = [{
                 component: MySubs
             },
             {
+                name: '账单交易记录',
                 path: '/userDetail/myOrderRecord',
                 component: MyOrderRecord
             },

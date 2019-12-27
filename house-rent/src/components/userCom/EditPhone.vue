@@ -76,7 +76,7 @@
 				}
 			},
 			getAuthCode() {
-				editAuthCode({ telephone: '15182432853', noLoading: true }).then(res => {
+				editAuthCode({ telephone: this.tel, noLoading: true }).then(res => {
 					if(res.status){
 						this.serverCode = res.data;
 					} else {

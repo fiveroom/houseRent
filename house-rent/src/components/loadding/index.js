@@ -46,11 +46,12 @@ export default {
                 }
             },
             hide() {
-                clearTimeout(timer)
-                timer = setTimeout(() => {
-                    Profile.show = false;
-                    clearTimeout(timer)
-                }, 100)
+                Profile.show = false;
+                // clearTimeout(timer)
+                // timer = setTimeout(() => {
+                //     Profile.show = false;
+                //     clearTimeout(timer)
+                // }, 100)
             }
         };
         Vue.prototype.$myLoadding = myLoadingMethod;

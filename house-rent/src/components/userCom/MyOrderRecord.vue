@@ -3,7 +3,7 @@
 		<header class="header">
 			<div>
 				<i class="myiconfont icon-shoucang"></i>
-				<span>订单交易记录</span>
+				<span>账单交易记录</span>
 			</div>
 		</header>
 		<ul class="orderre-box" ref="orderReBox">
