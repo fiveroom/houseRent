@@ -211,7 +211,7 @@ $fontLightColor: #3dbcc6;
 }
 .show-enter-active,
 .show-leave-active{
-	transition: all 0.3s;
+	transition: all .5s;
 }
 
 </style>
