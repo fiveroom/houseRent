@@ -337,3 +337,17 @@ export const queryContractInfoById = data => {
         return { status: false, data: null }
     })
 }
+
+/**
+ * 查看未处理消息
+ * 
+ */
+
+export const findMsg = data => {
+    console.log('调用次数');
+    return axios.post('/socket/findMge', data).then(res => {
+        console.log(res);
+    }).catch(err => {
+        console.log(err);
+    })
+}

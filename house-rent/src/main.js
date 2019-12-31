@@ -4,12 +4,15 @@ import router from '@/router'
 import store from '@/store'
 import element from '@/element';
 // import '@/router/permission'
+import webS from '@/config/webSocket';
 
 import Nav from '@/components/Nav.vue';
 import Footer from '@/components/Footer';
 import Mybutton from '@/components/Mybutton';
 import MyInput from '@/components/MyInput';
 import myLoadding from '@/components/loadding';
+import RightSide from "@/components/wholeSit/RightSide";
+
 
 // import Axios from '@/axios';
 // import Axios from '@/axios';
@@ -19,6 +22,8 @@ import Qs from 'qs';
 //     "application/x-www-form-urlencoded";
 // Vue.prototype.$axios = Axios;
 // Vue.prototype.$qs = Qs;
+
+Vue.prototype.$webS = webS;
 
 Vue.use(element)
 Vue.use(myLoadding)
@@ -45,6 +50,7 @@ Vue.component('header-nav', Nav)
 Vue.component('Footer', Footer)
 Vue.component('Mybutton', Mybutton)
 Vue.component('MyInput', MyInput)
+Vue.component('RightSide', RightSide)
 
 
 new Vue({

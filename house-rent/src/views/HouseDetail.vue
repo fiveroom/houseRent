@@ -328,7 +328,7 @@
 							this.House = res.Data.House;
 							this.Admin = res.Data.Admin || {};
 							houseApi
-								.houseCollectNum({
+								.queryHouseCollectAmount({
 									house_id: this.House.House_id
 								})
 								.then(res => {

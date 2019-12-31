@@ -66,7 +66,7 @@
 <script>
 	import { mapActions, mapMutations } from "vuex";
 	import { login, getCode, logByCode } from "@/api/user";
-	import SlidVal from "./SlidVal";
+	import SlidVal from "@/components/SlidVal";
 	export default {
 		name: "login",
 		data() {

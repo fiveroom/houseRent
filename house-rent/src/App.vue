@@ -1,9 +1,18 @@
 <template>
 	<div id="app">
 		<router-view />
-		<el-backtop></el-backtop>
+		<RightSide />
 	</div>
 </template>
+
+<script>
+import RightSide from "@/components/wholeSit/RightSide";
+	export default {
+		components: {
+			RightSide
+		}
+	};
+</script>
 
 <style lang="scss">
 	@import "./assets/css/iconfont.css";

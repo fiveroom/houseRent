@@ -366,8 +366,12 @@
 			},
 			autoLunBo() {
 				this.timerS = setInterval(() => {
-					this.showIndex++;
-					if (this.showIndex == this.imgList.length - 1) {
+					if(this.imgList.length == 1){
+						this.showIndex++;
+						if (this.showIndex == this.imgList.length - 1) {
+							window.clearInterval(this.timerS);
+						}
+					} else {
 						window.clearInterval(this.timerS);
 					}
 				}, 2000);

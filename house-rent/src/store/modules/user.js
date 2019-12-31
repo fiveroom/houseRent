@@ -1,12 +1,27 @@
 import * as types from '../types';
 import * as userApi from '@/api/user';
+import myWebS from '@/config/webSocket';
 
 const state = {
     user_id: null,
     user_name: null,
     tel: null,
     userEmail: 'asdfadf@163.com',
-    userAvater: null
+    userAvater: null,
+    userRemind: [],
+    bsRemind: {
+        TotalCount: 0,
+        _Items: []
+    }, // 预约
+    conRemind: {
+        TotalCount: 0,
+        _Items: []
+    }, // 合同
+    payRemind: {
+        TotalCount: 0,
+        _Items: []
+    },
+    remindWebS: null
 }
 
 const getters = {
@@ -30,6 +45,9 @@ const getters = {
     },
     userAvater(state) {
         return state.userAvater
+    },
+    allRemindCount(state) {
+        return state.bsRemind.TotalCount + state.conRemind.TotalCount + state.payRemind.TotalCount
     }
 }
 
@@ -38,13 +56,29 @@ const actions = {
         let res = await userApi.login(logoInfo)
         if (res.status) {
             commit(types.SAVE_USER, res.Data);
+            let webS = new myWebS(`${types.REMIND_URL}/u_${state.user_id}`);
+            webS.conSuss = userApi.findMsg({ user_id: res.Data.user_id, noLoading: true });
+            commit(types.UP_REMINDOBJ, webS)
+            webS.message(data => {
+                switch (data.Msg) {
+                    case 'bs':
+                        commit(types.UP_REMIND, 'bsRemind', data.Data)
+                        break;
+                    case 'con':
+                        commit(types.UP_REMIND, 'conRemind', data.Data)
+                        break;
+                    case 'pay':
+                        commit(types.UP_REMIND, 'payRemind', data.Data)
+                        break;
+                }
+            })
         }
         return res
     },
     async [types.UPDATE_USER]({ commit }, updateData) {
         let res = await userApi.updateUserInfo(updateData);
         return res
-    }
+    },
 }
 
 const mutations = {
@@ -60,11 +94,18 @@ const mutations = {
         state.tel = '';
         state.userEmail = '';
         state.userAvaterPath = '';
+        state.remindWebS.close();
+        state.webS = null;
         sessionStorage.clear()
     },
     [types.UP_AVATOR](state, url) {
-        console.log(url, '=============');
         state.userAvater = url
+    },
+    [types.UP_REMIND](state, type, data) {
+        state[type] = data
+    },
+    [types.UP_REMINDOBJ](state, obj) {
+        state.remindWebS = obj
     }
 }
 

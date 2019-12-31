@@ -130,7 +130,7 @@
 			opacity: 1;
 		}
 		& > div:first-of-type {
-			z-index: 1;
+			z-index: 0;
 		}
 		& > div:last-of-type {
 			z-index: 2;

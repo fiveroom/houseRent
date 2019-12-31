@@ -45,6 +45,12 @@ module.exports = {
                 changeOrigin: true,
                 autoRewite: true,
                 cookieDomainRewrite: true
+            },
+            "/socket": {
+                target: "http://192.168.3.5:8888/",
+                changeOrigin: true,
+                autoRewite: true,
+                cookieDomainRewrite: true
             }
 
             // "/UserMgeSvr.assx": {

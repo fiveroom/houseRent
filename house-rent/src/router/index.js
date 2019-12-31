@@ -8,8 +8,8 @@ import HouseDetail from '@/views/HouseDetail'; // 房子详情
 import UserDetail from '@/views/UserDetail'; // 房子详情
 import NoContent from '@/views/NoContent';
 import PayPage from '@/components/PayPage';
-import Login from '@/components/Login'; // 登录
-import Register from '@/components/Register'; // 注册
+import Login from '@/components/userEnt/Login'; // 登录
+import Register from '@/components/userEnt/Register'; // 注册
 
 import PersCenter from '@/components/userCom/PersCenter'; // 个人中心
 import EditPerData from '@/components/userCom/EditPerData'; // 个人资料
@@ -46,6 +46,9 @@ const routes = [{
     {
         path: '/user',
         component: UserEnt,
+        meta: {
+            noShowRight: true
+        },
         children: [{
                 path: '',
                 component: Login
