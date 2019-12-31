@@ -5,7 +5,7 @@
 			<div class="msg__min">1</div>
 			<!-- :style="showRemindStyle" -->
 			<!-- showRemind?'msg-remaind--show':'' -->
-			<section :class="['msg-remaind', 'msg-remaind--show']" style="display: block">
+			<section :class="['msg-remaind', showRemind?'msg-remaind--show':'msg-remaind--no']">
 				<div :class="['msg-content', showRemind?'msg-content--show':'msg-content--leave']"></div>
 			</section>
 		</li>
@@ -113,38 +113,37 @@
 	.msg {
 		&__min {
 			position: absolute;
-			// width:
 		}
 		&-remaind {
 			overflow: hidden;
-			display: none;
 			position: absolute;
 			width: 250px;
-			height: 300px;
+			height: 0;
 			right: 44px;
 			bottom: 0;
 			z-index: 3;
-			opacity: 0;
-			transition-property: opacity;
-			transition-delay: 1.3s;
-			transition-duration: 0.3s;
 			border-right: 2px solid #3dbcc6;
+			&--show {
+				transition: height 0.3s;
+				height: 300px;
+			}
+			&--no{
+				transition: height 0.3s .6s;
+				height: 0;
+			}
 		}
 
-		&-remaind--show {
-			opacity: 1;
-		}
 		&-content {
 			width: 100%;
 			transform: translateX(100%);
 			height: 30px;
 			background-color: skyblue;
-			transition: transform .3s .4s;
+			transition: transform 0.3s 0.3s;
 			&--show {
-				transform: translateX(0)
+				transform: translateX(0);
 			}
 			&--leave {
-				transform: translateX(100%)
+				transform: translateX(100%);
 			}
 		}
 	}
