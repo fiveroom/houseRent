@@ -21,6 +21,9 @@ import EditPwd from '@/components/userCom/EditPwd'; // 编辑密码
 import MySubs from '@/components/userCom/MySubs'; // 我的预约
 import MyOrderRecord from '@/components/userCom/MyOrderRecord'; // 合同
 import ContractDetail from '@/components/userCom/ContractDetail'; // 合同
+import MyMsg from '@/components/userCom/MyMsg'; // 合同
+
+import Page404 from '@/components/wholeSit/Page404'; // 404PAGE
 
 const originalPush = VueRouter.prototype.push
 VueRouter.prototype.push = function push(location) {
@@ -149,10 +152,17 @@ const routes = [{
             {
                 path: '/userDetail/contractDetail',
                 component: ContractDetail
-            }
+            },
+            {
+                path: "/userDetail/myMsg",
+                component: MyMsg
+            },
         ]
     },
-
+    {
+       path: '*',
+       component:  Page404
+    }
 
 ]
 

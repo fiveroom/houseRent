@@ -52,26 +52,11 @@ const getters = {
 }
 
 const actions = {
-    async [types.LOGIN_USER]({ commit, state }, logoInfo) {
+    async [types.LOGIN_USER]({ dispatch, commit, state }, logoInfo) {
         let res = await userApi.login(logoInfo)
         if (res.status) {
             commit(types.SAVE_USER, res.Data);
-            let webS = new myWebS(`${types.REMIND_URL}/u_${state.user_id}`);
-            webS.conSuss = userApi.findMsg({ user_id: res.Data.user_id, noLoading: true });
-            commit(types.UP_REMINDOBJ, webS)
-            webS.message(data => {
-                switch (data.Msg) {
-                    case 'bs':
-                        commit(types.UP_REMIND, 'bsRemind', data.Data)
-                        break;
-                    case 'con':
-                        commit(types.UP_REMIND, 'conRemind', data.Data)
-                        break;
-                    case 'pay':
-                        commit(types.UP_REMIND, 'payRemind', data.Data)
-                        break;
-                }
-            })
+            dispatch(types.GET_REMIND)
         }
         return res
     },
@@ -79,16 +64,41 @@ const actions = {
         let res = await userApi.updateUserInfo(updateData);
         return res
     },
+    // 建立webSocket连接
+    async [types.GET_REMIND]({ commit, state}) {
+        let webS = new myWebS(`${types.REMIND_URL}/u_${state.user_id}`);
+        webS.conSuss = userApi.findMsg({ user_id: state.user_id, noLoading: true });
+        commit(types.UP_REMINDOBJ, webS)
+        webS.message(data => {
+            console.log(data.Msg);
+            switch (data.Msg) {
+                case 'bs':
+                    console.log(object, 'bs');
+                    commit(types.UP_REMIND, 'bsRemind', data.Data)
+                    break;
+                case 'con':
+                    console.log(object, 'con');
+                    commit(types.UP_REMIND, 'conRemind', data.Data)
+                    break;
+                case 'pay':
+                    console.log(object, 'pay');
+                    commit(types.UP_REMIND, 'payRemind', data.Data)
+                    break;
+            }
+        })
+    }
 }
 
 const mutations = {
+    // 保存用户信息
     [types.SAVE_USER](state, obj) {
         state.user_id = obj.user_id;
         state.user_name = obj.user_name;
         state.tel = obj.tel;
         state.userAvater = obj.user_avaterPath;
     },
-    [types.LOGIN_OUT](state, obj) {
+    // 清除用户信息
+    [types.LOGIN_OUT](state) {
         state.user_id = '';
         state.user_name = '';
         state.tel = '';

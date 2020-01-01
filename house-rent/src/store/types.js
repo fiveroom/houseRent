@@ -10,7 +10,9 @@ export const MSG_REMIND = 'msgRemind'
 
 // mutations
 export const UP_AVATOR = 'upAvator'
+
 export const UP_REMIND = 'upRemind'
+export const GET_REMIND = 'getRemind'
 
 export const REMIND_URL = "ws://192.168.3.5:8888/socketServer/"
 export const UP_REMINDOBJ = 'upRemindObj'

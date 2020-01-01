@@ -101,7 +101,7 @@
 			SlidVal
 		},
 		methods: {
-			...mapActions(["loginUser"]),
+			...mapActions(["loginUser", 'getRemind']),
 			...mapMutations(['saveUser']),
 			loginTo() {
 				let obj = { loginInfo: this.userName, user_pwd: this.pwd };
@@ -135,6 +135,7 @@
 					};
 					if (res.status) {
 						this.saveUser(res.data)
+						this.getRemind()
 						if (window.history.length <= 2) {
 							this.$router.push({ name: "home" });
 						} else {

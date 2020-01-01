@@ -34,7 +34,6 @@ Axios.interceptors.response.use(res => {
     tryHideLoading()
     return res
 }, err => {
-    console.log(err, '----------------');
     tryHideLoading()
     return Promise.reject(err);
 });

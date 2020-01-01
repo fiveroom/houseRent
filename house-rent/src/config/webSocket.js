@@ -26,7 +26,6 @@ class WebS {
     message(call) {
         this.webS.onmessage = (event) => {
             let data = JSON.parse(event.data);
-            console.log(data);
             call(data)
         };
     }

@@ -210,6 +210,7 @@
 		}
 	};
 </script>
+
 <style lang="scss" scoped>
 $hoverColor: #00bfc8;
 $fontLightColor: #3dbcc6;
