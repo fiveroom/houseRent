@@ -22,6 +22,7 @@ import MySubs from '@/components/userCom/MySubs'; // 我的预约
 import MyOrderRecord from '@/components/userCom/MyOrderRecord'; // 合同
 import ContractDetail from '@/components/userCom/ContractDetail'; // 合同
 import MyMsg from '@/components/userCom/MyMsg'; // 合同
+import MyChat from '@/components/userCom/MyChat'; // 合同
 
 import Page404 from '@/components/wholeSit/Page404'; // 404PAGE
 
@@ -157,11 +158,16 @@ const routes = [{
                 path: "/userDetail/myMsg",
                 component: MyMsg
             },
+            {
+                path: "/userDetail/myChat",
+                component: MyChat
+            }
+
         ]
     },
     {
-       path: '*',
-       component:  Page404
+        path: '*',
+        component: Page404
     }
 
 ]

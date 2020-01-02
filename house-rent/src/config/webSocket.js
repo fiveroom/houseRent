@@ -3,10 +3,10 @@ class WebS {
         this.url = url;
         this.times = times;
         this.init()
-        console.log('成功');
     }
 
     init() {
+        console.log('连接啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊');
         this.webS = new WebSocket(this.url);
         this.webS.onerror = this.error
     }
@@ -32,6 +32,7 @@ class WebS {
 
     // 连接成功
     conSuss(call) {
+        console.log('连接成功');
         this.webS.onopen = call;
     }
 

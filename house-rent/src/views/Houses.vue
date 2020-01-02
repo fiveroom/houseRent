@@ -166,6 +166,7 @@
 			<footer></footer>
 		</div>
 		<Footer />
+		<RightSide />
 	</div>
 </template>
 

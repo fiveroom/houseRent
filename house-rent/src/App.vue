@@ -1,7 +1,7 @@
 <template>
 	<div id="app">
 		<router-view />
-		<RightSide />
+		<el-backtop />
 	</div>
 </template>
 

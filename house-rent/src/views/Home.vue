@@ -157,6 +157,7 @@
 			</div>
 		</section>
 		<Footer />
+		<RightSide />
 	</section>
 </template>
 

@@ -216,6 +216,7 @@
 			</div>
 		</section>
 		<Footer />
+		<RightSide />
 	</div>
 </template>
 
@@ -223,7 +224,7 @@
 	import * as houseApi from "@/api/house";
 	import mixin from "@/mixin";
 	import * as userApi from "@/api/user";
-	import { mapActions, mapGetters } from "vuex";
+	import { mapActions, mapGetters, mapMutations } from "vuex";
 	export default {
 		data() {
 			let userPhoneRex = {
@@ -317,16 +318,31 @@
 		},
 		mixins: [mixin],
 		methods: {
+			...mapMutations(["upRemind"]),
 			getHouseDetail() {
 				houseApi.houseDetail(
 					{
-						house_id: this.$route.query.House_id || this.$route.query.house_id
+						house_id:
+							this.$route.query.House_id || this.$route.query.house_id
 					},
 					res => {
+						console.log(res.status, "status");
 						if (res.status) {
-							this.HousePicture = res.Data.HousePicture._Items.map(item=>{return item.Pic_path});
+							this.HousePicture = res.Data.HousePicture._Items.map(
+								item => {
+									return item.Pic_path;
+								}
+							);
 							this.House = res.Data.House;
 							this.Admin = res.Data.Admin || {};
+							this.upRemind({
+								type: 'adminInfo',
+								data: res.Data.Admin
+							});
+							console.log(
+								"------------dddddddddddddddddddddddddddddddddddddddd----"
+							);
+
 							houseApi
 								.queryHouseCollectAmount({
 									house_id: this.House.House_id

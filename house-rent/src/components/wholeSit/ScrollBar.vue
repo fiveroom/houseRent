@@ -24,6 +24,7 @@
 
 <script>
 	export default {
+		props: ['goBottom'],
 		data() {
 			let runStatus = {
 				timer: null, // 定时器序号
@@ -47,6 +48,13 @@
 				observe,
 				eleSize
 			};
+		},
+		watch: {
+			goBottom(newV, oldV) {
+				console.log('==============');
+				console.log( );
+				this.$refs.scrollContent.scrollTop = 100000;
+			}
 		},
 		methods: {
 			/**
@@ -150,7 +158,6 @@
 			 */
 			addScrollConEvent() {
 				this.$refs.scrollSlot.style.width = "5px";
-
 				this.$refs.scrollContent.addEventListener(
 					"scroll",
 					this.changeScrBlockTop
@@ -264,7 +271,7 @@
 <style lang="scss" scoped>
 .scroll-content {
 	position: relative;
-	height: 100%;
+	height: inherit;
 	overflow: auto;
 	&::-webkit-scrollbar {
 		width: 0px;

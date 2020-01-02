@@ -21,7 +21,12 @@ const state = {
         TotalCount: 0,
         _Items: []
     },
-    remindWebS: null
+    sysRemind: {
+        TotalCount: 0,
+        _Items: []
+    },
+    remindWebS: null,
+    adminInfo: {}
 }
 
 const getters = {
@@ -47,7 +52,7 @@ const getters = {
         return state.userAvater
     },
     allRemindCount(state) {
-        return state.bsRemind.TotalCount + state.conRemind.TotalCount + state.payRemind.TotalCount
+        return state.bsRemind.TotalCount + state.conRemind.TotalCount + state.payRemind.TotalCount + state.sysRemind.TotalCount
     }
 }
 
@@ -65,26 +70,44 @@ const actions = {
         return res
     },
     // 建立webSocket连接
-    async [types.GET_REMIND]({ commit, state}) {
+    async [types.GET_REMIND]({ commit, state }) {
+        console.log('开始连接webSocket');
         let webS = new myWebS(`${types.REMIND_URL}/u_${state.user_id}`);
         webS.conSuss = userApi.findMsg({ user_id: state.user_id, noLoading: true });
         commit(types.UP_REMINDOBJ, webS)
         webS.message(data => {
-            console.log(data.Msg);
-            switch (data.Msg) {
-                case 'bs':
-                    console.log(object, 'bs');
-                    commit(types.UP_REMIND, 'bsRemind', data.Data)
-                    break;
-                case 'con':
-                    console.log(object, 'con');
-                    commit(types.UP_REMIND, 'conRemind', data.Data)
-                    break;
-                case 'pay':
-                    console.log(object, 'pay');
-                    commit(types.UP_REMIND, 'payRemind', data.Data)
-                    break;
+            console.log(data, '=================');
+            if (data.Msg) {
+                commit(types.UP_REMIND, {
+                    type: data.Msg + 'Remind',
+                    data: data.Data
+                })
             }
+            // switch (data.Msg) {
+            //     case 'bs':
+            //         console.log(data.Data, 'bs');
+            //         commit(types.UP_REMIND, {
+            //             type: 'bsRemind',
+            //             data: data.Data
+            //         })
+            //         break;
+            //     case 'con':
+            //         console.log(data.Data, 'con');
+            //         commit(types.UP_REMIND, {
+            //             type: 'conRemind',
+            //             data: data.Data
+            //         })
+            //         break;
+            //     case 'pay':
+            //         console.log(data.Data, 'pay');
+            //         commit(types.UP_REMIND, {
+            //             type: 'payRemind',
+            //             data: data.Data
+            //         })
+            //         break;
+            //     case 'sys':
+            //         break;
+            // }
         })
     }
 }
@@ -111,7 +134,8 @@ const mutations = {
     [types.UP_AVATOR](state, url) {
         state.userAvater = url
     },
-    [types.UP_REMIND](state, type, data) {
+    [types.UP_REMIND](state, { type, data }) {
+        console.log(data, 'sssssssssssssss==========================');
         state[type] = data
     },
     [types.UP_REMINDOBJ](state, obj) {

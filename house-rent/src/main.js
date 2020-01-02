@@ -13,10 +13,10 @@ import MyInput from '@/components/MyInput';
 import myLoadding from '@/components/loadding';
 import RightSide from "@/components/wholeSit/RightSide";
 
-
+// import emoji from 'emoji';
 // import Axios from '@/axios';
 // import Axios from '@/axios';
-import Qs from 'qs';
+// import Qs from 'qs';
 
 // Axios.defaults.headers.post["Content-Type"] =
 //     "application/x-www-form-urlencoded";
@@ -24,6 +24,7 @@ import Qs from 'qs';
 // Vue.prototype.$qs = Qs;
 
 Vue.prototype.$webS = webS;
+// Vue.prototype.$emoji = emoji;
 
 Vue.use(element)
 Vue.use(myLoadding)

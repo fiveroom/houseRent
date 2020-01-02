@@ -22,7 +22,8 @@ import {
     MessageBox,
     Tooltip,
     Link,
-    Image
+    Image,
+    // Input
 } from 'element-ui';
 
 export default {
@@ -49,6 +50,7 @@ export default {
         Vue.use(Tooltip);
         Vue.use(Link);
         Vue.use(Image);
+        // Vue.use(Input);
 
         Vue.prototype.$notify = Notification;
         Vue.prototype.$msgBox = MessageBox;
