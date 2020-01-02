@@ -6,56 +6,78 @@
 			</li>
 			<li class="msg no-bot" @mouseenter="enterMsg" @mouseleave="leaveMsg">
 				<i class="el-icon-s-opportunity"></i>
-				<div class="msg__min" v-show="allRemindCount!=0"></div>
+				<div class="msg__min" v-show="allRemindCount!=0">{{allRemindCount}}</div>
 				<section :class="['msg-remaind', showRemind?'msg-remaind--show':'msg-remaind--no']">
 					<div class="msg-conbox">
-						<ScrollBar :class="['msg-content', showRemind?'msg-content--show':'msg-content--leave']">
-							<div>
-								<div class="msgitem">
-									<header>系统消息</header>
-									<ul>
-										<li class="msg-li msg-li-nomsg" :style="liAnima(0, 0)" v-if="sysRemind.TotalCount != 0">暂时没有消息</li>
-										<li
-											class="msg-li"
-											v-for="(item, index) in test"
-											:key="index"
-											:style="liAnima(index, item.length)"
-										>
-											你的消息你的消息你的消息你的消息
-											<i class="msg-li-dian"></i>
-										</li>
-									</ul>
+						<div :class="['msg-content', showRemind?'msg-content--show':'msg-content--leave']">
+							<div class="empty"></div>
+							<ScrollBar class="msg-scroll">
+								<!-- <div style="height: 300px; background-color: red"></div> -->
+								<div>
+									<!-- style="height: 100px; background-color: skyblue" -->
+									<div class="msgitem">
+										<header>系统消息</header>
+										<ul>
+											<li
+												class="msg-li msg-li-nomsg"
+												:style="liAnima(0, 0)"
+												v-if="sysRemind.TotalCount != 0"
+											>暂时没有消息</li>
+											<li
+												class="msg-li"
+												v-for="(item, index) in test"
+												:key="index"
+												:style="liAnima(index, item.length)"
+											>
+												你的消息你的消息你的消息你的消息
+												<i class="msg-li-dian"></i>
+											</li>
+										</ul>
+									</div>
+									<div class="msgitem">
+										<header>预约提醒</header>
+										<ul>
+											<li
+												class="msg-li msg-li-nomsg"
+												:style="liAnima(0, 0)"
+												v-if="bsRemind.TotalCount != 0"
+											>暂时没有消息</li>
+											<li
+												class="msg-li"
+												v-for="(item, index) in test"
+												:key="index"
+												:style="liAnima(index, item.length)"
+											>
+												你的消息你的消息你的消息你的消息
+												<i class="msg-li-dian"></i>
+											</li>
+										</ul>
+									</div>
+									<div class="msgitem">
+										<header>合同提醒</header>
+										<ul>
+											<li
+												class="msg-li msg-li-nomsg"
+												:style="liAnima(0, 0)"
+												v-if="conRemind.TotalCount != 0"
+											>暂时没有消息</li>
+											<li></li>
+										</ul>
+									</div>
+									<div class="msgitem msgitem-no">
+										<header>续租退租提醒</header>
+										<ul>
+											<li
+												class="msg-li msg-li-nomsg"
+												:style="liAnima(0, 0)"
+												v-if="payRemind.TotalCount != 0"
+											>暂时没有消息</li>
+										</ul>
+									</div>
 								</div>
-								<div class="msgitem">
-									<header>预约提醒</header>
-									<ul>
-										<li class="msg-li msg-li-nomsg" :style="liAnima(0, 0)" v-if="bsRemind.TotalCount != 0">暂时没有消息</li>
-										<li
-											class="msg-li"
-											v-for="(item, index) in test"
-											:key="index"
-											:style="liAnima(index, item.length)"
-										>
-											你的消息你的消息你的消息你的消息
-											<i class="msg-li-dian"></i>
-										</li>
-									</ul>
-								</div>
-								<div class="msgitem">
-									<header>合同提醒</header>
-									<ul>
-										<li class="msg-li msg-li-nomsg" :style="liAnima(0, 0)" v-if="conRemind.TotalCount != 0">暂时没有消息</li>
-										<li></li>
-									</ul>
-								</div>
-								<div class="msgitem">
-									<header>续租退租提醒</header>
-									<ul>
-										<li class="msg-li msg-li-nomsg" :style="liAnima(0, 0)" v-if="payRemind.TotalCount != 0">暂时没有消息</li>
-									</ul>
-								</div>
-							</div>
-						</ScrollBar>
+							</ScrollBar>
+							<div class="empty"></div>
+						</div>
 					</div>
 					<div class="msg-icon" v-show="showRemind">
 						<i class="el-icon-caret-right"></i>
@@ -89,7 +111,7 @@
 				bsRemind: state => state.user.bsRemind,
 				conRemind: state => state.user.conRemind,
 				payRemind: state => state.user.payRemind,
-				sysRemind: state => state.user.sysRemind,
+				sysRemind: state => state.user.sysRemind
 			}),
 			showRight() {
 				if (
@@ -148,14 +170,12 @@
 						this.$router.push("/userDetail/myChat");
 					} else {
 						console.log("do something ----");
-						this.addChat = true
+						this.addChat = true;
 					}
 				}
 			}
 		},
-		created() {
-
-		},
+		created() {},
 		beforeDestroy() {},
 		components: {
 			ScrollBar,
@@ -165,128 +185,138 @@
 </script>
 
 <style lang="scss" scoped>
-	.right-sli {
-		position: fixed;
-		right: 40px;
-		top: 50%;
-		transform: translateY(-50%);
-		color: #3dbcc6;
-		font-size: 20px;
-		& > li {
-			position: relative;
-			box-shadow: 0 0 6px rgba(0, 0, 0, 0.12);
-			cursor: pointer;
-			background-color: #fff;
-			width: 40px;
-			height: 40px;
-			border-radius: 50%;
-			display: flex;
-			justify-content: center;
-			align-items: center;
-		}
-		& > li:hover {
-			background-color: #f2f6fc;
-		}
-
-		& > li:not(.no-bot) {
-			margin-bottom: 10px;
-		}
-	}
-	.msg {
-		&__min {
-			position: absolute;
-			background-color: #d33a31;
-			border-radius: 2em;
-			top: -10px;
-			right: -2px;
-			line-height: 20px;
-			padding: 0 5px;
-			color: #fff;
-			font-size: 14px;
-		}
-		&-remaind {
-			// background-color: #fff;
-			position: absolute;
-			width: 250px;
-			height: 0;
-			right: 52px;
-			bottom: 0;
-			z-index: 3;
-			border-right: 2px solid #3dbcc6;
-			&--show {
-				transition: height 0.3s;
-				height: 300px;
-			}
-			&--no {
-				transition: height 0.3s 0.6s;
-				height: 0;
-			}
-		}
-		&-conbox {
-			width: 100%;
-			height: 100%;
-			position: relative;
-			overflow: hidden;
-		}
-		&-content {
-			height: 300px;
-			box-sizing: border-box;
-			padding-right: 6px;
-			transform: translateX(100%);
-			transition: transform 0.3s 0.3s;
-			&--show {
-				transform: translateX(0);
-			}
-			&--leave {
-				transform: translateX(100%);
-			}
-		}
-
-		&-icon {
-			position: absolute;
-			bottom: 9px;
-			right: -13px;
-		}
-	}
-	.msgitem {
-		margin-bottom: 10px;
-		border: 1px solid #ebeef5;
-		padding: 0 12px;
-		background-color: #fff;
-		header {
-			color: #000;
-			font-size: 15px;
-			line-height: 28px;
-			margin-bottom: 5px;
-		}
-		ul > li:last-child {
-			margin-bottom: 0;
-		}
-	}
-	.msg-li {
+.right-sli {
+	position: fixed;
+	right: 40px;
+	top: 50%;
+	transform: translateY(-50%);
+	color: #3dbcc6;
+	font-size: 20px;
+	& > li {
 		position: relative;
-		margin-bottom: 5px;
-		font-size: 14px;
-		line-height: 1.4;
-		padding: 5px 5px 5px 0;
+		box-shadow: 0 0 6px rgba(0, 0, 0, 0.12);
 		cursor: pointer;
-		color: #909399;
-		transform: translateX(250px);
-		border-top: 1px solid rgb(233, 233, 235);
-		transition-property: transform;
-		transition-duration: 0.3s;
-		&-dian {
-			width: 6px;
-			height: 6px;
-			border-radius: 50%;
-			position: absolute;
-			top: 11px;
-			left: -9px;
-			background-color: #d33a31;
+		background-color: #fff;
+		width: 40px;
+		height: 40px;
+		border-radius: 50%;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+	}
+	& > li:hover {
+		background-color: #f2f6fc;
+	}
+
+	& > li:not(.no-bot) {
+		margin-bottom: 10px;
+	}
+}
+.empty {
+	height: 20px;
+	background-color: rgb(217, 217, 217);
+}
+.msg {
+	&-scroll {
+		position: relative;
+		height: 260px;
+	}
+	&__min {
+		position: absolute;
+		background-color: #d33a31;
+		border-radius: 2em;
+		top: -10px;
+		right: -2px;
+		line-height: 20px;
+		padding: 0 5px;
+		color: #fff;
+		font-size: 14px;
+	}
+	&-remaind {
+		position: absolute;
+		width: 250px;
+		height: 0;
+		right: 52px;
+		bottom: 0;
+		z-index: 3;
+		border-right: 2px solid #3dbcc6;
+		&--show {
+			transition: height 0.3s;
+			height: 300px;
 		}
-		&-nomsg {
-			text-align: center;
+		&--no {
+			transition: height 0.3s 0.6s;
+			height: 0;
 		}
 	}
+	&-conbox {
+		height: 100%;
+		overflow: hidden;
+	}
+	&-content {
+		height: 300px;
+		background-color: #fff;
+		box-sizing: border-box;
+		padding-right: 6px;
+		transform: translateX(100%);
+		transition: transform 0.3s 0.3s;
+		&--show {
+			transform: translateX(0);
+		}
+		&--leave {
+			transform: translateX(100%);
+		}
+	}
+
+	&-icon {
+		position: absolute;
+		bottom: 9px;
+		right: -13px;
+	}
+}
+.msgitem {
+	margin-bottom: 10px;
+	border: 1px solid #ebeef5;
+	padding: 0 12px;
+	background-color: #fff;
+	header {
+		color: #000;
+		font-size: 15px;
+		line-height: 28px;
+		margin-bottom: 5px;
+	}
+	ul > li:last-child {
+		margin-bottom: 0;
+	}
+	&-no {
+		margin-bottom: 0;
+	}
+}
+.msg-li {
+	position: relative;
+	margin-bottom: 5px;
+	font-size: 14px;
+	line-height: 1.4;
+	padding: 5px 5px 5px 0;
+	cursor: pointer;
+	color: #000;
+	// color: #909399;
+	transform: translateX(250px);
+	border-top: 1px solid rgb(233, 233, 235);
+	transition-property: transform;
+	transition-duration: 0.3s;
+	&-dian {
+		width: 6px;
+		height: 6px;
+		border-radius: 50%;
+		position: absolute;
+		top: 11px;
+		left: -9px;
+		background-color: #d33a31;
+	}
+	&-nomsg {
+		text-align: center;
+	}
+}
 </style>
 

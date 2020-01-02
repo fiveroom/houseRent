@@ -339,10 +339,6 @@
 								type: 'adminInfo',
 								data: res.Data.Admin
 							});
-							console.log(
-								"------------dddddddddddddddddddddddddddddddddddddddd----"
-							);
-
 							houseApi
 								.queryHouseCollectAmount({
 									house_id: this.House.House_id

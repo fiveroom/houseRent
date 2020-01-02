@@ -113,7 +113,7 @@
 			getEleDisPage(ele) {
 				let disX = 0,
 					disY = 0;
-				while (ele != document.body) {
+				while (ele != null && ele != document.body) {
 					disY += ele.offsetTop + ele.clientTop;
 					disX += ele.offsetLeft + ele.clientLeft;
 					ele = ele.offsetParent;
