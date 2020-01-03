@@ -3,8 +3,8 @@ import App from '@/App.vue'
 import router from '@/router'
 import store from '@/store'
 import element from '@/element';
-// import '@/router/permission'
-import webS from '@/config/webSocket';
+import '@/router/permission'
+// import webS from '@/config/webSocket';
 
 import Nav from '@/components/Nav.vue';
 import Footer from '@/components/Footer';
@@ -12,7 +12,7 @@ import Mybutton from '@/components/Mybutton';
 import MyInput from '@/components/MyInput';
 import myLoadding from '@/components/loadding';
 import RightSide from "@/components/wholeSit/RightSide";
-
+import VueAMap from 'vue-amap';
 // import emoji from 'emoji';
 // import Axios from '@/axios';
 // import Axios from '@/axios';
@@ -23,29 +23,35 @@ import RightSide from "@/components/wholeSit/RightSide";
 // Vue.prototype.$axios = Axios;
 // Vue.prototype.$qs = Qs;
 
-Vue.prototype.$webS = webS;
+// Vue.prototype.$webS = webS;
 // Vue.prototype.$emoji = emoji;
 
 Vue.use(element)
 Vue.use(myLoadding)
 Vue.config.productionTip = false
-
-
-router.beforeEach((to, from, next) => {
-    if (to.matched.some(record => record.meta.requiresAuth)) {
-        if (store.state.user.user_id) {
-            next()
-        } else {
-            next({
-                path: '/user/login',
-                query: to.fullPath
-            })
-        }
-    } else {
-        next()
-    }
-
+Vue.use(VueAMap)
+VueAMap.initAMapApiLoader({
+    key: '52e32be08f9e13cb695662b063f0b887',
+    plugin: ['AMap.Scale', 'AMap.OverView', 'AMap.ToolBar', 'AMap.MapType', 'AMap.PlaceSearch', 'AMap.Geolocation', 'AMap.Geocoder'],
+    v: '1.4.4',
+    uiVersion: '1.0'
 })
+
+// router.beforeEach((to, from, next) => {
+//     if (to.matched.some(record => record.meta.requiresAuth)) {
+//         if (store.state.user.user_id) {
+//             next()
+//         } else {
+//             next({
+//                 path: '/user/login',
+//                 query: to.fullPath
+//             })
+//         }
+//     } else {
+//         next()
+//     }
+
+// })
 
 Vue.component('header-nav', Nav)
 Vue.component('Footer', Footer)

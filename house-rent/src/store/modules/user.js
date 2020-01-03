@@ -1,6 +1,6 @@
 import * as types from '../types';
 import * as userApi from '@/api/user';
-import myWebS from '@/config/webSocket';
+import { myWebS, webMsg } from '@/config/webSocket';
 
 const state = {
     user_id: null,
@@ -9,22 +9,10 @@ const state = {
     userEmail: 'asdfadf@163.com',
     userAvater: null,
     userRemind: [],
-    bsRemind: {
-        TotalCount: 0,
-        _Items: []
-    }, // 预约
-    conRemind: {
-        TotalCount: 0,
-        _Items: []
-    }, // 合同
-    payRemind: {
-        TotalCount: 0,
-        _Items: []
-    },
-    sysRemind: {
-        TotalCount: 0,
-        _Items: []
-    },
+    bsRemind: [], // 预约
+    conRemind: [], // 合同
+    payRemind: [],
+    sysRemind: [],
     remindWebS: null,
     adminInfo: {}
 }
@@ -52,7 +40,7 @@ const getters = {
         return state.userAvater
     },
     allRemindCount(state) {
-        return state.bsRemind.TotalCount + state.conRemind.TotalCount + state.payRemind.TotalCount + state.sysRemind.TotalCount
+        return state.bsRemind.length + state.conRemind.length + state.payRemind.length + state.sysRemind.length
     }
 }
 
@@ -70,45 +58,25 @@ const actions = {
         return res
     },
     // 建立webSocket连接
-    async [types.GET_REMIND]({ commit, state }) {
+    [types.GET_REMIND]({ commit, state }) {
         console.log('开始连接webSocket');
-        let webS = new myWebS(`${types.REMIND_URL}/u_${state.user_id}`);
-        webS.conSuss = userApi.findMsg({ user_id: state.user_id, noLoading: true });
+        let webS = new myWebS(`${webMsg}/u_${state.user_id}`);
+        webS.conSuss(() => { userApi.findMsg({ user_id: state.user_id, noLoading: true }) });
         commit(types.UP_REMINDOBJ, webS)
         webS.message(data => {
             console.log(data, '=================');
             if (data.Msg) {
                 commit(types.UP_REMIND, {
                     type: data.Msg + 'Remind',
-                    data: data.Data
+                    data: data.Data._Items,
+                    arr: true
                 })
             }
-            // switch (data.Msg) {
-            //     case 'bs':
-            //         console.log(data.Data, 'bs');
-            //         commit(types.UP_REMIND, {
-            //             type: 'bsRemind',
-            //             data: data.Data
-            //         })
-            //         break;
-            //     case 'con':
-            //         console.log(data.Data, 'con');
-            //         commit(types.UP_REMIND, {
-            //             type: 'conRemind',
-            //             data: data.Data
-            //         })
-            //         break;
-            //     case 'pay':
-            //         console.log(data.Data, 'pay');
-            //         commit(types.UP_REMIND, {
-            //             type: 'payRemind',
-            //             data: data.Data
-            //         })
-            //         break;
-            //     case 'sys':
-            //         break;
-            // }
         })
+    },
+    [types.DEL_REMIND]({ commit, state }, { mge_id, type }) {
+        // userApi.delMsg({ mge_id });
+        commit(types.DEL_REMIND_LOCAT, { mge_id, type })
     }
 }
 
@@ -127,19 +95,34 @@ const mutations = {
         state.tel = '';
         state.userEmail = '';
         state.userAvaterPath = '';
-        state.remindWebS.close();
-        state.webS = null;
-        sessionStorage.clear()
+        state.adminInfo = {}
+        state.bsRemind = [];
+        state.conRemind = [];
+        state.payRemind = [];
+        state.sysRemind = [];
+        if (state.remindWebS instanceof myWebS) {
+            state.remindWebS.close();
+        }
+        sessionStorage.clear();
     },
     [types.UP_AVATOR](state, url) {
         state.userAvater = url
     },
-    [types.UP_REMIND](state, { type, data }) {
-        console.log(data, 'sssssssssssssss==========================');
-        state[type] = data
+    [types.UP_REMIND](state, { type, data, arr }) {
+        if (arr) {
+            console.log(data, 'push');
+            state[type].push(...data)
+        } else {
+            state[type] = data
+        }
     },
     [types.UP_REMINDOBJ](state, obj) {
         state.remindWebS = obj
+    },
+    // 删除消息
+    [types.DEL_REMIND_LOCAT](state, { mge_id, type }) {
+        type += 'Remind';
+        state[type].splice(state[type].findIndex(item => item.mge_id == mge_id), 1)
     }
 }
 

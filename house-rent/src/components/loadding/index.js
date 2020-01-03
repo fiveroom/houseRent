@@ -30,7 +30,6 @@ export default {
         let timer = null;
         const myLoadingMethod = {
             open(el, text, stu) {
-                console.log(el);
                 Profile.show = true;
                 if (text) {
                     Profile.text = text

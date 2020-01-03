@@ -272,7 +272,8 @@
 .scroll-content {
 	position: relative;
 	height: inherit;
-	overflow: auto;
+	overflow-y: auto;
+	overflow-x: hidden;
 	&::-webkit-scrollbar {
 		width: 0px;
 	}

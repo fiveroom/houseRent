@@ -1,4 +1,4 @@
-class WebS {
+export class myWebS {
     constructor(url, times) {
         this.url = url;
         this.times = times;
@@ -52,4 +52,14 @@ class WebS {
     }
 }
 
-export default WebS
+// 192.168.3.5  李晓东
+// 39.106.122.19
+// 192.168.3.26  余展鹏
+export const webChatU = 'ws://192.168.3.5:8888/websocket/';
+export const webMsg = 'ws://192.168.3.5:8888/socketServer/';
+
+// export default {
+//     myWebS,
+//     webChatU,
+//     webMsg
+// }

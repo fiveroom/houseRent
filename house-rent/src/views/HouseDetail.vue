@@ -202,7 +202,6 @@
 									<el-switch v-model="seePhone" @change="showPhone" active-color="#2878ff"></el-switch>
 								</div>
 							</div>
-							<MyInput v-model="userRemark" placeholder="备注" lable="userRemark" />
 							<Mybutton class="subfrom-but" title="提交约看" @clickTo="confimSub" />
 						</div>
 					</section>
@@ -212,11 +211,14 @@
 		<section id="ambitus">
 			<div class="map-box">
 				<h2 class="detail-h2">周边配套</h2>
-				<div class="map"></div>
+				<div class="map">
+					<Amap />
+				</div>
 			</div>
 		</section>
 		<Footer />
 		<RightSide />
+		
 	</div>
 </template>
 
@@ -225,6 +227,7 @@
 	import mixin from "@/mixin";
 	import * as userApi from "@/api/user";
 	import { mapActions, mapGetters, mapMutations } from "vuex";
+	import Amap from '@/components/houseDetail/Amap';
 	export default {
 		data() {
 			let userPhoneRex = {
@@ -259,7 +262,6 @@
 				userPhoneRex,
 				seePhone: false, // 看号码
 				subfromStatus: true, //
-				userRemark: "", //
 				inputkeyDown: false,
 				judgeNum: 1, // 检验次数1
 				houseCollectNumM: null,
@@ -374,7 +376,6 @@
 			confimSub() {
 				this.subfromStatus =
 					this.userTel.includes("****") || this.userPhoneStatus;
-
 				if (this.subfromStatus) {
 					let obj = {
 						bespeak: JSON.stringify({
@@ -385,10 +386,9 @@
 							Admin_id: this.House.Admin_id,
 							Bs_time: this.getTimeCh(this.subDate),
 							Bs_isDeal: false,
-							Bs_content: this.userRemark || "无"
+							Bs_content: ""
 						})
 					};
-					console.log(this.subDate);
 					userApi.addBespeak(obj).then(res => {
 						let hint = {
 							title: "预约",
@@ -529,7 +529,10 @@
 		},
 		destroyed() {
 			// window.removeEventListener("scroll", this.judgeheight);
-		}
+		},
+		components: {
+			Amap,
+		},
 	};
 	// 展示图切换
 </script>

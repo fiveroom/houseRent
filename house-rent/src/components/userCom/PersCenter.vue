@@ -26,7 +26,8 @@
 						<option value="0">所有</option>
 						<option value="1">已生效</option>
 						<option value="2">未生效</option>
-						<option value="3">最新</option>
+						<option value="3">已失效</option>
+						<option value="4">最新</option>
 					</select>
 				</div>
 			</div>
@@ -43,14 +44,14 @@
 					@selection-change="(value)=>{checkOrderCon = value}"
 					height="380"
 				>
-					<el-table-column prop="Con_id" label="合同编号"></el-table-column>
+					<el-table-column prop="Con_id" label="合同编号" width="80px"></el-table-column>
 					<el-table-column prop="House_address" label="签约房源地址"></el-table-column>
-					<el-table-column label="签约日期">
+					<el-table-column label="签约日期" width="100px">
 						<template slot-scope="scope">
 							<div>{{getTimeCh(scope.row.Con_startTime)}}</div>
 						</template>
 					</el-table-column>
-					<el-table-column label="到期时间">
+					<el-table-column label="到期时间" width="100px">
 						<template slot-scope="scope">
 							<div>{{getTimeCh(scope.row.Con_endTime)}}</div>
 						</template>
@@ -63,22 +64,35 @@
 					<el-table-column label="操作" width="350px">
 						<template slot-scope="scope">
 							<div class="user-do">
-								<div
+								<!-- <div
 									class="user-do--base user-do--ok"
 									@click="downFile(scope.row.Con_path)"
-								>{{scope.row.active?"下载合同":'下载模板'}}</div>
+								>{{scope.row.active?"下载合同":'下载模板'}}</div>-->
 								<div
 									@click="conDetialInfo(scope.row.Con_path)"
 									class="user-do--base user-do--ok"
 								>{{scope.row.active?"查看详情":'查看模板'}}</div>
 								<div
-									@click="canvEvent(scope.row.active, scope.row.Con_id)"
-									:class="['user-do--base', scope.row.active?'user-do--no':'user-do--ok']"
+									@click="canvEvent(!/N/.test(scope.row.Con_isSigned), scope.row.Con_id)"
+									:class="['user-do--base', !/N/.test(scope.row.Con_isSigned)?'user-do--no':'user-do--ok']"
 								>上传签名</div>
+								<!-- <div
+									v-if="!scope.row.active"
+									@click="canvEvent(scope.row.active, scope.row.Con_id)"
+									class="user-do--base user-do--no"
+								>上传签名</div>-->
 								<div
 									:class="['user-do--base',scope.row.active?'user-do--ok':'user-do--no']"
 									@click="showMyOrder(scope.row.active, scope.row.Con_id, scope.row.House_id)"
 								>查看账单</div>
+								<div
+									:class="['user-do--base',scope.row.active?'user-do--ok':'user-do--no']"
+									@click="throwLease(scope.row.active, scope.row.Con_id, true)"
+								>退租</div>
+								<div
+									:class="['user-do--base',scope.row.active?'user-do--ok':'user-do--no']"
+									@click="throwLease(scope.row.active, scope.row.Con_id)"
+								>续租</div>
 								<!-- :to="`/userDetail/myOrder?Con_id=${scope.row.Con_id}`" -->
 							</div>
 						</template>
@@ -100,6 +114,28 @@
 						<Mybutton @clickTo="ctx.clearRect(0, 0, 500, 300)" title="重写" />
 						<Mybutton title="图片下载" />
 						<Mybutton title="上传" @clickTo="upToContract" />
+					</div>
+				</div>
+			</el-dialog>
+			<el-dialog :visible.sync="rentOtherS" :before-close="closeRent" width="30%">
+				<header class="rent-header">{{rentType == 'retreat'?'退租申请':'续租申请'}}</header>
+				<div>
+					<div v-if="rentType == 'retreat'" class="rent-retreat">
+						<div class="rent-retreat-price">
+							<span>当前时间应退租金</span>
+							<span>30000</span>
+						</div>
+						<div class="rent-retreat-time">
+							<p>退租时间</p>
+							<el-date-picker :clearable="false" v-model="rentRetDate" type="datetime" placeholder="退租时间"></el-date-picker>
+						</div>
+						<Mybutton title="提交退租申请" />
+					</div>
+					<div v-else>
+						<div class="rent-retreat-time">
+							<p>续租时间</p>
+							<el-date-picker :clearable="false" v-model="rentRetDate" type="datetime" placeholder="退租时间"></el-date-picker>
+						</div>
 					</div>
 				</div>
 			</el-dialog>
@@ -125,7 +161,10 @@
 				currConFielSrc: null,
 				showConFIle: true,
 				contractStu: 0,
-				haveData: false
+				haveData: false,
+				rentOtherS: false, // 框
+				rentRetDate: new Date(), // 退租时间
+				rentType: null // 续租退租类别
 			};
 		},
 		computed: {
@@ -157,10 +196,10 @@
 						if (res.status) {
 							this.haveData = true;
 							res.data.forEach(item => {
-								if (/N/.test(item.Con_isSigned)) {
-									item.active = false;
-								} else {
+								if (/Y/.test(item.Con_isSigned)) {
 									item.active = true;
+								} else {
+									item.active = false;
 								}
 							});
 						}
@@ -172,9 +211,9 @@
 							});
 						} else if (this.contractStu == 2) {
 							this.contractList = res.data.filter(item => {
-								return !item.active;
+								return /N/.test(item.Con_isSigned);
 							});
-						} else if (this.contractStu == 3) {
+						} else if (this.contractStu == 4) {
 							res.data.sort((a, b) => {
 								return (
 									new Date(b.Con_endTime) -
@@ -182,6 +221,10 @@
 								);
 							});
 							this.contractList = res.data;
+						} else if (this.contractStu == 3) {
+							this.contractList = res.data.filter(item => {
+								return /S/.test(item.Con_isSigned);
+							});
 						}
 						this.$myLoadding.hide();
 					}
@@ -270,6 +313,11 @@
 				this.ctx.clearRect(0, 0, 500, 300);
 				done();
 			},
+			// 关闭退租续租申请
+			closeRent(done) {
+				this.rentType = null;
+				done();
+			},
 			// 时间格式化
 			getTwo(value) {
 				return `${value}`.padStart(2, "0");
@@ -308,6 +356,13 @@
 						`/userDetail/myOrder?con_id=${con_id}&house_id=${house_id}`
 					);
 				}
+			},
+			// 退租
+			throwLease(status, con_id, retreat) {
+				this.rentOtherS = true;
+				if (retreat) {
+					this.rentType = "retreat";
+				}
 			}
 		},
 		mounted() {
@@ -338,8 +393,10 @@
 				let [type, stu] = value.split("_");
 				if (stu == "Y") {
 					return "生效";
+				} else if (stu == "N") {
+					return "待完成";
 				}
-				return "待完成";
+				return "已失效";
 			}
 		},
 		watch: {
@@ -453,7 +510,6 @@
 	.user-do {
 		display: flex;
 		align-items: center;
-		cursor: pointer;
 		&--base {
 			font-size: 12px;
 			display: block;
@@ -465,6 +521,7 @@
 			color: #00bfc8;
 		}
 		&--ok {
+			cursor: pointer;
 			&:hover {
 				color: #fff;
 				background-color: #3dbcc6;
@@ -514,5 +571,36 @@
 	}
 	::v-deep .el-dialog__header {
 		padding: 0;
+	}
+	::v-deep .el-input--prefix .el-input__inner {
+		border: 0;
+		border-bottom: 1px solid #999999;
+		font-size: 16px;
+		outline: none;
+		border-radius: 0;
+		padding: 0;
+	}
+	::v-deep .el-date-editor {
+		width: 100%;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+	}
+	::v-deep .el-date-editor.el-input {
+		width: auto;
+	}
+	::v-deep .el-icon-date::before {
+		content: "\e6df";
+	}
+	::v-deep .el-input__prefix {
+		position: static;
+		cursor: pointer;
+		font-size: 22px;
+		margin-left: 15px;
+	}
+	.rent-retreat {
+		&-time {
+			margin-bottom: 2rem;
+		}
 	}
 </style>

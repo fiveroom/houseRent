@@ -22,7 +22,13 @@ export default new Vuex.Store({
         storage: window.sessionStorage,
         reducer(val) {
             return {
-                user: val.user
+                user: {
+                    user_id: val.user.user_id,
+                    user_name: val.user.user_name,
+                    tel: val.user.tel,
+                    userEmail: val.user.userEmail,
+                    userAvater: val.user.userAvater
+                }
             }
         }
     })]

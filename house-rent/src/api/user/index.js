@@ -351,3 +351,13 @@ export const findMsg = data => {
         console.log(err);
     })
 }
+
+/**
+ * 删除消息
+ */
+
+export const delMsg = data => {
+    return axios.post('/', {...data, noLoading: true }).then(res => {
+
+    }).catch(() => {})
+}
