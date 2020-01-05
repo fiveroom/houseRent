@@ -1,6 +1,9 @@
 <template>
 	<div>
 		<ul class="right-sli" :style="showRight">
+			<li @click="chatAdv" title="咨询">
+				<i class="myiconfont icon-zixun"></i>
+			</li>
 			<li @click="chatAdmin">
 				<i class="el-icon-chat-line-round"></i>
 			</li>
@@ -141,7 +144,7 @@
 		},
 		mixins: [mixin],
 		methods: {
-			...mapActions(['delRemind']),
+			...mapActions(["delRemind"]),
 			// 滚动条移动
 			toTop() {
 				clearInterval(this.timerTop);
@@ -190,17 +193,22 @@
 					}
 				}
 			},
+			chatAdv() {
+				if (this.judgeUser()) {
+					this.$router.push("/advis");
+				}
+			},
 			showMsg(mge_id, type) {
 				let url = null;
-				switch(type){
-					case 'bs':
-						url = '/userDetail/mySubs';
+				switch (type) {
+					case "bs":
+						url = "/userDetail/mySubs";
 						break;
-					case 'con':
-						url = '/userDetail/persCenter';
+					case "con":
+						url = "/userDetail/persCenter";
 						break;
 				}
-				this.delRemind({mge_id, type})
+				this.delRemind({ mge_id, type });
 				url && this.$router.push(url);
 			}
 		},
@@ -214,138 +222,137 @@
 </script>
 
 <style lang="scss" scoped>
-	.right-sli {
-		position: fixed;
-		right: 40px;
-		top: 50%;
-		transform: translateY(-50%);
-		color: #3dbcc6;
-		font-size: 20px;
-		& > li {
-			position: relative;
-			box-shadow: 0 0 6px rgba(0, 0, 0, 0.12);
-			cursor: pointer;
-			background-color: #fff;
-			width: 40px;
-			height: 40px;
-			border-radius: 50%;
-			display: flex;
-			justify-content: center;
-			align-items: center;
-		}
-		& > li:hover {
-			background-color: #f2f6fc;
-		}
-
-		& > li:not(.no-bot) {
-			margin-bottom: 10px;
-		}
-	}
-	.empty {
-		height: 20px;
-		background-color: rgb(217, 217, 217);
-	}
-	.msg {
-		&-scroll {
-			position: relative;
-			height: 260px;
-		}
-		&__min {
-			position: absolute;
-			background-color: #d33a31;
-			border-radius: 2em;
-			top: -10px;
-			right: -2px;
-			line-height: 20px;
-			padding: 0 5px;
-			color: #fff;
-			font-size: 14px;
-		}
-		&-remaind {
-			position: absolute;
-			width: 250px;
-			height: 0;
-			right: 52px;
-			bottom: 0;
-			z-index: 3;
-			border-right: 2px solid #3dbcc6;
-			&--show {
-				transition: height 0.3s;
-				height: 300px;
-			}
-			&--no {
-				transition: height 0.3s 0.6s;
-				height: 0;
-			}
-		}
-		&-conbox {
-			height: 100%;
-			overflow: hidden;
-		}
-		&-content {
-			height: 300px;
-			background-color: #fff;
-			box-sizing: border-box;
-			padding-right: 6px;
-			transform: translateX(100%);
-			transition: transform 0.3s 0.3s;
-			&--show {
-				transform: translateX(0);
-			}
-			&--leave {
-				transform: translateX(100%);
-			}
-		}
-
-		&-icon {
-			position: absolute;
-			bottom: 9px;
-			right: -13px;
-		}
-	}
-	.msgitem {
-		margin-bottom: 10px;
-		border: 1px solid #ebeef5;
-		padding: 0 12px;
-		background-color: #fff;
-		header {
-			color: #000;
-			font-size: 15px;
-			line-height: 28px;
-			margin-bottom: 5px;
-		}
-		ul > li:last-child {
-			margin-bottom: 0;
-		}
-		&-no {
-			margin-bottom: 0;
-		}
-	}
-	.msg-li {
+.right-sli {
+	position: fixed;
+	right: 40px;
+	top: 50%;
+	transform: translateY(-50%);
+	color: #3dbcc6;
+	font-size: 20px;
+	& > li {
 		position: relative;
-		margin-bottom: 5px;
-		font-size: 14px;
-		line-height: 1.4;
-		padding: 5px 5px 5px 0;
+		box-shadow: 0 0 6px rgba(0, 0, 0, 0.12);
 		cursor: pointer;
-		color: #000;
-		// color: #909399;
-		transform: translateX(250px);
-		border-top: 1px solid rgb(233, 233, 235);
-		transition-property: transform;
-		transition-duration: 0.3s;
-		&-dian {
-			width: 6px;
-			height: 6px;
-			border-radius: 50%;
-			position: absolute;
-			top: 11px;
-			left: -9px;
-			background-color: #d33a31;
+		background-color: #fff;
+		width: 40px;
+		height: 40px;
+		border-radius: 50%;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+	}
+	& > li:hover {
+		background-color: #f2f6fc;
+	}
+
+	& > li:not(.no-bot) {
+		margin-bottom: 10px;
+	}
+}
+.empty {
+	height: 20px;
+	background-color: rgb(217, 217, 217);
+}
+.msg {
+	&-scroll {
+		height: 260px;
+	}
+	&__min {
+		position: absolute;
+		background-color: #d33a31;
+		border-radius: 2em;
+		top: -10px;
+		right: -2px;
+		line-height: 20px;
+		padding: 0 5px;
+		color: #fff;
+		font-size: 14px;
+	}
+	&-remaind {
+		position: absolute;
+		width: 250px;
+		height: 0;
+		right: 52px;
+		bottom: 0;
+		z-index: 3;
+		border-right: 2px solid #3dbcc6;
+		&--show {
+			transition: height 0.3s;
+			height: 300px;
 		}
-		&-nomsg {
-			text-align: center;
+		&--no {
+			transition: height 0.3s 0.6s;
+			height: 0;
 		}
 	}
+	&-conbox {
+		height: 100%;
+		overflow: hidden;
+	}
+	&-content {
+		height: 300px;
+		background-color: #fff;
+		box-sizing: border-box;
+		padding-right: 6px;
+		transform: translateX(100%);
+		transition: transform 0.3s 0.3s;
+		&--show {
+			transform: translateX(0);
+		}
+		&--leave {
+			transform: translateX(100%);
+		}
+	}
+
+	&-icon {
+		position: absolute;
+		bottom: 9px;
+		right: -13px;
+	}
+}
+.msgitem {
+	margin-bottom: 10px;
+	border: 1px solid #ebeef5;
+	padding: 0 12px;
+	background-color: #fff;
+	header {
+		color: #000;
+		font-size: 15px;
+		line-height: 28px;
+		margin-bottom: 5px;
+	}
+	ul > li:last-child {
+		margin-bottom: 0;
+	}
+	&-no {
+		margin-bottom: 0;
+	}
+}
+.msg-li {
+	position: relative;
+	margin-bottom: 5px;
+	font-size: 14px;
+	line-height: 1.4;
+	padding: 5px 5px 5px 0;
+	cursor: pointer;
+	color: #000;
+	// color: #909399;
+	transform: translateX(250px);
+	border-top: 1px solid rgb(233, 233, 235);
+	transition-property: transform;
+	transition-duration: 0.3s;
+	&-dian {
+		width: 6px;
+		height: 6px;
+		border-radius: 50%;
+		position: absolute;
+		top: 11px;
+		left: -9px;
+		background-color: #d33a31;
+	}
+	&-nomsg {
+		text-align: center;
+	}
+}
 </style>
 

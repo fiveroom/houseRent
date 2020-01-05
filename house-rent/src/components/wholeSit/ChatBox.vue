@@ -69,8 +69,6 @@
 				document.execCommand("insertText", false, clp);
 			},
 			connectSer() {
-				console.log(`${webChatU}${this.userName}`);
-				// ws://192.168.3.26:8888/websocket/user
 				this.webK = new myWebS(`${webChatU}${this.userName}`);
 				this.webK.conSuss(() => {
 					console.log("连接用户成功");
@@ -125,19 +123,19 @@
 				this.mouseStatus = true;
 				this.oldX = e.offsetX;
 				this.oldY = e.offsetY;
-				console.log(e.offsetX, e.offsetY);
 			},
 			chatMove(e) {
-				e.preventDefault();
+				e.stopPropagation();
 				if (this.mouseStatus) {
 					this.$refs.chatF.style = "transform: translateX(0);";
 					this.$refs.chatF.style.left = e.clientX - this.oldX + "px";
 					this.$refs.chatF.style.top = e.clientY - this.oldY + "px";
 				}
-				console.log("dddd");
 			},
 			sendMsgKey(e){
-				console.log(e);
+				if(e.keyCode == 13){
+					this.enterMsg()
+				}
 			}
 		},
 		created() {
@@ -145,7 +143,6 @@
 			this.connectSer();
 		},
 		beforeDestroy() {
-			console.log("关闭");
 			this.webK.close();
 			document.documentElement.removeEventListener(
 				"mousemove",
@@ -179,7 +176,6 @@
 		}
 		&-b {
 			height: 300px;
-			position: relative;
 			background-color: #f5f5f5;
 		}
 		&-con {

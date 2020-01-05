@@ -60,7 +60,7 @@ const actions = {
     // 建立webSocket连接
     [types.GET_REMIND]({ commit, state }) {
         console.log('开始连接webSocket');
-        let webS = new myWebS(`${webMsg}/u_${state.user_id}`);
+        let webS = new myWebS(`${webMsg}u_${state.user_id}`);
         webS.conSuss(() => { userApi.findMsg({ user_id: state.user_id, noLoading: true }) });
         commit(types.UP_REMINDOBJ, webS)
         webS.message(data => {

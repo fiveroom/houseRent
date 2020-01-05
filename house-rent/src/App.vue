@@ -30,7 +30,7 @@ import RightSide from "@/components/wholeSit/RightSide";
 		font-family: PingFang SC, Hiragino Sans GB, Microsoft YaHei, Helvetica Neue,
 			Helvetica, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji,
 			Segoe UI Symbol !important;
-		min-height: 100%;
+		height: 100%;
 		padding: 0 !important;
 		overflow: auto !important;
 	}

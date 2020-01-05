@@ -16,7 +16,7 @@ const Axios = axiosExtra.create({
 // 192.168.3.5  李晓东
 // 39.106.122.19
 // 192.168.3.26  余展鹏
-Axios.defaults.baseURL = 'http://192.168.3.5:8888';
+Axios.defaults.baseURL = 'https://chenmaio.com';
 Axios.defaults.headers.post["Content-Type"] =
     "application/x-www-form-urlencoded";
 Axios.defaults.withCredentials = true;

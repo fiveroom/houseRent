@@ -23,7 +23,9 @@ import {
     Tooltip,
     Link,
     Image,
-    // Input
+    Radio,
+    RadioGroup,
+    Input
 } from 'element-ui';
 
 export default {
@@ -50,7 +52,10 @@ export default {
         Vue.use(Tooltip);
         Vue.use(Link);
         Vue.use(Image);
-        // Vue.use(Input);
+        Vue.use(Radio);
+        Vue.use(RadioGroup);
+        Vue.use(Input);
+        
 
         Vue.prototype.$notify = Notification;
         Vue.prototype.$msgBox = MessageBox;

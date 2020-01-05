@@ -21,13 +21,8 @@
         :center="center"
         :events="events"
       >
-        <!-- 标记 -->
         <el-amap-marker v-for="(marker, index) in markers" :position="marker" :key="index"></el-amap-marker>
-      <!-- 地图打点-->
-<!--          
-     <el-amap-circle v-for="circle in circles" :center="circle.center" :radius="circle.radius" :fill-opacity="circle.fillOpacity" 
-	 :events="circle.events"></el-amap-circle> -->
-      <!-- </el-amap> -->
+
       </el-amap>
       
     </div>

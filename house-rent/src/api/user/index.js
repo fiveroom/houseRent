@@ -17,7 +17,7 @@ export const login = (data, call) => {
 
 // 登录验证码
 export const getCode = data => {
-    return axios.post('/LoginRegistMgeSvr.assx/sendLoginCode', {...data, noLoading: true }).then(res => {
+    return axios.post('/LoginRegistMgeSvr.assx/sendLoginCode', { ...data, noLoading: true }).then(res => {
         if (res.data.Code == '200') {
             return { status: true, msg: res.data.Msg }
         }
@@ -54,7 +54,7 @@ export const registUser = data => {
 }
 
 // 注册验证码
-export const registUserCode = async(data) => {
+export const registUserCode = async (data) => {
     return await axios.post('/LoginRegistMgeSvr.assx/sendRegistCode', data).then(res => {
         if (res.data.Code == "200") {
             return { status: true, msg: '验证码获取成功' }
@@ -223,7 +223,7 @@ export const deleteOwnCollectBatch = (data, call) => {
 // {
 //     user_id: '2'
 // }
-export const queryOwnCollect = async(data) => {
+export const queryOwnCollect = async (data) => {
     return await axios.post('/UserMgeSvr.assx/queryOwnCollect', data).then(res => {
         // console.log('查询收藏', res);
         if (res.data.Code == 200) {
@@ -236,7 +236,7 @@ export const queryOwnCollect = async(data) => {
 }
 
 // 查看合同
-export const queryCtractIn = async(data) => {
+export const queryCtractIn = async (data) => {
     return await axios.post('/UserMgeSvr.assx/queryContractInfoOfUser', data).then(res => {
         // console.log('查看合同', res);
         if (res.data.Code == 200) {
@@ -310,7 +310,7 @@ export const orderTradeInfo = data => {
  * order_id 订单ID
  */
 export const checkOrderIsPaid = data => {
-    return axios.post('/UserMgeSvr.assx/checkOrderIsPaid', {...data, noLoading: true }).then(res => {
+    return axios.post('/UserMgeSvr.assx/checkOrderIsPaid', { ...data, noLoading: true }).then(res => {
         console.log(res, '交易记录');
         if (res.status == 200) {
             return { status: true, data: res.data, _Items: res.data.Data._Items }
@@ -357,7 +357,23 @@ export const findMsg = data => {
  */
 
 export const delMsg = data => {
-    return axios.post('/', {...data, noLoading: true }).then(res => {
+    return axios.post('/', { ...data, noLoading: true }).then(res => {
 
-    }).catch(() => {})
+    }).catch(() => { })
+}
+
+/**
+ * 查询管理员
+ */
+export const queryAdmin = () => {
+    return axios.post('/TopAdminMgeSvr.assx/queryAdmin', {
+        sizeNum: '',
+        skipNum: '',
+        searchName: '全能管理员',
+        noLoading: true
+    }).then(res => {
+        return { admin: res.data.Data._Items[0] }
+    }).catch(() => {
+        return { admin: {} }
+    })
 }

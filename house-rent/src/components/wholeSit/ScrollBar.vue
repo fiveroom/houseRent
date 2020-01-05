@@ -1,6 +1,7 @@
 <template>
-	<div ref="scrllBar">
-		<div ref="scrollContent" @mousewheel="runStatus.runScroll=true" class="scroll-content">
+	<div ref="scrllBar" class="scroll-box">
+		<!-- @mousewheel="runStatus.runScroll=true"  -->
+		<div ref="scrollContent" class="scroll-content">
 			<slot></slot>
 		</div>
 		<div
@@ -13,7 +14,6 @@
 		>
 			<div
 				ref="scrollBlock"
-				@mousemove.stop.prevent="mouseMoveScrollBlock"
 				@mouseup="alterMouseDownStu"
 				@mousedown="getMouseLocat"
 				class="scroll-slot__block"
@@ -24,11 +24,11 @@
 
 <script>
 	export default {
-		props: ['goBottom'],
+		props: ["goBottom"],
 		data() {
+			// runScroll: false, // 滚轮移动状态
 			let runStatus = {
 				timer: null, // 定时器序号
-				runScroll: false, // 滚轮移动状态
 				moveDone: true, // 滑块定时器完成状态
 				clickScrPieStatus: false // 点击滑块状态
 			};
@@ -46,13 +46,12 @@
 				runStatus,
 				scrollData,
 				observe,
-				eleSize
+				eleSize,
+				scrollStatus: false
 			};
 		},
 		watch: {
 			goBottom(newV, oldV) {
-				console.log('==============');
-				console.log( );
 				this.$refs.scrollContent.scrollTop = 100000;
 			}
 		},
@@ -61,9 +60,10 @@
 			 * 滑块随内容区移动
 			 */
 			changeScrBlockTop() {
-                this.getEleSize();
-				this.$refs.scrollSlot.style.width = "10px";
-				if (this.runStatus.runScroll || this.moveDone) {
+				this.getEleSize();
+				// this.$refs.scrollSlot.style.width = "10px";
+				// this.runStatus.runScroll
+				if (this.$refs.scrollContent.scrollTop != 0 || this.moveDone) {
 					clearInterval(this.runStatus.timer);
 					let ratioOut =
 						this.$refs.scrollContent.scrollTop /
@@ -78,7 +78,7 @@
 			moveScrBlockAnim(moveDis) {
 				let oldTop = this.$refs.scrollBlock.offsetTop;
 				this.runStatus.moveDone = false;
-				this.runStatus.runScroll = false;
+				// this.runStatus.runScroll = false;
 				clearInterval(this.runStatus.timer);
 				this.runStatus.timer = setInterval(() => {
 					let newTop = this.$refs.scrollBlock.offsetTop;
@@ -144,8 +144,7 @@
 			 * 添加内容取scroll事件
 			 */
 			removeScrollConEvent() {
-				this.$refs.scrollSlot.style.width = "15px";
-
+				// this.$refs.scrollSlot.style.width = "15px";
 				this.$refs.scrollContent.removeEventListener(
 					"scroll",
 					this.changeScrBlockTop
@@ -157,7 +156,7 @@
 			 * 移除内容取scroll事件
 			 */
 			addScrollConEvent() {
-				this.$refs.scrollSlot.style.width = "5px";
+				// this.$refs.scrollSlot.style.width = "5px";
 				this.$refs.scrollContent.addEventListener(
 					"scroll",
 					this.changeScrBlockTop
@@ -188,6 +187,7 @@
 			 * 滑块随鼠标移动
 			 */
 			mouseMoveScrollBlock(e) {
+				e.stopPropagation();
 				if (this.runStatus.clickScrPieStatus) {
 					let maxTop = this.eleSize.scrSlotH - this.eleSize.scrBlockH;
 					// console.log("最大top", maxTop);
@@ -229,22 +229,25 @@
 				);
 				this.eleSize.scrContentScrH = this.$refs.scrollContent.scrollHeight;
 				if (this.eleSize.scrContentH < this.eleSize.scrContentScrH) {
-					this.$refs.scrollSlot.style.width = "5px";
+					// this.$refs.scrollSlot.style.width = "5px";
 					let scrBlockH = (
 						(this.eleSize.scrSlotH * this.eleSize.scrContentH) /
 						this.eleSize.scrContentScrH
 					).toFixed(2);
-                    this.eleSize.scrBlockH = scrBlockH;
-                    // console.log('5px');
+					this.eleSize.scrBlockH = scrBlockH;
+					// console.log('5px');
 					this.$refs.scrollBlock.style.height = scrBlockH + "px";
 				} else {
-                    this.$refs.scrollSlot.style.width = "0";
-                }
+					// this.$refs.scrollSlot.style.width = "0";
+				}
+			},
+			dealMouseDup() {
+				this.runStatus.clickScrPieStatus = false;
 			}
 		},
 		mounted() {
 			this.observer = new MutationObserver(mutations => {
-                // console.log('object');
+				// console.log('object');
 				this.getEleSize();
 			});
 			this.getEleSize();
@@ -257,6 +260,11 @@
 				"scroll",
 				this.changeScrBlockTop
 			);
+			document.documentElement.addEventListener(
+				"mousemove",
+				this.mouseMoveScrollBlock
+			);
+			document.documentElement.addEventListener("mouseup", this.dealMouseDup);
 		},
 		beforeDestroyed() {
 			if (this.observer) {
@@ -264,11 +272,22 @@
 				this.observer.takeRecords();
 				this.observer = null;
 			}
+			document.documentElement.removeEventListener(
+				"mousemove",
+				this.mouseMoveScrollBlock
+			);
+			document.documentElement.removeEventListener(
+				"mouseup",
+				this.dealMouseDup
+			);
 		}
 	};
 </script>
 
 <style lang="scss" scoped>
+.scroll-box {
+	position: relative;
+}
 .scroll-content {
 	position: relative;
 	height: inherit;
@@ -280,7 +299,7 @@
 }
 .scroll-slot {
 	transition: width 0.2s;
-	width: 5px;
+	width: 14px;
 	height: 100%;
 	border-top: 0;
 	border-bottom: 0;
@@ -297,9 +316,9 @@
 		border-radius: 10px;
 		background-color: rgba($color: #aaa, $alpha: 0.4);
 		cursor: pointer;
-        &:hover{
-            background-color: #a8a8a8
-        }
+		&:hover {
+			background-color: #a8a8a8;
+		}
 	}
 }
 </style>

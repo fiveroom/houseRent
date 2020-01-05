@@ -25,6 +25,7 @@ import MyMsg from '@/components/userCom/MyMsg'; // 合同
 import MyChat from '@/components/userCom/MyChat'; // 合同
 
 import Page404 from '@/components/wholeSit/Page404'; // 404PAGE
+import Advisory from '@/views/Advisory'; // 咨询
 
 const originalPush = VueRouter.prototype.push
 VueRouter.prototype.push = function push(location) {
@@ -42,6 +43,11 @@ const routes = [{
         path: '/h',
         name: '房屋搜索',
         component: Houses
+    },    
+    {
+        path: '/advis',
+        name: '咨询',
+        component: Advisory
     },
     {
         path: '/hdetail',
