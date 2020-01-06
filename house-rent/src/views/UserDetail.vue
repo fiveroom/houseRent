@@ -78,14 +78,14 @@
 							title: "我的预约",
 							url: "/userDetail/mySubs"
 						},
-						{
-							title: "我的消息",
-							url: "/userDetail/myMsg"
-						},
-						{
-							title: "我的聊天",
-							url: "/userDetail/myChat"
-						}
+						// {
+						// 	title: "我的消息",
+						// 	url: "/userDetail/myMsg"
+						// },
+						// {
+						// 	title: "我的聊天",
+						// 	url: "/userDetail/myChat"
+						// }
 						// {
 						// 	title: "订单交易记录",
 						// 	url: "/userDetail/myOrderRecord"

@@ -59,9 +59,10 @@ const actions = {
     },
     // 建立webSocket连接
     [types.GET_REMIND]({ commit, state }) {
-        console.log('开始连接webSocket');
+        // console.log('开始连接webSocket');
         let webS = new myWebS(`${webMsg}u_${state.user_id}`);
-        webS.conSuss(() => { userApi.findMsg({ user_id: state.user_id, noLoading: true }) });
+        webS.conSuss(() => { userApi.findMsg({ user_id: state.user_id, noLoading: true });
+            console.log('nmsl'); });
         commit(types.UP_REMINDOBJ, webS)
         webS.message(data => {
             console.log(data, '=================');
@@ -75,7 +76,7 @@ const actions = {
         })
     },
     [types.DEL_REMIND]({ commit, state }, { mge_id, type }) {
-        // userApi.delMsg({ mge_id });
+        userApi.delMsg({ mge_id });
         commit(types.DEL_REMIND_LOCAT, { mge_id, type })
     }
 }
@@ -110,8 +111,9 @@ const mutations = {
     },
     [types.UP_REMIND](state, { type, data, arr }) {
         if (arr) {
-            console.log(data, 'push');
-            state[type].push(...data)
+            // console.log(data, 'push');
+            let arrMgeId = state[type].map(item => item.Mge_id);
+            state[type].push(...data.filter(item => !arrMgeId.includes(item.Mge_id)));
         } else {
             state[type] = data
         }

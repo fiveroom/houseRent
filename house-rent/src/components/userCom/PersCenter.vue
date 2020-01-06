@@ -62,8 +62,14 @@
 											class="user-do--base user-do--ok"
 											:to="`/userDetail/myOrder?con_id=${scope.row.Con_id}&house_id=${scope.row.House_id}`"
 										>查看账单</router-link>
-										<div class="user-do--base user-do--ok" @click="throwLease(scope.row, true)">退租</div>
-										<div class="user-do--base user-do--ok" @click="throwLease(scope.row)">续租</div>
+										<div
+											:class="['user-do--base',scope.row.retreatStu || scope.row.reletStu? 'user-do--no':'user-do--ok']"
+											@click="throwLease(scope.row, true)"
+										>{{scope.row.retreatStu?'已发起':'退租'}}</div>
+										<div
+											:class="['user-do--base',scope.row.reletStu || scope.row.retreatStu? 'user-do--no':'user-do--ok']"
+											@click="throwLease(scope.row)"
+										>{{scope.row.reletStu?'已发起':'续租'}}</div>
 									</div>
 								</template>
 							</el-table-column>
@@ -140,7 +146,10 @@
 											class="user-do--base user-do--ok"
 											@click="showMyOrder(scope.row.Con_id, scope.row.House_id)"
 										>查看账单</div>
-										<div class="user-do--base user-do--ok" @click="throwLease(scope.row)">续租</div>
+										<div
+											:class="['user-do--base',scope.row.reletStu? 'user-do--no':'user-do--ok']"
+											@click="throwLease(scope.row)"
+										>续租</div>
 									</div>
 								</template>
 							</el-table-column>
@@ -166,7 +175,7 @@
 					</div>
 				</div>
 			</el-dialog>
-			<el-dialog :visible.sync="rentOtherS" width="40%">
+			<el-dialog :visible.sync="rentOtherS" width="50%">
 				<header class="rent-header">{{rentType == 'retreat'?'退租申请':'续租申请'}}</header>
 				<div class="rent-conta">
 					<div class="rent-hou">
@@ -199,14 +208,14 @@
 							<p>退租时间</p>
 							<el-date-picker :clearable="false" v-model="rentRetDate" type="date" placeholder="退租时间"></el-date-picker>
 						</div>
-						<Mybutton class="rent-retreat-but" @clickTo="upRentInfo" title="提交退租申请" />
+						<Mybutton class="rent-retreat-but" @clickTo="upRentInfo(3)" title="提交退租申请" />
 					</div>
 					<div v-else class="rent-retreat">
 						<div class="rent-retreat-time">
 							<p>续租时间</p>
-							<el-date-picker :clearable="false" v-model="rentRetDate" type="datetime" placeholder="退租时间"></el-date-picker>
+							<el-date-picker :clearable="false" v-model="rentRetDate" type="datetime" placeholder="续租时间"></el-date-picker>
 						</div>
-						<Mybutton class="rent-retreat-but" @clickTo="upRentInfo" title="提交退租申请" />
+						<Mybutton class="rent-retreat-but" @clickTo="upRentInfo(2)" title="提交续租申请" />
 					</div>
 				</div>
 			</el-dialog>
@@ -217,7 +226,12 @@
 <script>
 	import { saveAs } from "file-saver";
 	import { mapGetters } from "vuex";
-	import { queryCtractIn, dowloadFile, addBespeak } from "@/api/user";
+	import {
+		queryCtractIn,
+		dowloadFile,
+		addBespeak,
+		queryRentStu
+	} from "@/api/user";
 	import { upConName, houseDetail } from "@/api/house";
 	export default {
 		data() {
@@ -241,7 +255,7 @@
 			};
 		},
 		computed: {
-			...mapGetters(["userId", "userName", "telDeal", "userAvater"]),
+			...mapGetters(["userId", "userName", "telDeal", "userAvater", "tel"]),
 			timeHint() {
 				let time = new Date().getHours();
 				switch (true) {
@@ -265,7 +279,7 @@
 			getCtractIn() {
 				this.$myLoadding.open(this.$refs.contract);
 				queryCtractIn({ user_id: this.userId, noLoading: true }).then(
-					res => {
+					async res => {
 						if (res.status) {
 							this.haveData = true;
 							switch (this.tabsIndex) {
@@ -285,6 +299,17 @@
 									);
 									break;
 							}
+							let arrResult = await Promise.all(
+								this.contractList.map(item => {
+									return queryRentStu({
+										user_id: this.userId,
+										house_id: item.House_id
+									});
+								})
+							);
+							this.contractList.forEach((item, index) => {
+								Object.assign(item, arrResult[index]);
+							});
 							this.contractList.sort(
 								(a, b) =>
 									new Date(b.Con_startTime) -
@@ -403,60 +428,82 @@
 					this.$notify.error(hint);
 				}
 			},
-			// 退租
+			// 退租续租
 			throwLease(rentData, retreat) {
-				this.rentData = rentData;
-				this.rentOtherS = true;
-				if (retreat) {
-					this.rentType = "retreat";
+				if (!rentData.done) {
+					this.rentData = rentData;
+					this.rentOtherS = true;
+					if (retreat) {
+						this.rentType = "retreat";
+					} else {
+						this.rentType = null;
+					}
+					houseDetail(
+						{ house_id: rentData.House_id, noLoading: true },
+						res => {
+							this.rentHouse = res.Data.House;
+							console.log(res, "结果");
+						}
+					);
 				} else {
-					this.rentType = null;
+					this.$notify.error({
+						message:
+							"不能重复预约，若需修改时间或取消，可前往我的预约中修改。",
+						title: "退租续租",
+						duration: 1000
+					});
 				}
-				houseDetail(
-					{ house_id: rentData.House_id, noLoading: true },
-					res => (this.rentHouse = res.Data.House)
-				);
 			},
 			// 提交退租续租申请
-			upRentInfo() {
+			upRentInfo(type) {
 				if (this.rentRetDate < new Date()) {
 					this.$notify.error({
-						title: "申请时间",
+						title: "预约时间",
 						duration: 1000,
 						showClose: true,
-						message: "不能小于当前时间"
+						message: "不能小于当前日期"
 					});
 				} else {
-					let obj = {
-						bespeak: JSON.stringify({
-							Bs_type: 1,
-							User_id: this.userId,
-							User_tel: this.cpUserTel,
-							House_id: this.rentData.House_id,
-							Admin_id: this.rentData.Admin_id,
-							Bs_time: this.getTimeCh(this.rentRetDate),
-							Bs_isDeal: false,
-							Bs_content: {
-								con_id: this.rentData.Con_id,
-								endTimeNew: this.rentRetDate
-							}
-						}),
-						noLoading: true
-					};
-					this.rentOtherS = false;
-					addBespeak(obj).then(res => {
-						let hint = {
-							title: "预约",
-							duration: 1000,
-							showClose: true,
-							message: res.msg
-						};
-						if (res.status) {
-							this.$notify.success(hint);
-						} else {
-							this.$notify.error(hint);
+					this.$msgBox.confirm(
+						`确认${type == 2 ? "续租" : "退租"}?`,
+						`${type == 2 ? "续租" : "退租"}`,
+						{
+							confirmButtonText: "确定",
+							cancelButtonText: "取消",
+							type: "warning"
 						}
-					});
+					).then(()=>{
+						let obj = {
+							bespeak: JSON.stringify({
+								Bs_type: type,
+								User_id: this.userId,
+								User_tel: this.tel,
+								House_id: this.rentData.House_id,
+								Admin_id: this.rentData.Admin_id,
+								Bs_time: `${this.getTimeCh(
+									this.rentRetDate
+								)} 00:00:00.000`,
+								Bs_isDeal: "N",
+								Bs_content: `{'con_id':'${this.rentData.Con_id}'}`
+							}),
+							noLoading: true
+						};
+						this.rentOtherS = false;
+						addBespeak(obj).then(res => {
+							let hint = {
+								title: "预约",
+								duration: 1000,
+								showClose: true,
+								message: res.msg
+							};
+							if (res.status) {
+								this.$notify.success(hint);
+							} else {
+								this.$notify.error(hint);
+							}
+							this.getCtractIn();
+						});
+					}).catch(()=>{});
 				}
 			}
 		},
@@ -503,266 +550,266 @@
 </script>
 
 <style lang="scss" scoped>
-$hoverColor: #00bfc8;
-$fontLightColor: #3dbcc6;
-$bacHoerClr: #3dbcc6;
-$NoHover: #999999;
-.header {
-	display: flex;
-	padding: 0 0 2rem 2rem;
-	border-bottom: 1px solid #f1f1f1;
-	&__left {
-		width: 12rem;
-		height: 12rem;
-		border-radius: 50%;
-		border: 0.2rem solid $fontLightColor;
-		overflow: hidden;
-		img {
-			height: 100%;
-			width: 100%;
+	$hoverColor: #00bfc8;
+	$fontLightColor: #3dbcc6;
+	$bacHoerClr: #3dbcc6;
+	$NoHover: #999999;
+	.header {
+		display: flex;
+		padding: 0 0 2rem 2rem;
+		border-bottom: 1px solid #f1f1f1;
+		&__left {
+			width: 12rem;
+			height: 12rem;
+			border-radius: 50%;
+			border: 0.2rem solid $fontLightColor;
+			overflow: hidden;
+			img {
+				height: 100%;
+				width: 100%;
+			}
+		}
+		&__right {
+			flex-grow: 1;
+			display: flex;
+			padding: 20px 0 0 40px;
+			justify-content: space-between;
+			&--name {
+				font-size: 2rem;
+				color: #000;
+				margin-bottom: 1rem;
+			}
+			&--hint {
+				color: $NoHover;
+			}
+			&__next {
+				font-size: 1.4rem;
+				color: $fontLightColor;
+				a {
+					color: $fontLightColor;
+				}
+			}
 		}
 	}
-	&__right {
-		flex-grow: 1;
-		display: flex;
-		padding: 20px 0 0 40px;
-		justify-content: space-between;
-		&--name {
-			font-size: 2rem;
-			color: #000;
-			margin-bottom: 1rem;
-		}
+	.contract-box {
+		position: relative;
+	}
+	.contract {
 		&--hint {
-			color: $NoHover;
+			height: 380px;
+		}
+		&-title {
+			padding: 3rem 0 2.4rem;
+			display: flex;
+			justify-content: space-between;
+			&__h {
+				line-height: 2.1rem;
+
+				span {
+					margin-left: 1.4rem;
+				}
+				font-size: 1.8rem;
+			}
+			color: #333;
+			&__s {
+			}
+		}
+		&--have {
+			border-bottom: 1px solid #f1f1f1;
+		}
+		&--no {
+			height: 200px;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			flex-direction: column;
+		}
+	}
+	.contract--no {
+		&__title {
+			font-size: 16px;
+			color: #999;
 		}
 		&__next {
-			font-size: 1.4rem;
-			color: $fontLightColor;
-			a {
-				color: $fontLightColor;
+			display: block;
+			background-color: #fff;
+			min-width: 180px;
+			width: auto;
+			height: 50px;
+			font-size: 1.8rem;
+			line-height: 4.6rem;
+			text-align: center;
+			border: 2px solid #3dbcc6;
+			border-radius: 33px;
+			box-sizing: border-box;
+			color: $hoverColor;
+			padding: 0 30px;
+			transition: all 0.2s;
+			margin-top: 2rem;
+			&:hover {
+				background-color: $bacHoerClr;
+				color: #fff;
 			}
 		}
 	}
-}
-.contract-box {
-	position: relative;
-}
-.contract {
-	&--hint {
-		height: 380px;
+	.user-do {
+		display: flex;
+		align-items: center;
+		&--base {
+			margin-right: 10px;
+			font-size: 12px;
+			display: block;
+			flex-shrink: 0;
+			transition: all 0.3s;
+			border: 1px solid #3dbcc6;
+			padding: 2px 10px;
+			border-radius: 2rem;
+			color: #00bfc8;
+		}
+		&--ok {
+			cursor: pointer;
+			&:hover {
+				color: #fff;
+				background-color: #3dbcc6;
+			}
+			&:active {
+				background-color: #2fa4ad;
+			}
+		}
+		&--no {
+			cursor: default;
+			background-color: rgba(0, 0, 0, 0.1);
+			background-color: rgba(0, 0, 0, 0.1);
+			color: #fff;
+			border-color: #dcdee1;
+		}
 	}
-	&-title {
-		padding: 3rem 0 2.4rem;
+
+	.mywrite {
+		&-box {
+		}
+		&-title {
+			font-size: 30px;
+			font-weight: bold;
+			width: fit-content;
+			margin: 0 auto 20px;
+		}
+		&-con {
+			width: fit-content;
+			flex-shrink: 0;
+			margin: 0 auto;
+			border: 1px solid #dddddd;
+		}
+		&-menu {
+			display: flex;
+			width: fit-content;
+			margin: 20px auto 0;
+			div {
+				width: 100px;
+			}
+			div:nth-of-type(2) {
+				margin: 0 20px;
+			}
+		}
+	}
+	::v-deep .el-dialog__header {
+		padding: 0;
+	}
+	::v-deep .el-input--prefix .el-input__inner {
+		border: 0;
+		border-bottom: 1px solid #999999;
+		font-size: 16px;
+		outline: none;
+		border-radius: 0;
+		padding: 0;
+	}
+	::v-deep .el-date-editor {
+		width: 100%;
 		display: flex;
 		justify-content: space-between;
-		&__h {
-			line-height: 2.1rem;
-
-			span {
-				margin-left: 1.4rem;
-			}
-			font-size: 1.8rem;
-		}
-		color: #333;
-		&__s {
-		}
-	}
-	&--have {
-		border-bottom: 1px solid #f1f1f1;
-	}
-	&--no {
-		height: 200px;
-		display: flex;
-		justify-content: center;
 		align-items: center;
-		flex-direction: column;
 	}
-}
-.contract--no {
-	&__title {
-		font-size: 16px;
-		color: #999;
-	}
-	&__next {
-		display: block;
-		background-color: #fff;
-		min-width: 180px;
+	::v-deep .el-date-editor.el-input {
 		width: auto;
-		height: 50px;
-		font-size: 1.8rem;
-		line-height: 4.6rem;
-		text-align: center;
-		border: 2px solid #3dbcc6;
-		border-radius: 33px;
-		box-sizing: border-box;
-		color: $hoverColor;
-		padding: 0 30px;
-		transition: all 0.2s;
-		margin-top: 2rem;
-		&:hover {
-			background-color: $bacHoerClr;
-			color: #fff;
-		}
 	}
-}
-.user-do {
-	display: flex;
-	align-items: center;
-	&--base {
-		margin-right: 10px;
-		font-size: 12px;
-		display: block;
-		flex-shrink: 0;
-		transition: all 0.3s;
-		border: 1px solid #3dbcc6;
-		padding: 2px 10px;
-		border-radius: 2rem;
-		color: #00bfc8;
+	::v-deep .el-icon-date::before {
+		content: "\e6df";
 	}
-	&--ok {
+	::v-deep .el-input__prefix {
+		position: static;
 		cursor: pointer;
-		&:hover {
-			color: #fff;
-			background-color: #3dbcc6;
-		}
-		&:active {
-			background-color: #2fa4ad;
-		}
+		font-size: 22px;
+		margin-left: 15px;
 	}
-	&--no {
-		cursor: default;
-		background-color: rgba(0, 0, 0, 0.1);
-		background-color: rgba(0, 0, 0, 0.1);
-		color: #fff;
-		border-color: #dcdee1;
-	}
-}
 
-.mywrite {
-	&-box {
+	::v-deep .el-tabs--border-card > .el-tabs__header .el-tabs__item.is-active {
+		color: #000;
 	}
-	&-title {
-		font-size: 30px;
-		font-weight: bold;
-		width: fit-content;
-		margin: 0 auto 20px;
+	::v-deep
+		.el-tabs--border-card
+		> .el-tabs__header
+		.el-tabs__item:not(.is-disabled):hover {
+		color: #000;
 	}
-	&-con {
-		width: fit-content;
-		flex-shrink: 0;
-		margin: 0 auto;
-		border: 1px solid #dddddd;
-	}
-	&-menu {
-		display: flex;
-		width: fit-content;
-		margin: 20px auto 0;
-		div {
-			width: 100px;
-		}
-		div:nth-of-type(2) {
-			margin: 0 20px;
-		}
-	}
-}
-::v-deep .el-dialog__header {
-	padding: 0;
-}
-::v-deep .el-input--prefix .el-input__inner {
-	border: 0;
-	border-bottom: 1px solid #999999;
-	font-size: 16px;
-	outline: none;
-	border-radius: 0;
-	padding: 0;
-}
-::v-deep .el-date-editor {
-	width: 100%;
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-}
-::v-deep .el-date-editor.el-input {
-	width: auto;
-}
-::v-deep .el-icon-date::before {
-	content: "\e6df";
-}
-::v-deep .el-input__prefix {
-	position: static;
-	cursor: pointer;
-	font-size: 22px;
-	margin-left: 15px;
-}
-
-::v-deep .el-tabs--border-card > .el-tabs__header .el-tabs__item.is-active {
-	color: #000;
-}
-::v-deep
-	.el-tabs--border-card
-	> .el-tabs__header
-	.el-tabs__item:not(.is-disabled):hover {
-	color: #000;
-}
-.house-info {
-	&__img {
-		display: block;
-		width: 100%;
-		img {
+	.house-info {
+		&__img {
+			display: block;
 			width: 100%;
-			height: 205px;
+			img {
+				width: 100%;
+				height: 205px;
+			}
+		}
+		&__d {
+			padding-top: 10px;
+		}
+		&__t {
+			display: inline-block;
+			color: #606266;
+			margin-bottom: 12px;
+			&:hover {
+				color: #3dbcc6;
+			}
 		}
 	}
-	&__d {
-		padding-top: 10px;
-	}
-	&__t {
-		display: inline-block;
-		color: #606266;
-		margin-bottom: 12px;
-		&:hover {
-			color: #3dbcc6;
-		}
-	}
-}
-.rent-header {
-	font-size: 20px;
-	color: #303133;
-	margin-top: -10px;
-	margin-bottom: 14px;
-}
-.rent-hou {
-	width: 380px;
-}
-.rent-info {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	margin-bottom: 15px;
-
-	& > div:first-child {
-		font-size: 16px;
+	.rent-header {
+		font-size: 20px;
 		color: #303133;
+		margin-top: -10px;
+		margin-bottom: 14px;
 	}
-}
-.rent-retreat {
-	padding-left: 10px;
-	height: fit-content;
-	margin: auto;
-	&-price {
-		margin-bottom: 2rem;
-		& > span:first-child {
+	.rent-hou {
+		width: 380px;
+	}
+	.rent-info {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 15px;
+
+		& > div:first-child {
 			font-size: 16px;
 			color: #303133;
 		}
 	}
-	&-time {
-		margin-bottom: 2rem;
+	.rent-retreat {
+		padding-left: 10px;
+		height: fit-content;
+		margin: auto;
+		&-price {
+			margin-bottom: 2rem;
+			& > span:first-child {
+				font-size: 16px;
+				color: #303133;
+			}
+		}
+		&-time {
+			margin-bottom: 2rem;
+		}
+		&-but {
+		}
 	}
-	&-but {
+	.rent-conta {
+		display: flex;
 	}
-}
-.rent-conta {
-	display: flex;
-}
 </style>

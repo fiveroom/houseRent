@@ -61,7 +61,7 @@
 			 */
 			changeScrBlockTop() {
 				this.getEleSize();
-				// this.$refs.scrollSlot.style.width = "10px";
+				this.$refs.scrollSlot.style.width = "10px";
 				// this.runStatus.runScroll
 				if (this.$refs.scrollContent.scrollTop != 0 || this.moveDone) {
 					clearInterval(this.runStatus.timer);
@@ -81,6 +81,7 @@
 				// this.runStatus.runScroll = false;
 				clearInterval(this.runStatus.timer);
 				this.runStatus.timer = setInterval(() => {
+					// console.log(this.$refs.scrollBlock);
 					let newTop = this.$refs.scrollBlock.offsetTop;
 					this.$refs.scrollBlock.style.top =
 						newTop + parseInt((moveDis - newTop) * 0.2) + "px";
@@ -144,7 +145,7 @@
 			 * 添加内容取scroll事件
 			 */
 			removeScrollConEvent() {
-				// this.$refs.scrollSlot.style.width = "15px";
+				this.$refs.scrollSlot.style.width = "15px";
 				this.$refs.scrollContent.removeEventListener(
 					"scroll",
 					this.changeScrBlockTop
@@ -156,7 +157,7 @@
 			 * 移除内容取scroll事件
 			 */
 			addScrollConEvent() {
-				// this.$refs.scrollSlot.style.width = "5px";
+				this.$refs.scrollSlot.style.width = "5px";
 				this.$refs.scrollContent.addEventListener(
 					"scroll",
 					this.changeScrBlockTop
@@ -228,8 +229,9 @@
 					)
 				);
 				this.eleSize.scrContentScrH = this.$refs.scrollContent.scrollHeight;
+
 				if (this.eleSize.scrContentH < this.eleSize.scrContentScrH) {
-					// this.$refs.scrollSlot.style.width = "5px";
+					this.$refs.scrollSlot.style.width = "5px";
 					let scrBlockH = (
 						(this.eleSize.scrSlotH * this.eleSize.scrContentH) /
 						this.eleSize.scrContentScrH
@@ -238,7 +240,7 @@
 					// console.log('5px');
 					this.$refs.scrollBlock.style.height = scrBlockH + "px";
 				} else {
-					// this.$refs.scrollSlot.style.width = "0";
+					this.$refs.scrollSlot.style.width = "0";
 				}
 			},
 			dealMouseDup() {
@@ -254,6 +256,7 @@
 			this.observer.observe(this.$refs.scrollContent, {
 				attributes: true,
 				subtree: true,
+				childList: true,
 				attributeOldValue: true
 			});
 			this.$refs.scrollContent.addEventListener(
@@ -285,40 +288,40 @@
 </script>
 
 <style lang="scss" scoped>
-.scroll-box {
-	position: relative;
-}
-.scroll-content {
-	position: relative;
-	height: inherit;
-	overflow-y: auto;
-	overflow-x: hidden;
-	&::-webkit-scrollbar {
-		width: 0px;
+	.scroll-box {
+		position: relative;
 	}
-}
-.scroll-slot {
-	transition: width 0.2s;
-	width: 14px;
-	height: 100%;
-	border-top: 0;
-	border-bottom: 0;
-	position: absolute;
-	top: 0;
-	right: 0;
-	background-color: rgba($color: #f5f5f5, $alpha: 0.7);
-	overflow: hidden;
-	&__block {
-		position: absolute;
-		transition: height 0.3s;
-		top: 0;
-		width: 100%;
-		border-radius: 10px;
-		background-color: rgba($color: #aaa, $alpha: 0.4);
-		cursor: pointer;
-		&:hover {
-			background-color: #a8a8a8;
+	.scroll-content {
+		position: relative;
+		height: inherit;
+		overflow-y: auto;
+		overflow-x: hidden;
+		&::-webkit-scrollbar {
+			width: 0px;
 		}
 	}
-}
+	.scroll-slot {
+		transition: width 0.2s;
+		width: 100%;
+		height: 100%;
+		border-top: 0;
+		border-bottom: 0;
+		position: absolute;
+		top: 0;
+		right: 0;
+		background-color: rgba($color: #f5f5f5, $alpha: 0.7);
+		overflow: hidden;
+		&__block {
+			position: absolute;
+			transition: height 0.3s;
+			top: 0;
+			width: 100%;
+			border-radius: 10px;
+			background-color: rgba($color: #aaa, $alpha: 0.4);
+			cursor: pointer;
+			&:hover {
+				background-color: #a8a8a8;
+			}
+		}
+	}
 </style>

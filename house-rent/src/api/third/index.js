@@ -1,5 +1,4 @@
 import axios from 'axios';
-import qs from 'qs';
 import { FW_WEBSERVER } from '@/api/type';
 
 // 区域查询
@@ -11,6 +10,10 @@ export const getDistrict = (data) => {
             extensions: 'base',
             key: FW_WEBSERVER
         }
+    }, {
+        headers: {
+            'Set-Cookie': 'widget_session=abc123; SameSite=None; Secure'
+        }
     }).then(res => res).catch(err => err)
 }
 
@@ -20,6 +23,10 @@ export const getCurrCity = () => {
         params: {
             output: 'JSON',
             key: FW_WEBSERVER
+        }
+    }, {
+        headers: {
+            'Set-Cookie': 'widget_session=abc123; SameSite=None; Secure'
         }
     }).then(res => res).catch(err => errr)
 }

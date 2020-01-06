@@ -17,7 +17,7 @@ export const login = (data, call) => {
 
 // 登录验证码
 export const getCode = data => {
-    return axios.post('/LoginRegistMgeSvr.assx/sendLoginCode', { ...data, noLoading: true }).then(res => {
+    return axios.post('/LoginRegistMgeSvr.assx/sendLoginCode', {...data, noLoading: true }).then(res => {
         if (res.data.Code == '200') {
             return { status: true, msg: res.data.Msg }
         }
@@ -30,7 +30,7 @@ export const getCode = data => {
 // 验证码登录
 export const logByCode = data => {
     return axios.post('/LoginRegistMgeSvr.assx/loginByCode', data).then(res => {
-        console.log(res, '验证码登录');
+        // console.log(res, '验证码登录');
         if (res.data.Code == '200') {
             return { status: true, msg: '登录成功', data: res.data.Data }
         }
@@ -43,7 +43,7 @@ export const logByCode = data => {
 // 注册
 export const registUser = data => {
     return axios.post('/LoginRegistMgeSvr.assx/registUser', data).then(res => {
-        console.log(res);
+        // console.log(res);
         if (res.data.Data.code == "200") {
             return { status: true, msg: '注册成功' }
         }
@@ -54,7 +54,7 @@ export const registUser = data => {
 }
 
 // 注册验证码
-export const registUserCode = async (data) => {
+export const registUserCode = async(data) => {
     return await axios.post('/LoginRegistMgeSvr.assx/sendRegistCode', data).then(res => {
         if (res.data.Code == "200") {
             return { status: true, msg: '验证码获取成功' }
@@ -70,7 +70,7 @@ export const registUserCode = async (data) => {
 // 查询用户电话
 export const queryTel = data => {
     return axios.post('/LoginRegistMgeSvr.assx/queryUserTel', data).then(res => {
-        console.log(res, '手机号');
+        // console.log(res, '手机号');
         if (res.data.Code == "600") {
             return { status: true, msg: '此手机号账户已存在，请更换手机号' }
         }
@@ -84,7 +84,7 @@ export const queryTel = data => {
 // 查询用户名称
 export const queryUName = data => {
     return axios.post('/LoginRegistMgeSvr.assx/queryUserName', data).then(res => {
-        console.log(res, '账户名');
+        // console.log(res, '账户名');
         if (res.data.Code == "700") {
             return { status: true, msg: '此账户名已存在，请更换账户名' }
         }
@@ -97,7 +97,7 @@ export const queryUName = data => {
 // 动态验证码
 export const editAuthCode = data => {
     return axios.post('/LoginRegistMgeSvr.assx/sendUpdateCode', data).then(res => {
-        console.log(res, '动态验证码');
+        // console.log(res, '动态验证码');
         if (res.data.Code == "200") {
             return { status: true, data: res.data.Data, msg: '验证码发送成功' }
         }
@@ -115,7 +115,7 @@ export const editAuthCode = data => {
  */
 export const upPwdUser = data => {
     return axios.post('/LoginRegistMgeSvr.assx/updatePasswordCode', data).then(res => {
-        console.log(res, '密码修改');
+        // console.log(res, '密码修改');
         if (res.data.Code == "200") {
             return { status: true, data: res.data.Data, msg: '密码修改成功' }
         }
@@ -140,7 +140,7 @@ export const updateUserInfo = (data) => {
 // 预约
 export const addBespeak = (data, call) => {
     return axios.post('/UserMgeSvr.assx/addBespeak', data).then(res => {
-        console.log(res);
+        // console.log(res);
         if (res.data.Code === "200") {
             return { status: true, msg: '预约成功' }
         }
@@ -153,7 +153,7 @@ export const addBespeak = (data, call) => {
 // 查看预约消息
 export const queryBespeak = data => {
     return axios.post('/UserMgeSvr.assx/queryOwnBespeak', data).then(res => {
-        console.log(res, '查看预约消息');
+        // console.log(res, '查看预约消息');
         if (res.data.Code == '200') {
             return { status: true, data: res.data.Data.bespeakList._Items }
         }
@@ -223,7 +223,7 @@ export const deleteOwnCollectBatch = (data, call) => {
 // {
 //     user_id: '2'
 // }
-export const queryOwnCollect = async (data) => {
+export const queryOwnCollect = async(data) => {
     return await axios.post('/UserMgeSvr.assx/queryOwnCollect', data).then(res => {
         // console.log('查询收藏', res);
         if (res.data.Code == 200) {
@@ -236,7 +236,7 @@ export const queryOwnCollect = async (data) => {
 }
 
 // 查看合同
-export const queryCtractIn = async (data) => {
+export const queryCtractIn = async(data) => {
     return await axios.post('/UserMgeSvr.assx/queryContractInfoOfUser', data).then(res => {
         // console.log('查看合同', res);
         if (res.data.Code == 200) {
@@ -295,7 +295,7 @@ export const payOrder = data => {
 // 支付记录
 export const orderTradeInfo = data => {
     return axios.post('/UserMgeSvr.assx/queryOrderTradeInfoOfUser', data).then(res => {
-        console.log(res, '交易记录');
+        // console.log(res, '交易记录');
         if (res.status == 200) {
             return { status: true, data: res.data, _Items: res.data.Data._Items }
         }
@@ -310,8 +310,8 @@ export const orderTradeInfo = data => {
  * order_id 订单ID
  */
 export const checkOrderIsPaid = data => {
-    return axios.post('/UserMgeSvr.assx/checkOrderIsPaid', { ...data, noLoading: true }).then(res => {
-        console.log(res, '交易记录');
+    return axios.post('/UserMgeSvr.assx/checkOrderIsPaid', {...data, noLoading: true }).then(res => {
+        // console.log(res, '交易记录');
         if (res.status == 200) {
             return { status: true, data: res.data, _Items: res.data.Data._Items }
         }
@@ -328,7 +328,7 @@ export const checkOrderIsPaid = data => {
  */
 export const queryContractInfoById = data => {
     return axios.post('UserMgeSvr.assx/queryContractInfoById', data).then(res => {
-        console.log(res, '合同详情');
+        // console.log(res, '合同详情');
         if (res.status == 200) {
             return { status: true, data: res.data }
         }
@@ -344,11 +344,11 @@ export const queryContractInfoById = data => {
  */
 
 export const findMsg = data => {
-    console.log('调用次数');
+    // console.log('调用次数');
     return axios.post('/socket/findMge', data).then(res => {
-        console.log(res);
+        // console.log(res);
     }).catch(err => {
-        console.log(err);
+        // console.log(err);
     })
 }
 
@@ -357,9 +357,9 @@ export const findMsg = data => {
  */
 
 export const delMsg = data => {
-    return axios.post('/', { ...data, noLoading: true }).then(res => {
-
-    }).catch(() => { })
+    return axios.post('/socket/deleteSysMessage', {...data, noLoading: true }).then(res => {
+        console.log(res, '删除啊啊啊啊');
+    }).catch(() => {})
 }
 
 /**
@@ -375,5 +375,34 @@ export const queryAdmin = () => {
         return { admin: res.data.Data._Items[0] }
     }).catch(() => {
         return { admin: {} }
+    })
+}
+
+/**
+ * 判断退租续租
+ */
+
+
+export const queryRentStu = data => {
+    return axios.post('/AdminMgeSvr.assx/checkExitOrContinueBespeakIsExisted', {
+        ...data,
+        noLoading: true
+    }).then(res => {
+        if (res.data.Code == '200') {
+            let { exitHouseBespeakIsExisted: retreatStu, continueHouseBespeakIsExisted: reletStu } = res.data.Data;
+            return { retreatStu, reletStu, done: retreatStu || reletStu }
+        } else {
+            return {
+                retreatStu: true, // 退租
+                reletStu: true, // 续租
+                done: true,
+            }
+        }
+    }).catch(() => {
+        return {
+            retreatStu: true,
+            reletStu: true,
+            done: true
+        }
     })
 }

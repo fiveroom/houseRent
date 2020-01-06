@@ -43,7 +43,7 @@ const routes = [{
         path: '/h',
         name: '房屋搜索',
         component: Houses
-    },    
+    },
     {
         path: '/advis',
         name: '咨询',
@@ -90,7 +90,7 @@ const routes = [{
         },
         children: [{
                 path: '',
-                name: '个人中心',
+                name: '',
                 component: PersCenter
             }, {
                 // 个人中心
@@ -119,12 +119,6 @@ const routes = [{
                 name: '修改手机号',
                 path: '/userDetail/editPhone',
                 component: EditPhone
-            },
-            {
-                // 修改手机号
-                name: '修改手机号',
-                path: '/userDetail/editEmail',
-                component: NoContent
             },
             {
                 name: '我的账单',

@@ -2,7 +2,7 @@ import axios from '@/config/axios';
 // 条件搜索房源
 export const searchHouse = (data, call) => {
     return axios.post('/UserMgeSvr.assx/queryHouseByColumn', data).then(res => {
-        console.log(res, '房屋信息');
+        // console.log(res, '房屋信息');
         call && call(res.data)
     }).catch(err => {
         call && call(err)
@@ -25,15 +25,15 @@ export const queryByT = async(data) => {
 
 export const houseDetail = (data, call) => {
     return axios.post('/UserMgeSvr.assx/queryHouseById', data).then(res => {
-        console.log(res, '------------------------------------');
+        // console.log(res, '------------------------------------');
         if (res.data.Code === "200") {
             call && call({ status: true, Data: res.data.Data });
         } else {
-            call && call({ status: false, Data: res.data.Msg });
+            call && call({ status: false, Data: { House: {} } });
         }
         return res
     }).catch(err => {
-        call && call({ status: false, Data: err });
+        call && call({ status: false, Data: { House: {} } });
         return err
     })
 }
@@ -79,7 +79,7 @@ export const upConName = data => {
             "Content-Type": "multipart/form-data"
         }
     }).then(res => {
-        console.log(res, '上传合同');
+        // console.log(res, '上传合同');
         if (res.data.code === "200") {
             return { status: true, msg: '合同上传成功' }
         }

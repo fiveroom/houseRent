@@ -335,7 +335,7 @@
 			},
 			getHotHouse() {
 				queryHotH().then(res => {
-					console.log(res);
+					// console.log(res);
 					if (res.status) {
 						this.hotHouses = res.data;
 						for (let i = 0; i < 3; i++) {

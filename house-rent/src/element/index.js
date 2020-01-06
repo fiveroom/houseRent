@@ -25,7 +25,8 @@ import {
     Image,
     Radio,
     RadioGroup,
-    Input
+    Input,
+    Badge
 } from 'element-ui';
 
 export default {
@@ -55,7 +56,8 @@ export default {
         Vue.use(Radio);
         Vue.use(RadioGroup);
         Vue.use(Input);
-        
+        Vue.use(Badge);
+
 
         Vue.prototype.$notify = Notification;
         Vue.prototype.$msgBox = MessageBox;

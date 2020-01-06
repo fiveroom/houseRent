@@ -122,5 +122,8 @@ $NoHover: #999999;
 			color: #fff;
 		}
 	}
-}
+}	
+::v-deep .el-table--border::after, .el-table--group::after, .el-table::before{
+		z-index: 0;
+	}
 </style>

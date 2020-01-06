@@ -323,7 +323,7 @@
 							this.$route.query.House_id || this.$route.query.house_id
 					},
 					res => {
-						console.log(res.status, "status");
+						// console.log(res.status, "status");
 						if (res.status) {
 							this.HousePicture = res.Data.HousePicture._Items.map(
 								item => {
@@ -548,9 +548,6 @@
 		},
 		beforeDestroy() {
 			window.removeEventListener("scroll", this.judgeheight);
-		},
-		destroyed() {
-			// window.removeEventListener("scroll", this.judgeheight);
 		},
 		components: {
 			Amap

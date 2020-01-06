@@ -101,10 +101,9 @@
 							item.houseCollectNumM = resArr[index].num;
 						});
 						this.arrCollect = res.data;
-						this.arrCollect.sort((a,b)=>{
-							// return a. 
-						
-						})
+						this.arrCollect.sort((a, b) => {
+							// return a.
+						});
 						this.$myLoadding.hide();
 					}
 				);
@@ -134,10 +133,10 @@
 					});
 				} else {
 					this.$notify.error({
-							title: "收藏",
-							duration: 1000,
-							message: '当前未选取收藏房源'
-						});
+						title: "收藏",
+						duration: 1000,
+						message: "当前未选取收藏房源"
+					});
 				}
 			}
 		},
@@ -269,5 +268,10 @@
 				margin-right: 15px;
 			}
 		}
+	}
+	::v-deep .el-table--border::after,
+	.el-table--group::after,
+	.el-table::before {
+		z-index: 0;
 	}
 </style>
