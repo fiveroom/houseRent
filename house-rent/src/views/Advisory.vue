@@ -193,7 +193,7 @@
 				}
 			},
 			queryAdmin() {
-				queryAdmin().then(data => {
+				queryAdmin('全能管理员').then(data => {
 					this.admin = data.admin;
 				});
 			},

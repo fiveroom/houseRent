@@ -52,14 +52,8 @@ export class myWebS {
     }
 }
 
-// 192.168.3.5  李晓东
-// 39.106.122.19
-// 192.168.3.26  余展鹏
+// 192.168.3.5:8888  李晓东
+// 39.106.122.19:8888  服务器
+// 192.168.3.26:8888  余展鹏
 export const webChatU = 'ws://39.106.122.19:8888/websocket/';
-export const webMsg = 'ws://192.168.3.5:8888/socketServer/';
-
-// export default {
-//     myWebS,
-//     webChatU,
-//     webMsg
-// }
+export const webMsg = 'ws://39.106.122.19:8888/socketServer/';
