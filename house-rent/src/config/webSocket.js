@@ -56,7 +56,7 @@ export class myWebS {
 // 39.106.122.19
 // 192.168.3.26  余展鹏
 export const webChatU = 'ws://39.106.122.19:8888/websocket/';
-export const webMsg = 'ws://39.106.122.19:8888/socketServer/';
+export const webMsg = 'ws://192.168.3.5:8888/socketServer/';
 
 // export default {
 //     myWebS,

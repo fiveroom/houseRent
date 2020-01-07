@@ -381,8 +381,6 @@ export const queryAdmin = () => {
 /**
  * 判断退租续租
  */
-
-
 export const queryRentStu = data => {
     return axios.post('/AdminMgeSvr.assx/checkExitOrContinueBespeakIsExisted', {
         ...data,
@@ -391,12 +389,11 @@ export const queryRentStu = data => {
         if (res.data.Code == '200') {
             let { exitHouseBespeakIsExisted: retreatStu, continueHouseBespeakIsExisted: reletStu } = res.data.Data;
             return { retreatStu, reletStu, done: retreatStu || reletStu }
-        } else {
-            return {
-                retreatStu: true, // 退租
-                reletStu: true, // 续租
-                done: true,
-            }
+        }
+        return {
+            retreatStu: true, // 退租
+            reletStu: true, // 续租
+            done: true,
         }
     }).catch(() => {
         return {
@@ -404,5 +401,33 @@ export const queryRentStu = data => {
             reletStu: true,
             done: true
         }
+    })
+}
+
+
+/**
+ * String bs_type, int user_id, int house_id
+ */
+export const quLookHDesStu = data => {
+    return axios.post('/UserMgeSvr.assx/checkBespeakIsExisted', {
+        ...data,
+        noLoading: true
+    }).then(res => {
+        console.log(res);
+        return res
+    }).catch(() => {
+        return { status: false }
+    })
+}
+
+// CancelOrRejectBespeak int bs_id, int sig
+export const cancelBes = data => {
+    return axios.post('/AdminMgeSvr.assx/CancelOrRejectBespeak', data).then(res => {
+        if (res.data.Code == '200') {
+            return { status: true, msg: '操作成功' }
+        }
+        return { status: false, msg: '操作失败' }
+    }).catch(err => {
+        return { status: false, msg: '操作失败' }
     })
 }

@@ -7,21 +7,26 @@
 			</div>
 			<div class="mybestype">
 				<el-radio-group class="mybestype-l" v-model="basIndex">
-					<el-badge is-dot class="mybadge" v-for="item in bespeakType" :key="item.index">
+					<el-badge
+						:class="['mybadge',item.index==3?'mybadge-no':'']"
+						v-for="item in bespeakType"
+						:key="item.index"
+						:is-dot="bsRemind.some(value => value.Mge_type == item.index)"
+					>
 						<el-radio :label="item.index">{{item.name}}</el-radio>
 					</el-badge>
 				</el-radio-group>
 				<span class="mybestype-spli">|</span>
 				<el-radio-group class="mybestype-r" v-model="basType">
-					<el-badge is-dot class="mybadge">
-						<el-radio label="Y">已处理</el-radio>
+					<el-badge :is-dot="bsRemind.some(value => value.Mge_type == basIndex)" class="mybadge">
+						<el-radio label="Y">已受理</el-radio>
 					</el-badge>
-					<el-badge is-dot class="mybadge">
+					<el-badge class="mybadge">
 						<el-radio label="N">未处理</el-radio>
 					</el-badge>
-					<el-badge is-dot v-show="basIndex==1" class="mybadge mybadge-no">
+					<!-- <el-badge v-show="basIndex==1" class="mybadge mybadge-no">
 						<el-radio label="S">已看房</el-radio>
-					</el-badge>
+					</el-badge>-->
 				</el-radio-group>
 			</div>
 		</header>
@@ -31,11 +36,13 @@
 				<router-link class="subs-box--no__next" to="/h">去找房</router-link>
 			</li>
 			<li v-else>
+				<!-- @selection-change="checkSubsNum(value)=>{checkSubs = value}" -->
 				<el-table
 					:data="arrSubs"
 					ref="collTable"
 					height="500"
-					@selection-change="(value)=>{checkSubs = value}"
+					@row-click="choiceCurrRow"
+					@selection-change="value=>checkSubs=value"
 				>
 					<el-table-column type="selection"></el-table-column>
 					<el-table-column :label="timeType" width="110px">
@@ -64,15 +71,17 @@
 					</el-table-column>
 					<el-table-column label="状态">
 						<template slot-scope="scope">
-							<div class="hint-status">
-								<span>{{getDealStu(scope.row.bs_isDeal).msg}}</span>
-								<div
-									class="hint-status__icon"
-									:style="{'background-color':getDealStu(scope.row.bs_isDeal).color}"
-								>
-									<i class="el-icon-check"></i>
+							<el-badge :is-dot="bsRemind.some(item => item.Link_id == scope.row.bs_id)" class="besinfo">
+								<div class="hint-status">
+									<span>{{getDealStu(scope.row.bs_isDeal).msg}}</span>
+									<div
+										class="hint-status__icon"
+										:style="{'background-color':getDealStu(scope.row.bs_isDeal).color}"
+									>
+										<i class="el-icon-check"></i>
+									</div>
 								</div>
-							</div>
+							</el-badge>
 						</template>
 					</el-table-column>
 					<el-table-column label="工作人员电话">
@@ -93,7 +102,7 @@
 				<div class="eidt-mycol">
 					<div class="eidt-mycol__do">
 						<div @click="$refs.collTable.clearSelection()">取消</div>
-						<div @click="removeColl">移除预约</div>
+						<div @click="removeColl">{{basIndex != 1?'取消预约':'移除预约'}}</div>
 					</div>
 				</div>
 			</li>
@@ -112,7 +121,8 @@
 
 <script>
 	import * as userApi from "@/api/user";
-	import { mapGetters, mapState } from "vuex";
+	import { mapGetters, mapState, mapActions } from "vuex";
+	import { fail } from "assert";
 	export default {
 		data() {
 			let bespeakType = [
@@ -166,8 +176,7 @@
 		computed: {
 			...mapGetters(["userId"]),
 			...mapState({
-				bsRemind: state => state.user.bsRemind,
-				conRemind: state => state.user.conRemind
+				bsRemind: state => state.user.bsRemind
 			}),
 			timeType() {
 				switch (this.basIndex) {
@@ -192,6 +201,7 @@
 		},
 		// 1,看房，2,续住，3,退租
 		methods: {
+			...mapActions(["delRemind"]),
 			querySubs() {
 				let obj = {
 					noLoading: true,
@@ -204,15 +214,15 @@
 					this.haveData = res.status;
 					switch (this.basType) {
 						case "Y":
-							if (this.basIndex != 1) {
-								this.arrSubs = res.data.filter(item => {
-									return item.bs_isDeal != "N";
-								});
-							} else {
-								this.arrSubs = res.data.filter(item => {
-									return item.bs_isDeal == "Y";
-								});
-							}
+							// if (this.basIndex != 1) {
+							this.arrSubs = res.data.filter(item => {
+								return item.bs_isDeal != "N";
+							});
+							// } else {
+							// this.arrSubs = res.data.filter(item => {
+							// return item.bs_isDeal == "Y";
+							// });
+							// }
 							break;
 						case "N":
 							this.arrSubs = res.data.filter(item => {
@@ -231,29 +241,84 @@
 					this.$myLoadding.hide();
 				});
 			},
+			// 移除取消预约执行
 			async delMySubs() {
 				this.$myLoadding.open(this.$refs.subsBox);
-				let asyArr = this.checkSubs.map(item => {
-					return userApi.delBespeak({
-						bs_id: item.bs_id,
-						noLoading: true
+				if (this.basIndex == 1) {
+					let asyArr = this.checkSubs.map(item => {
+						return userApi.delBespeak({
+							bs_id: item.bs_id,
+							noLoading: true
+						});
 					});
-				});
-				let res = await Promise.all(asyArr);
-				res.forEach(item => {
-					if (!item.status) {
-						this.$notify({ ...this.hintMs, message: item.msg });
-					}
-				});
+					let res = await Promise.all(asyArr);
+					res.forEach(item => {
+						if (!item.status) {
+							this.$notify({ ...this.hintMs, message: item.msg });
+						}
+					});
+				} else {
+					let res = await Promise.all(
+						this.checkSubs.map(item => {
+							return userApi.cancelBes({
+								bs_id: item.bs_id
+							});
+						})
+					);
+					let obj = {
+						title: this.basIndex == 2 ? "续租" : "退租",
+						duration: 1000,
+						showClose: false
+					};
+					res.forEach(item => {
+						if (!item.status) {
+							this.$notify.success({
+								...obj,
+								message: item.msg
+							});
+						} else {
+							this.$notify.error({
+								...obj,
+								message: item.msg
+							});
+						}
+					});
+				}
 				this.$myLoadding.hide();
 				this.querySubs();
 			},
+			// 移除取消预约判断
 			removeColl() {
 				if (this.checkSubs.length == 0) {
 					this.$notify.warning({
 						...this.hintMs,
 						message: "未选择预约消息"
 					});
+				} else if (this.basIndex != 1) {
+					if (this.checkSubs.some(item => item.bs_isDeal != "N")) {
+						this.$notify.error({
+							title: "退租续租",
+							message: "只可取消未处理过的",
+							duration: 1000,
+							showClose: false
+						});
+					} else {
+						this.$msgBox({
+							title: "退租续租取消提示",
+							message: "取消后将不再处理。是否继续？",
+							showCancelButton: true,
+							confirmButtonText: "继续",
+							cancelButtonText: "取消",
+							beforeClose: (action, instance, done) => {
+								if (action === "confirm") {
+									done();
+									this.delMySubs();
+								} else {
+									done();
+								}
+							}
+						}).then(() => {});
+					}
 				} else if (
 					this.checkSubs.some(item => {
 						return item.bs_isDeal == "N";
@@ -270,16 +335,19 @@
 							if (action === "confirm") {
 								done();
 								this.delMySubs();
+								this.checkSubs.forEach(item =>
+									this.delLookMsg(item)
+								);
 							} else {
 								done();
 							}
 						}
 					}).then(() => {});
-					// this.delMySubs();
 				} else {
 					this.delMySubs();
 				}
 			},
+			// 关闭弹窗信息处理
 			handleClose(done) {
 				if (this.oldDate != this.subDate) {
 					this.$msgBox({
@@ -303,6 +371,7 @@
 				}
 				done();
 			},
+			// 编辑预约信息
 			editSubsDo() {
 				let now = new Date();
 				let date = new Date(this.subDate);
@@ -334,6 +403,7 @@
 					});
 				}
 			},
+			// 打开弹出框
 			openDiag(row) {
 				if (row.bs_isDeal == "N") {
 					this.editSbusId = row.bs_id;
@@ -356,6 +426,7 @@
 					date.getSeconds()
 				)}`;
 			},
+			// 处理状态
 			getDealStu(value) {
 				switch (value) {
 					case "N":
@@ -375,6 +446,22 @@
 					case "R":
 						return { msg: "管理员拒绝", color: "#f56c6c" };
 				}
+			},
+			// 删除消息
+			delLookMsg(row) {
+				for (let i = 0; i < this.bsRemind.length; i++) {
+					if (this.bsRemind[i].Link_id == row.bs_id) {
+						this.delRemind({
+							mge_id: this.bsRemind[i].Mge_id,
+							type: "bs"
+						});
+					}
+				}
+			},
+			// 选中当前行
+			choiceCurrRow(row) {
+				this.$refs.collTable.toggleRowSelection(row);
+				this.delLookMsg(row)
 			}
 		},
 		mounted() {
@@ -637,10 +724,13 @@
 		vertical-align: initial;
 		margin-right: 20px;
 		&-no {
-			margin-right: 20px;
+			margin-right: 0;
 		}
 	}
 	::v-deep .mybadge.el-badge__content.is-fixed.is-dot {
 		right: 20px !important;
+	}
+	.besinfo {
+		margin: 5px;
 	}
 </style>

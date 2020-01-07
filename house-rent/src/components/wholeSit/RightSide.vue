@@ -199,17 +199,17 @@
 				}
 			},
 			showMsg(mge_id, type) {
-				let url = null;
 				switch (type) {
 					case "bs":
-						url = "/userDetail/mySubs";
+						this.$router.push("/userDetail/mySubs");
 						break;
 					case "con":
-						url = "/userDetail/persCenter";
+						this.$router.push("/userDetail/persCenter");
+						break;
+					default:
+						this.delRemind({ mge_id, type });
 						break;
 				}
-				this.delRemind({ mge_id, type });
-				url && this.$router.push(url);
 			}
 		},
 		created() {},

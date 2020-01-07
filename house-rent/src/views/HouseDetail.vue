@@ -343,6 +343,13 @@
 								.then(res => {
 									this.houseCollectNumM = res.num;
 								});
+							// userApi.quLookHDesStu({
+							// 	bs_type: '1',
+							// 	user_id: this.userId,
+							// 	house_id: this.House.House_id
+							// }).then(res=>{
+
+							// })
 						}
 					}
 				);

@@ -5,7 +5,7 @@ import axiosExtra from "axios-extra";
 import { showLoading, tryHideLoading } from './otherLoadding';
 const Axios = axiosExtra.create({
     axios,
-    timeout: 4000,
+    timeout: 6000,
     queueOptions: {
         retry: 2, // 重试次数
         retryIsJump: true

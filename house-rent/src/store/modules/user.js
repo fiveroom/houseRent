@@ -45,7 +45,7 @@ const getters = {
 }
 
 const actions = {
-    async [types.LOGIN_USER]({ dispatch, commit, state }, logoInfo) {
+    async [types.LOGIN_USER]({ dispatch, commit }, logoInfo) {
         let res = await userApi.login(logoInfo)
         if (res.status) {
             commit(types.SAVE_USER, res.Data);
@@ -61,8 +61,7 @@ const actions = {
     [types.GET_REMIND]({ commit, state }) {
         // console.log('开始连接webSocket');
         let webS = new myWebS(`${webMsg}u_${state.user_id}`);
-        webS.conSuss(() => { userApi.findMsg({ user_id: state.user_id, noLoading: true });
-            console.log('nmsl'); });
+        webS.conSuss(() => { userApi.findMsg({ user_id: state.user_id, noLoading: true }) });
         commit(types.UP_REMINDOBJ, webS)
         webS.message(data => {
             console.log(data, '=================');
@@ -75,7 +74,7 @@ const actions = {
             }
         })
     },
-    [types.DEL_REMIND]({ commit, state }, { mge_id, type }) {
+    [types.DEL_REMIND]({ commit }, { mge_id, type }) {
         userApi.delMsg({ mge_id });
         commit(types.DEL_REMIND_LOCAT, { mge_id, type })
     }
