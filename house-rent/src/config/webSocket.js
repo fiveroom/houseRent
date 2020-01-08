@@ -9,6 +9,10 @@ export class myWebS {
         console.log('连接啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊');
         this.webS = new WebSocket(this.url);
         this.webS.onerror = this.error
+        this.webS.onclose = () => {
+            console.log('websocket 断开: ' + e.code + ' ' + e.reason + ' ' + e.wasClean)
+            this.init()
+        };
     }
 
     // 发送数据
@@ -20,6 +24,16 @@ export class myWebS {
     close() {
         console.log('关闭连接');
         this.webS.close();
+    }
+
+    // 关闭回调
+    closeCall(e) {
+        console.log('websocket 断开: ' + e.code + ' ' + e.reason + ' ' + e.wasClean)
+        console.log(this);
+        if (e.code != 1000) {
+            this.init()
+        }
+        console.log(e)
     }
 
     // 接受消息
@@ -55,5 +69,8 @@ export class myWebS {
 // 192.168.3.5:8888  李晓东
 // 39.106.122.19:8888  服务器
 // 192.168.3.26:8888  余展鹏
-export const webChatU = 'ws://39.106.122.19:8888/websocket/';
-export const webMsg = 'ws://39.106.122.19:8888/socketServer/';
+const Lxd = '192.168.3.5:8888';
+const ServerA = '39.106.122.19:8888';
+const Yzp = '192.168.3.26:8888';
+export const webChatU = `ws://${ServerA}/websocket/`;
+export const webMsg = `ws://${ServerA}/socketServer/`;

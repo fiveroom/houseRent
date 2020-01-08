@@ -187,8 +187,11 @@
 				);
 				if (arrOldOrder.every(item => item.Order_isPaid == "Y")) {
 					this.$myLoadding.open(this.$refs.MyOrder, "等待支付中");
+					userApi.payOrder({out_trade_no: order_id, total_amount: payAmount}).then(res=>{
+						console.log(res, '=======================');
+					})
 					window.open(
-						`${PAY_ZHIFUBAO}?order_id=${order_id}&payAmount=${payAmount}`,
+						`${PAY_ZHIFUBAO}?out_trade_no=${order_id}&total_amount=${payAmount}`,
 						"_self"
 					);
 				} else {

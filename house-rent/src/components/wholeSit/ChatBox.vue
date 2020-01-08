@@ -61,56 +61,69 @@
 		methods: {
 			pasteMsg(e) {
 				e.preventDefault();
-
 				var clp = (e.originalEvent || e).clipboardData.getData(
 					"text/plain"
 				);
 				clp = clp.replace(/(<([^>]+)>)/gi, "");
 				document.execCommand("insertText", false, clp);
 			},
+			// 连接服务器
 			connectSer() {
 				this.webK = new myWebS(`${webChatU}${this.userName}`);
 				this.webK.conSuss(() => {
 					console.log("连接用户成功");
 				});
 				this.webK.message(data => {
-					if(data.isSelf){
+					if (data.isSelf) {
 						let div = document.createElement("div");
 						div.classList.add("admin-chat", "chat-msg");
 						div.innerHTML = `<div class="admin-chat-avator chat-msg-avator">
-														<img src="${this.admin.Admin_avaterPath || this.defCover}" alt />
-													</div>
-													<div class="admin-chat-con chat-msg-con">
-														${data.content}
-														<div class="admin-chat-con__l chat-msg-con_l">
-															<i class="el-icon-caret-left"></i>
-															<i class="el-icon-arrow-left admin-chat-con__l-line"></i>
-														</div>
-													</div>`;
+								<img src="${this.admin.Admin_avaterPath || this.defCover}" alt />
+							</div>
+							<div class="admin-chat-con chat-msg-con">
+								${data.content.data}
+								<div class="admin-chat-con__l chat-msg-con_l">
+									<i class="el-icon-caret-left"></i>
+									<i class="el-icon-arrow-left admin-chat-con__l-line"></i>
+								</div>
+							</div>`;
 						this.$refs.chatCon.appendChild(div);
 						this.goBot = !this.goBot;
 					}
 				});
 			},
-			enterMsg() {
+			// 发送消息
+			enterMsg(htmlData) {
 				if (this.myText.length) {
 					let div = document.createElement("div");
 					div.classList.add("user-chat", "chat-msg");
 					div.innerHTML = `<div class="user-chat-avator chat-msg-avator"><img src="${this
 						.userAvater || this.defCover}" alt />
-																</div>
-																<div class="user-chat-con chat-msg-con">
-																	${this.myText}
-																	<div class="user-chat-con__l chat-msg-con_l">
-																		<i class="el-icon-caret-right"></i>
-																	</div>
-																</div>
-															`;
+							</div>
+							<div class="user-chat-con chat-msg-con">
+								${this.myText}
+								<div class="user-chat-con__l chat-msg-con_l">
+									<i class="el-icon-caret-right"></i>
+								</div>
+							</div>
+						`;
+					let sendContent = null;
+					if (htmlData) {
+						sendContent = {
+							type: "html",
+							data: "1"
+						};
+					} else {
+						sendContent = {
+							type: "text",
+							data: this.myText
+						};
+					}
 					this.webK.send(
 						JSON.stringify({
-							content: this.myText,
+							content: sendContent,
 							nickname: this.userName,
-							nickname2: this.admin.Admin_realName,
+							nickname2: this.admin.Admin_name
 						})
 					);
 					this.$refs.chatCon.appendChild(div);
@@ -132,9 +145,9 @@
 					this.$refs.chatF.style.top = e.clientY - this.oldY + "px";
 				}
 			},
-			sendMsgKey(e){
-				if(e.keyCode == 13){
-					this.enterMsg()
+			sendMsgKey(e) {
+				if (e.keyCode == 13) {
+					this.enterMsg();
 				}
 			}
 		},

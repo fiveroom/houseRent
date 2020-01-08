@@ -16,7 +16,10 @@ const Axios = axiosExtra.create({
 // http://192.168.3.5:8888  李晓东
 // http://39.106.122.19:8888
 // http://192.168.3.26:8888  余展鹏
-Axios.defaults.baseURL = 'http://39.106.122.19:8888';
+const Lxd = 'http://192.168.3.5:8888';
+const ServerA = 'http://39.106.122.19:8888';
+const Yzp = 'http://192.168.3.26:8888';
+Axios.defaults.baseURL = ServerA;
 Axios.defaults.headers.post["Content-Type"] =
     "application/x-www-form-urlencoded";
 Axios.defaults.withCredentials = true;

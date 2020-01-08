@@ -71,7 +71,10 @@
 					</el-table-column>
 					<el-table-column label="状态">
 						<template slot-scope="scope">
-							<el-badge :is-dot="bsRemind.some(item => item.Link_id == scope.row.bs_id)" class="besinfo">
+							<el-badge
+								:is-dot="bsRemind.some(item => item.Link_id == scope.row.bs_id && item.Mge_type == basIndex)"
+								class="besinfo"
+							>
 								<div class="hint-status">
 									<span>{{getDealStu(scope.row.bs_isDeal).msg}}</span>
 									<div
@@ -450,7 +453,10 @@
 			// 删除消息
 			delLookMsg(row) {
 				for (let i = 0; i < this.bsRemind.length; i++) {
-					if (this.bsRemind[i].Link_id == row.bs_id) {
+					if (
+						this.bsRemind[i].Link_id == row.bs_id &&
+						this.bsRemind[i].Mge_type == this.basIndex
+					) {
 						this.delRemind({
 							mge_id: this.bsRemind[i].Mge_id,
 							type: "bs"
@@ -461,7 +467,7 @@
 			// 选中当前行
 			choiceCurrRow(row) {
 				this.$refs.collTable.toggleRowSelection(row);
-				this.delLookMsg(row)
+				this.delLookMsg(row);
 			}
 		},
 		mounted() {
@@ -493,7 +499,7 @@
 			font-size: 1.8rem;
 			line-height: 2.1rem;
 
-			span {
+			& > span {
 				margin-left: 15px;
 			}
 		}

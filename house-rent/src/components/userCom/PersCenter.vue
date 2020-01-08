@@ -1,4 +1,5 @@
 <template>
+	<!-- 1未生效  2待签字 3已生效  4 失效 -->
 	<div>
 		<header class="header">
 			<div class="header__left">
@@ -24,7 +25,10 @@
 			</div>
 			<div class="contract-box" ref="contract">
 				<el-tabs type="border-card" @tab-click="({index})=>{tabsIndex = index}">
-					<el-tab-pane label="生效中">
+					<el-tab-pane>
+						<div slot="label" class="per-heder-box">
+							<el-badge :is-dot="conRemind.some(item=>item.Mge_type == 3)" class="per-heder-badge">生效中</el-badge>
+						</div>
 						<div v-if="contractList.length == 0" class="contract--hint">
 							<div class="contract--no">
 								<p class="contract--no__title">您还没有履行中的合同，快去签约吧！～</p>
@@ -34,17 +38,20 @@
 						<el-table
 							v-else
 							:data="contractList"
-							ref="orderTable"
+							ref="orderTable0"
 							@selection-change="(value)=>{checkOrderCon = value}"
 							height="380"
+							@row-click="choiceCurrRow"
 						>
 							<el-table-column label="签约房源地址">
 								<template slot-scope="scope">
-									<router-link
-										style="color: #606266"
-										:to="`/hdetail?House_id=${scope.row.House_id}`"
-										title="查看房屋详情"
-									>{{scope.row.House_address}}</router-link>
+									<el-badge :is-dot="conRemind.some(item=>item.Link_id == scope.row.Con_id)" class="besinfo">
+										<router-link
+											style="color: #606266"
+											:to="`/hdetail?House_id=${scope.row.House_id}`"
+											title="查看房屋详情"
+										>{{scope.row.House_address}}</router-link>
+									</el-badge>
 								</template>
 							</el-table-column>
 							<el-table-column label="合同签约时区" width="260px">
@@ -75,7 +82,10 @@
 							</el-table-column>
 						</el-table>
 					</el-tab-pane>
-					<el-tab-pane label="待签字">
+					<el-tab-pane>
+						<div slot="label" class="per-heder-box">
+							<el-badge :is-dot="conRemind.some(item=>item.Mge_type == 2)" class="per-heder-badge">待签字</el-badge>
+						</div>
 						<div v-if="contractList.length == 0" class="contract--hint">
 							<div class="contract--no">
 								<p class="contract--no__title">您还没有创建合同，快去签约吧！～</p>
@@ -85,17 +95,20 @@
 						<el-table
 							v-else
 							:data="contractList"
-							ref="orderTable"
+							ref="orderTable1"
 							@selection-change="(value)=>{checkOrderCon = value}"
 							height="380"
+							@row-click="choiceCurrRow"
 						>
 							<el-table-column label="签约房源地址">
 								<template slot-scope="scope">
-									<router-link
-										style="color: #606266"
-										:to="`/hdetail?House_id=${scope.row.House_id}`"
-										title="查看房屋详情"
-									>{{scope.row.House_address}}</router-link>
+									<el-badge :is-dot="conRemind.some(item=>item.Link_id == scope.row.Con_id)" class="besinfo">
+										<router-link
+											style="color: #606266"
+											:to="`/hdetail?House_id=${scope.row.House_id}`"
+											title="查看房屋详情"
+										>{{scope.row.House_address}}</router-link>
+									</el-badge>
 								</template>
 							</el-table-column>
 							<el-table-column label="合同签约时区" width="260px">
@@ -115,20 +128,26 @@
 							</el-table-column>
 						</el-table>
 					</el-tab-pane>
-					<el-tab-pane label="已失效">
+					<el-tab-pane>
+						<div slot="label" class="per-heder-box">
+							<el-badge :is-dot="conRemind.some(item=>item.Mge_type == 4)" class="per-heder-badge">已失效</el-badge>
+						</div>
 						<el-table
 							:data="contractList"
-							ref="orderTable"
+							ref="orderTable2"
 							@selection-change="(value)=>{checkOrderCon = value}"
 							height="380"
+							@row-click="choiceCurrRow"
 						>
 							<el-table-column label="签约房源地址">
 								<template slot-scope="scope">
-									<router-link
-										style="color: #606266"
-										:to="`/hdetail?House_id=${scope.row.House_id}`"
-										title="查看房屋详情"
-									>{{scope.row.House_address}}</router-link>
+									<el-badge :is-dot="conRemind.some(item=>item.Link_id == scope.row.Con_id)" class="besinfo">
+										<router-link
+											style="color: #606266"
+											:to="`/hdetail?House_id=${scope.row.House_id}`"
+											title="查看房屋详情"
+										>{{scope.row.House_address}}</router-link>
+									</el-badge>
 								</template>
 							</el-table-column>
 							<el-table-column label="合同签约时区" width="260px">
@@ -202,7 +221,7 @@
 					<div v-if="rentType == 'retreat'" class="rent-retreat">
 						<div class="rent-retreat-price">
 							<span>当前时间应退租金:&nbsp;&nbsp;</span>
-							<span>30000</span>
+							<span>{{rentPrice}}</span>
 						</div>
 						<div class="rent-retreat-time">
 							<p>退租时间</p>
@@ -225,12 +244,14 @@
 
 <script>
 	import { saveAs } from "file-saver";
-	import { mapGetters } from "vuex";
+	import { mapGetters, mapState, mapActions } from "vuex";
 	import {
 		queryCtractIn,
 		dowloadFile,
 		addBespeak,
-		queryRentStu
+		queryRentStu,
+		getConIdByOrder,
+		getRefund
 	} from "@/api/user";
 	import { upConName, houseDetail } from "@/api/house";
 	export default {
@@ -251,11 +272,17 @@
 				rentType: null, // 续租退租类别
 				tabsIndex: "0",
 				rentHouse: {},
-				rentData: {}
+				rentData: {},
+				arrMsgConId: [],
+				rentPrice: null
 			};
 		},
 		computed: {
 			...mapGetters(["userId", "userName", "telDeal", "userAvater", "tel"]),
+			...mapState({
+				conRemind: state => state.user.conRemind,
+				payRemind: state => state.user.payRemind
+			}),
 			timeHint() {
 				let time = new Date().getHours();
 				switch (true) {
@@ -275,6 +302,7 @@
 			}
 		},
 		methods: {
+			...mapActions(["delRemind"]),
 			// 获取合同
 			getCtractIn() {
 				this.$myLoadding.open(this.$refs.contract);
@@ -445,6 +473,7 @@
 							console.log(res, "结果");
 						}
 					);
+					this.getCurrRefund();
 				} else {
 					this.$notify.error({
 						message:
@@ -453,6 +482,23 @@
 						duration: 1000
 					});
 				}
+			},
+			// 查询退还金额
+			getCurrRefund() {
+				getRefund({
+					con_id: this.rentData.Con_id,
+					dayTime: `${this.getTimeCh(this.rentRetDate)} 00:00:00.000` 
+				}).then(res => {
+					if(res.status){
+						this.rentPrice = res.price
+					} else {
+						this.$notify.error({
+							duration: 1000,
+							message: '服务器故障请稍后再试',
+							title: '退租'
+						})
+					}
+				});
 			},
 			// 提交退租续租申请
 			upRentInfo(type) {
@@ -464,46 +510,73 @@
 						message: "不能小于当前日期"
 					});
 				} else {
-					this.$msgBox.confirm(
-						`确认${type == 2 ? "续租" : "退租"}?`,
-						`${type == 2 ? "续租" : "退租"}`,
-						{
-							confirmButtonText: "确定",
-							cancelButtonText: "取消",
-							type: "warning"
-						}
-					).then(()=>{
-						let obj = {
-							bespeak: JSON.stringify({
-								Bs_type: type,
-								User_id: this.userId,
-								User_tel: this.tel,
-								House_id: this.rentData.House_id,
-								Admin_id: this.rentData.Admin_id,
-								Bs_time: `${this.getTimeCh(
-									this.rentRetDate
-								)} 00:00:00.000`,
-								Bs_isDeal: "N",
-								Bs_content: `{'con_id':'${this.rentData.Con_id}'}`
-							}),
-							noLoading: true
-						};
-						this.rentOtherS = false;
-						addBespeak(obj).then(res => {
-							let hint = {
-								title: "预约",
-								duration: 1000,
-								showClose: true,
-								message: res.msg
-							};
-							if (res.status) {
-								this.$notify.success(hint);
-							} else {
-								this.$notify.error(hint);
+					this.$msgBox
+						.confirm(
+							`确认${type == 2 ? "续租" : "退租"}?`,
+							`${type == 2 ? "续租" : "退租"}`,
+							{
+								confirmButtonText: "确定",
+								cancelButtonText: "取消",
+								type: "warning"
 							}
-							this.getCtractIn();
+						)
+						.then(() => {
+							let obj = {
+								bespeak: JSON.stringify({
+									Bs_type: type,
+									User_id: this.userId,
+									User_tel: this.tel,
+									House_id: this.rentData.House_id,
+									Admin_id: this.rentData.Admin_id,
+									Bs_time: `${this.getTimeCh(
+										this.rentRetDate
+									)} 00:00:00.000`,
+									Bs_isDeal: "N",
+									Bs_content: `{'con_id':'${this.rentData.Con_id}'}`
+								}),
+								noLoading: true
+							};
+							this.rentOtherS = false;
+							addBespeak(obj).then(res => {
+								let hint = {
+									title: "预约",
+									duration: 1000,
+									showClose: true,
+									message: res.msg
+								};
+								if (res.status) {
+									this.$notify.success(hint);
+								} else {
+									this.$notify.error(hint);
+								}
+								this.getCtractIn();
+							});
+						})
+						.catch(() => {});
+				}
+			},
+			// 根据订单id获取合同id
+			queryConIdByMsg() {
+				let res = Promise.all(
+					this.payRemind.map(item => {
+						return getConIdByOrder({ order_id: item.Link_id });
+					})
+				);
+			},
+			// 删除消息
+			choiceCurrRow(row) {
+				this.delLookMsg(row);
+			},
+			// 删除消息
+			delLookMsg(row) {
+				for (let i = 0; i < this.conRemind.length; i++) {
+					if (this.conRemind[i].Link_id == row.Con_id) {
+						this.delRemind({
+							mge_id: this.conRemind[i].Mge_id,
+							type: "con"
 						});
-					}).catch(()=>{});
+						break;
+					}
 				}
 			}
 		},
@@ -545,6 +618,9 @@
 			tabsIndex(newV, oldV) {
 				this.getCtractIn();
 			}
+		},
+		created() {
+			this.queryConIdByMsg();
 		}
 	};
 </script>
@@ -811,5 +887,11 @@
 	}
 	.rent-conta {
 		display: flex;
+	}
+	.per-heder-badge {
+		line-height: initial;
+	}
+	.besinfo {
+		margin: 5px;
 	}
 </style>

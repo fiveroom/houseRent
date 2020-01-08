@@ -492,7 +492,6 @@
 			}
 		}
 	}
-
 	.search {
 		background-color: #fbfbfb;
 		border-bottom: 1px solid #f3f3f3;

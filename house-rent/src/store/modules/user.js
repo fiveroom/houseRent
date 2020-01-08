@@ -75,8 +75,12 @@ const actions = {
         })
     },
     [types.DEL_REMIND]({ commit }, { mge_id, type }) {
-        userApi.delMsg({ mge_id });
-        commit(types.DEL_REMIND_LOCAT, { mge_id, type })
+        userApi.delMsg({ mge_id }).then(res => {
+            console.log(res, '删除状态');
+            if (res) {
+                commit(types.DEL_REMIND_LOCAT, { mge_id, type })
+            }
+        });
     }
 }
 
