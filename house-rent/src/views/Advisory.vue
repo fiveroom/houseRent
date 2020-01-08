@@ -283,26 +283,26 @@
 			// 发送格式转换
 			sendHouse(index) {
 				let htmlData = `
-							<div class="advh-item advh-item--min">
-								<div class="advh-item__cover">
-										<img src="${this.houseData[index].House_coverPic}" alt />
-									</div>
-									<article class="advh-item__info">
-									<p class="advh-item__info__t">${this.houseData[index].House_title}</p>
-									<p>
-										<span>${this.houseData[index].House_shape}</span>
-										<span class="advh-item__info__spli">|</span>
-										<span>${this.houseData[index].House_direction}</span>
-										<span class="advh-item__info__spli">|</span>
-										<span>${this.houseData[index].House_area}㎡</span>
-									</p>
-									<p>
-										<span>${this.houseData[index].House_rent}</span>
-										<span class="advh-item__info__spli">|</span>
-										<span>${this.getChname(this.houseData[index].House_months)}</span>
-									</p>
-								</article>
-							</div>`;
+				<div class="advh-item advh-item--min">
+					<div class="advh-item__cover">
+							<img src="${this.houseData[index].House_coverPic}" alt />
+						</div>
+						<article class="advh-item__info">
+						<p class="advh-item__info__t">${this.houseData[index].House_title}</p>
+						<p>
+							<span>${this.houseData[index].House_shape}</span>
+							<span class="advh-item__info__spli">|</span>
+							<span>${this.houseData[index].House_direction}</span>
+							<span class="advh-item__info__spli">|</span>
+							<span>${this.houseData[index].House_area}㎡</span>
+						</p>
+						<p>
+							<span>${this.houseData[index].House_rent}</span>
+							<span class="advh-item__info__spli">|</span>
+							<span>${this.getChname(this.houseData[index].House_months)}</span>
+						</p>
+					</article>
+				</div>`;
 				this.butUserMsg(htmlData, index);
 			},
 			// 获取房子支付类别

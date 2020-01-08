@@ -29,11 +29,15 @@ export default {
         //定义显示隐藏的方法  open 会传入一个text 字符串。如果有则赋值给组件内默认值。
         let timer = null;
         const myLoadingMethod = {
-            open(el, text, stu) {
+            open(el, text, stu, img, mini) {
                 Profile.show = true;
                 if (text) {
                     Profile.text = text
                 }
+                if (img) {
+                    Profile.imgOut = img
+                }
+                Profile.mini = mini
                 if (el) {
                     el.appendChild(Profile.$el);
                     Profile.el = true

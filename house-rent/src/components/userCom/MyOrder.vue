@@ -4,7 +4,6 @@
 			<i class="el-icon-edit-outline"></i>
 			<span>我的账单</span>
 		</header>
-
 		<div v-if="orderList.length != 0" class="house-info">
 			<div class="house-info__l">
 				<div class="house-info__cov">
@@ -45,10 +44,16 @@
 					:border="true"
 					ref="orderTable"
 					height="400"
+					@row-click="choiceCurrRow"
 				>
-					<!-- @selection-change="(value)=>{checkOrderCon = value}" -->
-					<!-- @row-click="rowClick" -->
-					<!-- <el-table-column type="selection" :selectable="row=>row.Order_isPaid == 'N'"></el-table-column> -->
+					<el-table-column label="订单ID" width="100">
+						<template slot-scope="scope">
+							<el-badge
+								:is-dot="payRemind.some(item=>item.Link_id == scope.row.Order_id)"
+								class="besinfo"
+							>{{scope.row.Order_id}}</el-badge>
+						</template>
+					</el-table-column>
 					<el-table-column label="截止日期">
 						<template slot-scope="scope">
 							<span>{{scope.row.Order_time | getTime}}</span>
@@ -88,6 +93,7 @@
 	import * as userApi from "@/api/user";
 	import { houseDetail } from "@/api/house";
 	import { PAY_ZHIFUBAO } from "@/api/type";
+	import { mapState, mapActions } from "vuex";
 	export default {
 		props: { con_id: null, house_id: null },
 		data() {
@@ -95,14 +101,19 @@
 				orderList: [],
 				HousePicture: null,
 				House: {},
-				Admin: {},
+				Admin: {}
 				// checkOrderIndex: [],  // 选中的行
 			};
 		},
 		computed: {
-			...mapGetters(["userId"])
+			...mapGetters(["userId"]),
+			...mapState({
+				payRemind: state => state.user.payRemind
+			})
 		},
 		methods: {
+			...mapActions(["delRemind"]),
+			// 查询订单
 			getMyOrder() {
 				this.$myLoadding.open(this.$refs.MyOrder);
 				userApi
@@ -130,10 +141,11 @@
 						this.$myLoadding.hide();
 					});
 			},
-
+			// 判断支付状态
 			judegPayStatus(should, realy) {
+				console.log(should, realy, "=============================");
 				switch (true) {
-					case should === realy:
+					case should === realy || should < realy:
 						return {
 							status: 1
 						};
@@ -149,7 +161,7 @@
 						};
 				}
 			},
-
+			// 获取房子信息
 			getHouseInfo() {
 				houseDetail(
 					{
@@ -164,7 +176,7 @@
 					}
 				);
 			},
-
+			// 状态样式
 			hintStatusStlye(value) {
 				switch (true) {
 					case value == 1:
@@ -179,7 +191,7 @@
 						};
 				}
 			},
-
+			// 去支付
 			toPayOrder(order_id, payAmount) {
 				let arrOldOrder = this.orderList.slice(
 					0,
@@ -187,9 +199,14 @@
 				);
 				if (arrOldOrder.every(item => item.Order_isPaid == "Y")) {
 					this.$myLoadding.open(this.$refs.MyOrder, "等待支付中");
-					userApi.payOrder({out_trade_no: order_id, total_amount: payAmount}).then(res=>{
-						console.log(res, '=======================');
-					})
+					userApi
+						.payOrder({
+							out_trade_no: order_id,
+							total_amount: payAmount
+						})
+						.then(res => {
+							console.log(res, "=======================");
+						});
 					window.open(
 						`${PAY_ZHIFUBAO}?out_trade_no=${order_id}&total_amount=${payAmount}`,
 						"_self"
@@ -203,12 +220,26 @@
 					});
 				}
 			},
-
 			// rowClick(row) {
 			// 	this.$refs.orderTable.toggleRowSelection(row);
 			// }
+			// 选取当前行消息
+			choiceCurrRow(row) {
+				this.delLookMsg(row);
+			},
+			// 删除消息
+			delLookMsg(row) {
+				for (let i = 0; i < this.payRemind.length; i++) {
+					if (this.payRemind[i].Link_id == row.Order_id) {
+						this.delRemind({
+							mge_id: this.payRemind[i].Mge_id,
+							type: "pay"
+						});
+						break;
+					}
+				}
+			}
 		},
-
 		mounted() {
 			this.getMyOrder();
 			this.getHouseInfo();
@@ -237,171 +268,173 @@
 </script>
 
 <style lang="scss" scoped>
-	$hoverColor: #00bfc8;
-	$fontLightColor: #3dbcc6;
-	$bacHoerClr: #3dbcc6;
-	$NoHover: #999999;
-	.header {
-		padding-bottom: 3rem;
-		font-size: 1.8rem;
-		line-height: 2.1rem;
-		border-bottom: 1px solid #f1f1f1;
-		color: #333;
-		span {
-			margin-left: 15px;
-		}
+$hoverColor: #00bfc8;
+$fontLightColor: #3dbcc6;
+$bacHoerClr: #3dbcc6;
+$NoHover: #999999;
+.header {
+	padding-bottom: 3rem;
+	font-size: 1.8rem;
+	line-height: 2.1rem;
+	border-bottom: 1px solid #f1f1f1;
+	color: #333;
+	span {
+		margin-left: 15px;
 	}
+}
 
-	.house-info {
-		margin-left: 10px;
-		height: 130px;
+.house-info {
+	margin-left: 10px;
+	height: 130px;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	&__cov {
+		width: 150px;
+		height: 90px;
+		img {
+			width: 100%;
+			height: 100%;
+		}
+	}
+	&__l {
 		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		&__cov {
-			width: 150px;
-			height: 90px;
-			background-color: red;
-			img {
-				width: 100%;
-				height: 100%;
-			}
-		}
-		&__l {
-			display: flex;
-		}
 	}
-	.house-detail {
-		margin-left: 16px;
-		display: flex;
-		flex-direction: column;
-		justify-content: space-between;
-		&__t {
-			font-size: 22px;
-			font-weight: bold;
-			cursor: pointer;
-			transition: color 0.3;
-			&:hover {
-				color: rgb(61, 188, 198);
-			}
-		}
-	}
-	.house-price {
-		font-size: 20px;
-		&__pledge {
-			font-size: 16px;
-			color: rgb(102, 102, 102);
-			&--l {
-				margin-left: 10px;
-			}
-		}
-	}
-	.order-box {
-		position: relative;
-	}
-	.order {
-		&--have {
-			border-bottom: 1px solid #f1f1f1;
-		}
-		&--no {
-			height: 200px;
-			display: flex;
-			justify-content: center;
-			align-items: center;
-			flex-direction: column;
-		}
-	}
-	.order--no {
-		&__title {
-			font-size: 16px;
-			color: #999;
-		}
-		&__next {
-			display: block;
-			background-color: #fff;
-			min-width: 180px;
-			width: auto;
-			height: 50px;
-			font-size: 1.8rem;
-			line-height: 4.6rem;
-			text-align: center;
-			border: 2px solid #3dbcc6;
-			border-radius: 33px;
-			box-sizing: border-box;
-			color: $hoverColor;
-			padding: 0 30px;
-			transition: all 0.2s;
-			margin-top: 2rem;
-			&:hover {
-				background-color: $bacHoerClr;
-				color: #fff;
-			}
-		}
-	}
-
-	.admin {
-		display: flex;
-		margin-left: 10px;
-		&-info {
-			padding: 12px 12px 0;
-			p:first-of-type {
-				font-size: 18px;
-				color: #000;
-			}
-			p:last-of-type {
-				margin-top: 4px;
-				font-size: 15px;
-				color: #9f9f9f;
-			}
-		}
-		&-avator {
-			width: 60px;
-			height: 60px;
-			img {
-				border-radius: 50%;
-				overflow: hidden;
-				height: 100%;
-				width: 100%;
-			}
-		}
-		&-see {
-			margin-bottom: 20px;
-		}
-	}
-	.hint-status {
-		display: flex;
-		align-items: center;
-		&__icon {
-			height: 20px;
-			line-height: 20px;
-			width: 34px;
-			text-align: center;
-			border-radius: 2em;
-			font-size: 16px;
-			color: #fff;
-			margin-left: 10px;
-			i {
-				font-weight: bolder;
-			}
-			background-color: rgba(0, 0, 0, 0.2);
-			&--succuss {
-				background-color: rgb(103, 194, 58);
-			}
-		}
-	}
-	.table-order {
-		border: 1px solid #f1f1f1;
-		padding: 10px;
-	}
-	.topay {
-		color: #3dbcc6;
+}
+.house-detail {
+	margin-left: 16px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	&__t {
+		font-size: 22px;
+		font-weight: bold;
 		cursor: pointer;
+		transition: color 0.3;
+		&:hover {
+			color: rgb(61, 188, 198);
+		}
 	}
-	.many-item {
+}
+.house-price {
+	font-size: 20px;
+	&__pledge {
+		font-size: 16px;
+		color: rgb(102, 102, 102);
+		&--l {
+			margin-left: 10px;
+		}
 	}
-	::v-deep .el-table--border::after,
-	.el-table--group::after,
-	.el-table::before {
-		z-index: 0;
+}
+.order-box {
+	position: relative;
+}
+.order {
+	&--have {
+		border-bottom: 1px solid #f1f1f1;
 	}
+	&--no {
+		height: 200px;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		flex-direction: column;
+	}
+}
+.order--no {
+	&__title {
+		font-size: 16px;
+		color: #999;
+	}
+	&__next {
+		display: block;
+		background-color: #fff;
+		min-width: 180px;
+		width: auto;
+		height: 50px;
+		font-size: 1.8rem;
+		line-height: 4.6rem;
+		text-align: center;
+		border: 2px solid #3dbcc6;
+		border-radius: 33px;
+		box-sizing: border-box;
+		color: $hoverColor;
+		padding: 0 30px;
+		transition: all 0.2s;
+		margin-top: 2rem;
+		&:hover {
+			background-color: $bacHoerClr;
+			color: #fff;
+		}
+	}
+}
+
+.admin {
+	display: flex;
+	margin-left: 10px;
+	&-info {
+		padding: 12px 12px 0;
+		p:first-of-type {
+			font-size: 18px;
+			color: #000;
+		}
+		p:last-of-type {
+			margin-top: 4px;
+			font-size: 15px;
+			color: #9f9f9f;
+		}
+	}
+	&-avator {
+		width: 60px;
+		height: 60px;
+		img {
+			border-radius: 50%;
+			overflow: hidden;
+			height: 100%;
+			width: 100%;
+		}
+	}
+	&-see {
+		margin-bottom: 20px;
+	}
+}
+.hint-status {
+	display: flex;
+	align-items: center;
+	&__icon {
+		height: 20px;
+		line-height: 20px;
+		width: 34px;
+		text-align: center;
+		border-radius: 2em;
+		font-size: 16px;
+		color: #fff;
+		margin-left: 10px;
+		i {
+			font-weight: bolder;
+		}
+		background-color: rgba(0, 0, 0, 0.2);
+		&--succuss {
+			background-color: rgb(103, 194, 58);
+		}
+	}
+}
+.table-order {
+	border: 1px solid #f1f1f1;
+	padding: 10px;
+}
+.topay {
+	color: #3dbcc6;
+	cursor: pointer;
+}
+.many-item {
+}
+::v-deep .el-table--border::after,
+.el-table--group::after,
+.el-table::before {
+	z-index: 0;
+}
+.besinfo {
+	margin: 5px;
+}
 </style>

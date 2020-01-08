@@ -9,7 +9,7 @@ export class myWebS {
         console.log('连接啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊');
         this.webS = new WebSocket(this.url);
         this.webS.onerror = this.error
-        this.webS.onclose = () => {
+        this.webS.onclose = e => {
             console.log('websocket 断开: ' + e.code + ' ' + e.reason + ' ' + e.wasClean)
             this.init()
         };

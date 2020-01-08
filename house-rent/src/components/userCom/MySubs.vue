@@ -32,7 +32,7 @@
 		</header>
 		<ul class="subs-box" ref="subsBox">
 			<li v-if="!haveData" class="subs-box--no">
-				<p class="subs-box--no__title">您还没有预约看房，快去添加吧！～</p>
+				<p class="subs-box--no__title">{{basIndex!=1?'无相关数据，去租房吧！':'您还没有预约看房，快去添加吧！～'}}</p>
 				<router-link class="subs-box--no__next" to="/h">去找房</router-link>
 			</li>
 			<li v-else>
@@ -45,12 +45,18 @@
 					@selection-change="value=>checkSubs=value"
 				>
 					<el-table-column type="selection"></el-table-column>
+					<el-table-column :label="basIndex!=1?'合同ID':'预约ID'" width="70px">
+						<template slot-scope="scope">
+							<span v-if="basIndex!=1">{{scope.row.bs_content | getConId}}</span>
+							<span v-else>{{scope.row.bs_id}}</span>
+						</template>
+					</el-table-column>
 					<el-table-column :label="timeType" width="110px">
 						<template slot-scope="scope">
 							<span>{{getTimeCh(scope.row.bs_time)}}</span>
 						</template>
 					</el-table-column>
-					<el-table-column label="预约房源" width="280px">
+					<el-table-column :label="besTypeName + '房源'" width="280px">
 						<template slot-scope="scope">
 							<div class="house-info">
 								<router-link class="house-info__img" :to="`/hdetail?House_id=${scope.row.house_id}`">
@@ -171,7 +177,7 @@
 				oldDate: null, // 旧的时间
 				typeSubs: "0",
 				haveData: false,
-				basType: "Y",
+				basType: "N",
 				basIndex: 1,
 				besDealType
 			};
@@ -482,6 +488,15 @@
 					this.basType = "N";
 				}
 				this.querySubs();
+			}
+		},
+		filters: {
+			getConId(value) {
+				let res = value.match(/(?<=')(\d+)(?=')/g)
+				if(res.length){
+					return res[0]
+				}
+				return '错误'
 			}
 		}
 	};

@@ -25,6 +25,7 @@
 			</div>
 			<div class="contract-box" ref="contract">
 				<el-tabs type="border-card" @tab-click="({index})=>{tabsIndex = index}">
+					<!-- 生效中 -->
 					<el-tab-pane>
 						<div slot="label" class="per-heder-box">
 							<el-badge :is-dot="conRemind.some(item=>item.Mge_type == 3)" class="per-heder-badge">生效中</el-badge>
@@ -43,18 +44,25 @@
 							height="380"
 							@row-click="choiceCurrRow"
 						>
-							<el-table-column label="签约房源地址">
+							<el-table-column label="合同id" width="70px">
 								<template slot-scope="scope">
-									<el-badge :is-dot="conRemind.some(item=>item.Link_id == scope.row.Con_id)" class="besinfo">
-										<router-link
-											style="color: #606266"
-											:to="`/hdetail?House_id=${scope.row.House_id}`"
-											title="查看房屋详情"
-										>{{scope.row.House_address}}</router-link>
-									</el-badge>
+									<el-badge
+										:is-dot="conRemind.some(item=>item.Link_id == scope.row.Con_id)"
+										class="besinfo"
+									>{{scope.row.Con_id}}</el-badge>
 								</template>
 							</el-table-column>
-							<el-table-column label="合同签约时区" width="260px">
+							<el-table-column label="签约房源地址" width="260px">
+								<template slot-scope="scope">
+									<router-link
+										class="nowrap-ecli"
+										style="color: #606266"
+										:to="`/hdetail?House_id=${scope.row.House_id}`"
+										title="查看房屋详情"
+									>{{scope.row.House_address}}</router-link>
+								</template>
+							</el-table-column>
+							<el-table-column label="合同签约时区" width="230px">
 								<template slot-scope="scope">
 									<span>{{getTimeCh(scope.row.Con_startTime)}}</span>
 									<span>~</span>
@@ -65,10 +73,12 @@
 								<template slot-scope="scope">
 									<div class="user-do">
 										<div @click="conDetialInfo(scope.row.Con_path)" class="user-do--base user-do--ok">查看合同</div>
-										<router-link
-											class="user-do--base user-do--ok"
-											:to="`/userDetail/myOrder?con_id=${scope.row.Con_id}&house_id=${scope.row.House_id}`"
-										>查看账单</router-link>
+										<el-badge :is-dot="arrMsgConId.some(item=>scope.row.Con_id == item)" class="look-badge">
+											<router-link
+												class="user-do--base user-do--nomar user-do--ok"
+												:to="`/userDetail/myOrder?con_id=${scope.row.Con_id}&house_id=${scope.row.House_id}`"
+											>查看账单</router-link>
+										</el-badge>
 										<div
 											:class="['user-do--base',scope.row.retreatStu || scope.row.reletStu? 'user-do--no':'user-do--ok']"
 											@click="throwLease(scope.row, true)"
@@ -82,6 +92,7 @@
 							</el-table-column>
 						</el-table>
 					</el-tab-pane>
+					<!-- 待签字 -->
 					<el-tab-pane>
 						<div slot="label" class="per-heder-box">
 							<el-badge :is-dot="conRemind.some(item=>item.Mge_type == 2)" class="per-heder-badge">待签字</el-badge>
@@ -100,18 +111,20 @@
 							height="380"
 							@row-click="choiceCurrRow"
 						>
-							<el-table-column label="签约房源地址">
+							<el-table-column label="合同id" width="70px">
+								<template slot-scope="scope">{{scope.row.Con_id}}</template>
+							</el-table-column>
+							<el-table-column label="签约房源地址" width="260px">
 								<template slot-scope="scope">
-									<el-badge :is-dot="conRemind.some(item=>item.Link_id == scope.row.Con_id)" class="besinfo">
-										<router-link
-											style="color: #606266"
-											:to="`/hdetail?House_id=${scope.row.House_id}`"
-											title="查看房屋详情"
-										>{{scope.row.House_address}}</router-link>
-									</el-badge>
+									<router-link
+										class="nowrap-ecli"
+										style="color: #606266"
+										:to="`/hdetail?House_id=${scope.row.House_id}`"
+										title="查看房屋详情"
+									>{{scope.row.House_address}}</router-link>
 								</template>
 							</el-table-column>
-							<el-table-column label="合同签约时区" width="260px">
+							<el-table-column label="合同签约时区" width="230px">
 								<template slot-scope="scope">
 									<span>{{getTimeCh(scope.row.Con_startTime)}}</span>
 									<span>~</span>
@@ -122,12 +135,19 @@
 								<template slot-scope="scope">
 									<div class="user-do">
 										<div @click="conDetialInfo(scope.row.Con_path)" class="user-do--base user-do--ok">查看模板</div>
-										<div @click="canvEvent(scope.row.Con_id)" class="user-do--base user-do--ok">上传签名</div>
+										<!-- <el-badge :is-dot="conRemind.some(item=>item.Link_id == scope.row.Con_id)" class="besinfo"> -->
+										<el-badge
+											:is-dot="conRemind.some(item=>item.Link_id == scope.row.Con_id)"
+											class="besinfo"
+										>
+											<div @click="canvEvent(scope.row.Con_id)" class="user-do--base user-do--ok">上传签名</div>
+										</el-badge>
 									</div>
 								</template>
 							</el-table-column>
 						</el-table>
 					</el-tab-pane>
+					<!-- 已失效 -->
 					<el-tab-pane>
 						<div slot="label" class="per-heder-box">
 							<el-badge :is-dot="conRemind.some(item=>item.Mge_type == 4)" class="per-heder-badge">已失效</el-badge>
@@ -139,8 +159,11 @@
 							height="380"
 							@row-click="choiceCurrRow"
 						>
+							<el-table-column label="合同id" width="70px">
+								<template slot-scope="scope">{{scope.row.Con_id}}</template>
+							</el-table-column>
 							<el-table-column label="签约房源地址">
-								<template slot-scope="scope">
+								<template slot-scope="scope" width="260px">
 									<el-badge :is-dot="conRemind.some(item=>item.Link_id == scope.row.Con_id)" class="besinfo">
 										<router-link
 											style="color: #606266"
@@ -150,7 +173,7 @@
 									</el-badge>
 								</template>
 							</el-table-column>
-							<el-table-column label="合同签约时区" width="260px">
+							<el-table-column label="合同签约时区" width="230px">
 								<template slot-scope="scope">
 									<span>{{getTimeCh(scope.row.Con_startTime)}}</span>
 									<span>~</span>
@@ -221,7 +244,7 @@
 					<div v-if="rentType == 'retreat'" class="rent-retreat">
 						<div class="rent-retreat-price">
 							<span>当前时间应退租金:&nbsp;&nbsp;</span>
-							<span>{{rentPrice}}</span>
+							<span ref="rentPrice" class="rent-retreat-price--num">{{rentPrice.price}}</span>
 						</div>
 						<div class="rent-retreat-time">
 							<p>退租时间</p>
@@ -257,6 +280,7 @@
 	export default {
 		data() {
 			let avator = require("@/assets/avator.jpg");
+			let miniLoadding = require("@/assets/mini.gif");
 			return {
 				avator,
 				contractList: [],
@@ -274,7 +298,11 @@
 				rentHouse: {},
 				rentData: {},
 				arrMsgConId: [],
-				rentPrice: null
+				rentPrice: {
+					price: 0,
+					status: false
+				},
+				miniLoadding
 			};
 		},
 		computed: {
@@ -372,6 +400,7 @@
 					});
 				}, 1000);
 			},
+			// 画线
 			drawingLine(e) {
 				if (this.cavMouseDown) {
 					this.ctx.lineTo(e.offsetX, e.offsetY);
@@ -379,6 +408,7 @@
 				}
 				e.preventDefault();
 			},
+			// dataURL => Blod
 			dataURLtoBlob(dataurl) {
 				let arr = dataurl.split(","),
 					mime = arr[0].match(/:(.*?);/)[1],
@@ -485,85 +515,107 @@
 			},
 			// 查询退还金额
 			getCurrRefund() {
-				getRefund({
-					con_id: this.rentData.Con_id,
-					dayTime: `${this.getTimeCh(this.rentRetDate)} 00:00:00.000` 
-				}).then(res => {
-					if(res.status){
-						this.rentPrice = res.price
-					} else {
-						this.$notify.error({
-							duration: 1000,
-							message: '服务器故障请稍后再试',
-							title: '退租'
-						})
-					}
+				this.$nextTick(() => {
+					this.$myLoadding.open(
+						this.$refs.rentPrice,
+						null,
+						null,
+						this.miniLoadding,
+						true
+					);
+					getRefund({
+						con_id: this.rentData.Con_id,
+						dayTime: `${this.getTimeCh(this.rentRetDate)} 00:00:00.000`
+					}).then(res => {
+						this.rentPrice = res;
+						if (!res.status) {
+							this.$notify.error({
+								duration: 1000,
+								message: "确保时间在合同期间内",
+								title: "退租"
+							});
+						}
+						this.$myLoadding.hide();
+					});
 				});
 			},
 			// 提交退租续租申请
 			upRentInfo(type) {
-				if (this.rentRetDate < new Date()) {
-					this.$notify.error({
-						title: "预约时间",
-						duration: 1000,
-						showClose: true,
-						message: "不能小于当前日期"
-					});
-				} else {
-					this.$msgBox
-						.confirm(
-							`确认${type == 2 ? "续租" : "退租"}?`,
-							`${type == 2 ? "续租" : "退租"}`,
-							{
-								confirmButtonText: "确定",
-								cancelButtonText: "取消",
-								type: "warning"
-							}
-						)
-						.then(() => {
-							let obj = {
-								bespeak: JSON.stringify({
-									Bs_type: type,
-									User_id: this.userId,
-									User_tel: this.tel,
-									House_id: this.rentData.House_id,
-									Admin_id: this.rentData.Admin_id,
-									Bs_time: `${this.getTimeCh(
-										this.rentRetDate
-									)} 00:00:00.000`,
-									Bs_isDeal: "N",
-									Bs_content: `{'con_id':'${this.rentData.Con_id}'}`
-								}),
-								noLoading: true
-							};
-							this.rentOtherS = false;
-							addBespeak(obj).then(res => {
-								let hint = {
-									title: "预约",
-									duration: 1000,
-									showClose: true,
-									message: res.msg
-								};
-								if (res.status) {
-									this.$notify.success(hint);
-								} else {
-									this.$notify.error(hint);
+				if (this.rentPrice.status) {
+					if (this.rentRetDate < new Date()) {
+						this.$notify.error({
+							title: "预约时间",
+							duration: 1000,
+							showClose: true,
+							message: "不能小于当前日期"
+						});
+					} else {
+						this.$msgBox
+							.confirm(
+								`确认${type == 2 ? "续租" : "退租"}?`,
+								`${type == 2 ? "续租" : "退租"}`,
+								{
+									confirmButtonText: "确定",
+									cancelButtonText: "取消",
+									type: "warning"
 								}
-								this.getCtractIn();
-							});
-						})
-						.catch(() => {});
+							)
+							.then(() => {
+								let obj = {
+									bespeak: JSON.stringify({
+										Bs_type: type,
+										User_id: this.userId,
+										User_tel: this.tel,
+										House_id: this.rentData.House_id,
+										Admin_id: this.rentData.Admin_id,
+										Bs_time: `${this.getTimeCh(
+											this.rentRetDate
+										)} 00:00:00.000`,
+										Bs_isDeal: "N",
+										Bs_content: `{'con_id':'${this.rentData.Con_id}'}`
+									}),
+									noLoading: true
+								};
+								this.rentOtherS = false;
+								addBespeak(obj).then(res => {
+									let hint = {
+										title: "预约",
+										duration: 1000,
+										showClose: true,
+										message: res.msg
+									};
+									if (res.status) {
+										this.$notify.success(hint);
+									} else {
+										this.$notify.error(hint);
+									}
+									this.getCtractIn();
+								});
+							})
+							.catch(() => {});
+					}
+				} else {
+					this.$notify.error({
+						duration: 1000,
+						message: "确保时间在合同期间内",
+						title: "退租"
+					});
 				}
 			},
 			// 根据订单id获取合同id
-			queryConIdByMsg() {
-				let res = Promise.all(
+			async queryConIdByMsg() {
+				// let arrOrder = [209, 210, 211];
+				await Promise.all(
 					this.payRemind.map(item => {
-						return getConIdByOrder({ order_id: item.Link_id });
+						return getConIdByOrder({ order_id: item.Link_id }).then(res => {
+							if (res) {
+								this.arrMsgConId.push(res)
+							}
+						});
 					})
 				);
 			},
-			// 删除消息
+			// 选取当前行消息
 			choiceCurrRow(row) {
 				this.delLookMsg(row);
 			},
@@ -593,12 +645,12 @@
 					1}.${date.getDate()}`;
 			},
 			getChname(value) {
-				switch (true) {
-					case value == "1":
+				switch (value) {
+					case "1":
 						return "押一付一";
-					case value == "2":
+					case "2":
 						return "押一付二";
-					case value == "3":
+					case "3":
 						return "押一付三";
 					default:
 						return "";
@@ -606,17 +658,24 @@
 			},
 			judegStatus(value) {
 				let [type, stu] = value.split("_");
-				if (stu == "Y") {
-					return "生效";
-				} else if (stu == "N") {
-					return "待完成";
+				switch (stu) {
+					case "Y":
+						return "生效";
+					case "N":
+						return "待完成";
+					default:
+						return "已失效";
 				}
-				return "已失效";
 			}
 		},
 		watch: {
 			tabsIndex(newV, oldV) {
 				this.getCtractIn();
+			},
+			rentRetDate() {
+				if (this.rentType) {
+					this.getCurrRefund();
+				}
 			}
 		},
 		created() {
@@ -626,272 +685,290 @@
 </script>
 
 <style lang="scss" scoped>
-	$hoverColor: #00bfc8;
-	$fontLightColor: #3dbcc6;
-	$bacHoerClr: #3dbcc6;
-	$NoHover: #999999;
-	.header {
+$hoverColor: #00bfc8;
+$fontLightColor: #3dbcc6;
+$bacHoerClr: #3dbcc6;
+$NoHover: #999999;
+.header {
+	display: flex;
+	padding: 0 0 2rem 2rem;
+	border-bottom: 1px solid #f1f1f1;
+	&__left {
+		width: 12rem;
+		height: 12rem;
+		border-radius: 50%;
+		border: 0.2rem solid $fontLightColor;
+		overflow: hidden;
+		img {
+			height: 100%;
+			width: 100%;
+		}
+	}
+	&__right {
+		flex-grow: 1;
 		display: flex;
-		padding: 0 0 2rem 2rem;
-		border-bottom: 1px solid #f1f1f1;
-		&__left {
-			width: 12rem;
-			height: 12rem;
-			border-radius: 50%;
-			border: 0.2rem solid $fontLightColor;
-			overflow: hidden;
-			img {
-				height: 100%;
-				width: 100%;
-			}
+		padding: 20px 0 0 40px;
+		justify-content: space-between;
+		&--name {
+			font-size: 2rem;
+			color: #000;
+			margin-bottom: 1rem;
 		}
-		&__right {
-			flex-grow: 1;
-			display: flex;
-			padding: 20px 0 0 40px;
-			justify-content: space-between;
-			&--name {
-				font-size: 2rem;
-				color: #000;
-				margin-bottom: 1rem;
-			}
-			&--hint {
-				color: $NoHover;
-			}
-			&__next {
-				font-size: 1.4rem;
-				color: $fontLightColor;
-				a {
-					color: $fontLightColor;
-				}
-			}
-		}
-	}
-	.contract-box {
-		position: relative;
-	}
-	.contract {
 		&--hint {
-			height: 380px;
-		}
-		&-title {
-			padding: 3rem 0 2.4rem;
-			display: flex;
-			justify-content: space-between;
-			&__h {
-				line-height: 2.1rem;
-
-				span {
-					margin-left: 1.4rem;
-				}
-				font-size: 1.8rem;
-			}
-			color: #333;
-			&__s {
-			}
-		}
-		&--have {
-			border-bottom: 1px solid #f1f1f1;
-		}
-		&--no {
-			height: 200px;
-			display: flex;
-			justify-content: center;
-			align-items: center;
-			flex-direction: column;
-		}
-	}
-	.contract--no {
-		&__title {
-			font-size: 16px;
-			color: #999;
+			color: $NoHover;
 		}
 		&__next {
-			display: block;
-			background-color: #fff;
-			min-width: 180px;
-			width: auto;
-			height: 50px;
+			font-size: 1.4rem;
+			color: $fontLightColor;
+			a {
+				color: $fontLightColor;
+			}
+		}
+	}
+}
+.contract-box {
+	position: relative;
+}
+.contract {
+	&--hint {
+		height: 380px;
+	}
+	&-title {
+		padding: 3rem 0 2.4rem;
+		display: flex;
+		justify-content: space-between;
+		&__h {
+			line-height: 2.1rem;
+
+			span {
+				margin-left: 1.4rem;
+			}
 			font-size: 1.8rem;
-			line-height: 4.6rem;
-			text-align: center;
-			border: 2px solid #3dbcc6;
-			border-radius: 33px;
-			box-sizing: border-box;
-			color: $hoverColor;
-			padding: 0 30px;
-			transition: all 0.2s;
-			margin-top: 2rem;
-			&:hover {
-				background-color: $bacHoerClr;
-				color: #fff;
-			}
+		}
+		color: #333;
+		&__s {
 		}
 	}
-	.user-do {
+	&--have {
+		border-bottom: 1px solid #f1f1f1;
+	}
+	&--no {
+		height: 200px;
 		display: flex;
+		justify-content: center;
 		align-items: center;
-		&--base {
-			margin-right: 10px;
-			font-size: 12px;
-			display: block;
-			flex-shrink: 0;
-			transition: all 0.3s;
-			border: 1px solid #3dbcc6;
-			padding: 2px 10px;
-			border-radius: 2rem;
-			color: #00bfc8;
-		}
-		&--ok {
-			cursor: pointer;
-			&:hover {
-				color: #fff;
-				background-color: #3dbcc6;
-			}
-			&:active {
-				background-color: #2fa4ad;
-			}
-		}
-		&--no {
-			cursor: default;
-			background-color: rgba(0, 0, 0, 0.1);
-			background-color: rgba(0, 0, 0, 0.1);
-			color: #fff;
-			border-color: #dcdee1;
-		}
+		flex-direction: column;
 	}
-
-	.mywrite {
-		&-box {
-		}
-		&-title {
-			font-size: 30px;
-			font-weight: bold;
-			width: fit-content;
-			margin: 0 auto 20px;
-		}
-		&-con {
-			width: fit-content;
-			flex-shrink: 0;
-			margin: 0 auto;
-			border: 1px solid #dddddd;
-		}
-		&-menu {
-			display: flex;
-			width: fit-content;
-			margin: 20px auto 0;
-			div {
-				width: 100px;
-			}
-			div:nth-of-type(2) {
-				margin: 0 20px;
-			}
-		}
-	}
-	::v-deep .el-dialog__header {
-		padding: 0;
-	}
-	::v-deep .el-input--prefix .el-input__inner {
-		border: 0;
-		border-bottom: 1px solid #999999;
+}
+.contract--no {
+	&__title {
 		font-size: 16px;
-		outline: none;
-		border-radius: 0;
-		padding: 0;
+		color: #999;
 	}
-	::v-deep .el-date-editor {
-		width: 100%;
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-	}
-	::v-deep .el-date-editor.el-input {
+	&__next {
+		display: block;
+		background-color: #fff;
+		min-width: 180px;
 		width: auto;
+		height: 50px;
+		font-size: 1.8rem;
+		line-height: 4.6rem;
+		text-align: center;
+		border: 2px solid #3dbcc6;
+		border-radius: 33px;
+		box-sizing: border-box;
+		color: $hoverColor;
+		padding: 0 30px;
+		transition: all 0.2s;
+		margin-top: 2rem;
+		&:hover {
+			background-color: $bacHoerClr;
+			color: #fff;
+		}
 	}
-	::v-deep .el-icon-date::before {
-		content: "\e6df";
+}
+.user-do {
+	display: flex;
+	align-items: center;
+	&--base {
+		margin-right: 10px;
+		font-size: 12px;
+		display: block;
+		flex-shrink: 0;
+		transition: all 0.3s;
+		border: 1px solid #3dbcc6;
+		padding: 2px 10px;
+		border-radius: 2rem;
+		color: #00bfc8;
 	}
-	::v-deep .el-input__prefix {
-		position: static;
+	&--ok {
 		cursor: pointer;
-		font-size: 22px;
-		margin-left: 15px;
+		&:hover {
+			color: #fff;
+			background-color: #3dbcc6;
+		}
+		&:active {
+			background-color: #2fa4ad;
+		}
 	}
+	&--no {
+		cursor: default;
+		background-color: rgba(0, 0, 0, 0.1);
+		background-color: rgba(0, 0, 0, 0.1);
+		color: #fff;
+		border-color: #dcdee1;
+	}
+	&--nomar {
+		margin-right: 0;
+	}
+}
 
-	::v-deep .el-tabs--border-card > .el-tabs__header .el-tabs__item.is-active {
-		color: #000;
+.mywrite {
+	&-box {
 	}
-	::v-deep
-		.el-tabs--border-card
-		> .el-tabs__header
-		.el-tabs__item:not(.is-disabled):hover {
-		color: #000;
+	&-title {
+		font-size: 30px;
+		font-weight: bold;
+		width: fit-content;
+		margin: 0 auto 20px;
 	}
-	.house-info {
-		&__img {
-			display: block;
-			width: 100%;
-			img {
-				width: 100%;
-				height: 205px;
-			}
-		}
-		&__d {
-			padding-top: 10px;
-		}
-		&__t {
-			display: inline-block;
-			color: #606266;
-			margin-bottom: 12px;
-			&:hover {
-				color: #3dbcc6;
-			}
-		}
+	&-con {
+		width: fit-content;
+		flex-shrink: 0;
+		margin: 0 auto;
+		border: 1px solid #dddddd;
 	}
-	.rent-header {
-		font-size: 20px;
-		color: #303133;
-		margin-top: -10px;
-		margin-bottom: 14px;
-	}
-	.rent-hou {
-		width: 380px;
-	}
-	.rent-info {
+	&-menu {
 		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		margin-bottom: 15px;
+		width: fit-content;
+		margin: 20px auto 0;
+		div {
+			width: 100px;
+		}
+		div:nth-of-type(2) {
+			margin: 0 20px;
+		}
+	}
+}
+::v-deep .el-dialog__header {
+	padding: 0;
+}
+::v-deep .el-input--prefix .el-input__inner {
+	border: 0;
+	border-bottom: 1px solid #999999;
+	font-size: 16px;
+	outline: none;
+	border-radius: 0;
+	padding: 0;
+}
+::v-deep .el-date-editor {
+	width: 100%;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+::v-deep .el-date-editor.el-input {
+	width: auto;
+}
+::v-deep .el-icon-date::before {
+	content: "\e6df";
+}
+::v-deep .el-input__prefix {
+	position: static;
+	cursor: pointer;
+	font-size: 22px;
+	margin-left: 15px;
+}
 
-		& > div:first-child {
+::v-deep .el-tabs--border-card > .el-tabs__header .el-tabs__item.is-active {
+	color: #000;
+}
+::v-deep
+	.el-tabs--border-card
+	> .el-tabs__header
+	.el-tabs__item:not(.is-disabled):hover {
+	color: #000;
+}
+.house-info {
+	&__img {
+		display: block;
+		width: 100%;
+		img {
+			width: 100%;
+			height: 205px;
+		}
+	}
+	&__d {
+		padding-top: 10px;
+	}
+	&__t {
+		display: inline-block;
+		color: #606266;
+		margin-bottom: 12px;
+		&:hover {
+			color: #3dbcc6;
+		}
+	}
+}
+.rent-header {
+	font-size: 20px;
+	color: #303133;
+	margin-top: -10px;
+	margin-bottom: 14px;
+}
+.rent-hou {
+	width: 380px;
+}
+.rent-info {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 15px;
+
+	& > div:first-child {
+		font-size: 16px;
+		color: #303133;
+	}
+}
+.rent-retreat {
+	padding-left: 10px;
+	height: fit-content;
+	margin: auto;
+	&-price {
+		margin-bottom: 2rem;
+		& > span:first-child {
 			font-size: 16px;
 			color: #303133;
 		}
-	}
-	.rent-retreat {
-		padding-left: 10px;
-		height: fit-content;
-		margin: auto;
-		&-price {
-			margin-bottom: 2rem;
-			& > span:first-child {
-				font-size: 16px;
-				color: #303133;
-			}
-		}
-		&-time {
-			margin-bottom: 2rem;
-		}
-		&-but {
+		&--num {
+			position: relative;
+			color: #000;
+			display: inline-block;
+			border-bottom: 2px solid #2878ff;
 		}
 	}
-	.rent-conta {
-		display: flex;
+	&-time {
+		margin-bottom: 2rem;
 	}
-	.per-heder-badge {
-		line-height: initial;
+	&-but {
 	}
-	.besinfo {
-		margin: 5px;
-	}
+}
+.rent-conta {
+	display: flex;
+}
+.per-heder-badge {
+	line-height: initial;
+}
+.besinfo {
+	margin: 5px;
+}
+.nowrap-ecli {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+.look-badge {
+	margin: 5px 10px 0 0;
+	flex-shrink: 0;
+}
 </style>
