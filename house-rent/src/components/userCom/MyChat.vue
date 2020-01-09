@@ -131,15 +131,15 @@
 					let div = document.createElement("div");
 					div.classList.add("cenuser-chat", "cenchat-msg");
 					div.innerHTML = `
-													<div class="cenuser-chat-avator cenchat-msg-avator">
-														<img src="${this.userAvater || this.defCover}" alt />
-													</div>
-													<div class="cenuser-chat-con cenchat-msg-con">
-														${this.userMsg}
-															<div class="cenuser-chat-con__l cenchat-msg-con_l">
-															<i class="el-icon-caret-right"></i>
-														</div>
-													</div>`;
+						<div class="cenuser-chat-avator cenchat-msg-avator">
+							<img src="${this.userAvater || this.defCover}" alt />
+						</div>
+						<div class="cenuser-chat-con cenchat-msg-con">
+							${this.userMsg}
+								<div class="cenuser-chat-con__l cenchat-msg-con_l">
+								<i class="el-icon-caret-right"></i>
+							</div>
+						</div>`;
 					let sendContent = null;
 					if (htmlData) {
 						sendContent = {
@@ -149,12 +149,12 @@
 					} else {
 						sendContent = {
 							type: "text",
-							data: this.myText
+							data: this.userMsg
 						};
 					}
 					this.webK.send(
 						JSON.stringify({
-							content: this.userMsg,
+							content: sendContent,
 							nickname: this.userName,
 							nickname2: this.currAdmin.Admin_name
 						})

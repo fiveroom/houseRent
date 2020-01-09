@@ -215,7 +215,7 @@
 			},
 			clearAllmsg() {
 				if (
-					this.delRemind.length ||
+					this.bsRemind.length ||
 					this.conRemind.length ||
 					this.payRemind.length ||
 					this.sysRemind.length

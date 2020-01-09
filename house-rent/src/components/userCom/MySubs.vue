@@ -45,9 +45,9 @@
 					@selection-change="value=>checkSubs=value"
 				>
 					<el-table-column type="selection"></el-table-column>
-					<el-table-column :label="basIndex!=1?'合同ID':'预约ID'" width="70px">
+					<el-table-column :label="basIndex!=1?'预约-合同ID':'预约ID'" width="100px">
 						<template slot-scope="scope">
-							<span v-if="basIndex!=1">{{scope.row.bs_content | getConId}}</span>
+							<span v-if="basIndex!=1">{{scope.row.bs_id}}-{{scope.row.bs_content | getConId}}</span>
 							<span v-else>{{scope.row.bs_id}}</span>
 						</template>
 					</el-table-column>

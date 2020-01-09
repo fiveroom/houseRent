@@ -71,6 +71,7 @@ export class myWebS {
 // 192.168.3.26:8888  余展鹏
 const Lxd = '192.168.3.5:8888';
 const ServerA = '39.106.122.19:8888';
+const ServerB = 'chenmaio.com';
 const Yzp = '192.168.3.26:8888';
 export const webChatU = `ws://${ServerA}/websocket/`;
 export const webMsg = `ws://${ServerA}/socketServer/`;

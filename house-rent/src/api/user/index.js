@@ -17,7 +17,7 @@ export const login = (data, call) => {
 
 // 登录验证码
 export const getCode = data => {
-    return axios.post('/LoginRegistMgeSvr.assx/sendLoginCode', { ...data, noLoading: true }).then(res => {
+    return axios.post('/LoginRegistMgeSvr.assx/sendLoginCode', {...data, noLoading: true }).then(res => {
         if (res.data.Code == '200') {
             return { status: true, msg: res.data.Msg }
         }
@@ -54,7 +54,7 @@ export const registUser = data => {
 }
 
 // 注册验证码
-export const registUserCode = async (data) => {
+export const registUserCode = async(data) => {
     return await axios.post('/LoginRegistMgeSvr.assx/sendRegistCode', data).then(res => {
         if (res.data.Code == "200") {
             return { status: true, msg: '验证码获取成功' }
@@ -223,7 +223,7 @@ export const deleteOwnCollectBatch = (data, call) => {
 // {
 //     user_id: '2'
 // }
-export const queryOwnCollect = async (data) => {
+export const queryOwnCollect = async(data) => {
     return await axios.post('/UserMgeSvr.assx/queryOwnCollect', data).then(res => {
         // console.log('查询收藏', res);
         if (res.data.Code == 200) {
@@ -236,7 +236,7 @@ export const queryOwnCollect = async (data) => {
 }
 
 // 查看合同
-export const queryCtractIn = async (data) => {
+export const queryCtractIn = async(data) => {
     return await axios.post('/UserMgeSvr.assx/queryContractInfoOfUser', data).then(res => {
         // console.log('查看合同', res);
         if (res.data.Code == 200) {
@@ -309,7 +309,7 @@ export const orderTradeInfo = data => {
  * order_id 订单ID
  */
 export const checkOrderIsPaid = data => {
-    return axios.post('/UserMgeSvr.assx/checkOrderIsPaid', { ...data, noLoading: true }).then(res => {
+    return axios.post('/UserMgeSvr.assx/checkOrderIsPaid', {...data, noLoading: true }).then(res => {
         // console.log(res, '交易记录');
         if (res.status == 200) {
             return { status: true, data: res.data, _Items: res.data.Data._Items }
@@ -356,7 +356,7 @@ export const findMsg = data => {
  */
 
 export const delMsg = data => {
-    return axios.post('/socket/deleteSysMessage', { ...data, noLoading: true }).then(res => {
+    return axios.post('/socket/deleteSysMessage', {...data, noLoading: true }).then(res => {
         console.log(res, '删除啊啊啊啊');
         if (res.data.code == '200') {
             return true
@@ -444,7 +444,7 @@ export const cancelBes = data => {
  * {order_id: int}
  */
 export const getConIdByOrder = data => {
-    return axios.post('/UserMgeSvr.assx/queryContractInfoByOrderId', { ...data, noLoading: true }).then(res => {
+    return axios.post('/UserMgeSvr.assx/queryContractInfoByOrderId', {...data, noLoading: true }).then(res => {
         if (res.data.Code == '200') {
             return res.data.Data
         }
@@ -457,7 +457,7 @@ export const getConIdByOrder = data => {
  * admin_name
  */
 export const queryMyAdmin = data => {
-    return axios.post('/TopAdminMgeSvr.assx/queryAdminByAdminName', { ...data, noLoading: true }).then(res => {
+    return axios.post('/TopAdminMgeSvr.assx/queryAdminByAdminName', {...data, noLoading: true }).then(res => {
         if (res.data.Code == '200') {
             return { status: true, admin: res.data.Data }
         }
@@ -473,12 +473,12 @@ export const queryMyAdmin = data => {
  * dayTime
  */
 export const getRefund = data => {
-    return axios.post('/UserMgeSvr.assx/getRefund', { ...data, noLoading: true }).then(res => {
+    return axios.post('/UserMgeSvr.assx/getRefund', {...data, noLoading: true }).then(res => {
         if (res.data.Code == '200') {
-            return { status: true, price: Math.abs(res.data.Data) }
+            return { status: true, data: res.data.Data }
         }
-        return { status: false, price: 0 }
+        return { status: false }
     }).catch(() => {
-        return { status: false, price: 0 }
+        return { status: false }
     })
 }

@@ -62,7 +62,7 @@
 									>{{scope.row.House_address}}</router-link>
 								</template>
 							</el-table-column>
-							<el-table-column label="合同签约时区" width="230px">
+							<el-table-column label="合同签约时区" width="210px">
 								<template slot-scope="scope">
 									<span>{{getTimeCh(scope.row.Con_startTime)}}</span>
 									<span>~</span>
@@ -242,9 +242,19 @@
 						</div>
 					</div>
 					<div v-if="rentType == 'retreat'" class="rent-retreat">
-						<div class="rent-retreat-price">
-							<span>当前时间应退租金:&nbsp;&nbsp;</span>
-							<span ref="rentPrice" class="rent-retreat-price--num">{{rentPrice.price}}</span>
+						<div>
+							<div class="rent-retreat-price">
+								<span>已交金额:&nbsp;&nbsp;</span>
+								<span ref="rentPrice" class="rent-retreat-price--num">{{rentPrice.your_pay}}</span>
+							</div>
+							<div class="rent-retreat-price">
+								<span>应交金额:&nbsp;&nbsp;</span>
+								<span ref="rentPrice" class="rent-retreat-price--num">{{rentPrice.need_pay}}</span>
+							</div>
+							<div class="rent-retreat-price">
+								<span>当前时间应退金额:&nbsp;&nbsp;</span>
+								<span ref="rentPrice" class="rent-retreat-price--num">{{Math.abs(rentPrice.refund)}}</span>
+							</div>
 						</div>
 						<div class="rent-retreat-time">
 							<p>退租时间</p>
@@ -299,7 +309,9 @@
 				rentData: {},
 				arrMsgConId: [],
 				rentPrice: {
-					price: 0,
+					your_pay: 0,
+					need_pay: 0,
+					refund: 0,
 					status: false
 				},
 				miniLoadding
@@ -527,13 +539,15 @@
 						con_id: this.rentData.Con_id,
 						dayTime: `${this.getTimeCh(this.rentRetDate)} 00:00:00.000`
 					}).then(res => {
-						this.rentPrice = res;
 						if (!res.status) {
 							this.$notify.error({
 								duration: 1000,
 								message: "确保时间在合同期间内",
 								title: "退租"
 							});
+						} else {
+							this.rentPrice = res.data;
+							this.rentPrice.status = true;
 						}
 						this.$myLoadding.hide();
 					});
@@ -541,77 +555,80 @@
 			},
 			// 提交退租续租申请
 			upRentInfo(type) {
-				if (this.rentPrice.status) {
-					if (this.rentRetDate < new Date()) {
-						this.$notify.error({
-							title: "预约时间",
-							duration: 1000,
-							showClose: true,
-							message: "不能小于当前日期"
-						});
-					} else {
-						this.$msgBox
-							.confirm(
-								`确认${type == 2 ? "续租" : "退租"}?`,
-								`${type == 2 ? "续租" : "退租"}`,
-								{
-									confirmButtonText: "确定",
-									cancelButtonText: "取消",
-									type: "warning"
-								}
-							)
-							.then(() => {
-								let obj = {
-									bespeak: JSON.stringify({
-										Bs_type: type,
-										User_id: this.userId,
-										User_tel: this.tel,
-										House_id: this.rentData.House_id,
-										Admin_id: this.rentData.Admin_id,
-										Bs_time: `${this.getTimeCh(
-											this.rentRetDate
-										)} 00:00:00.000`,
-										Bs_isDeal: "N",
-										Bs_content: `{'con_id':'${this.rentData.Con_id}'}`
-									}),
-									noLoading: true
-								};
-								this.rentOtherS = false;
-								addBespeak(obj).then(res => {
-									let hint = {
-										title: "预约",
-										duration: 1000,
-										showClose: true,
-										message: res.msg
-									};
-									if (res.status) {
-										this.$notify.success(hint);
-									} else {
-										this.$notify.error(hint);
-									}
-									this.getCtractIn();
-								});
-							})
-							.catch(() => {});
-					}
-				} else {
+				// if ( this.rentPrice.status) {
+				// console.log(this.rentRetDate, new Date());
+				if (this.rentRetDate < new Date()) {
 					this.$notify.error({
+						title: "预约时间",
 						duration: 1000,
-						message: "确保时间在合同期间内",
-						title: "退租"
+						showClose: true,
+						message: "不能小于当前日期"
 					});
+				} else {
+					this.$msgBox
+						.confirm(
+							`确认${type == 2 ? "续租" : "退租"}?`,
+							`${type == 2 ? "续租" : "退租"}`,
+							{
+								confirmButtonText: "确定",
+								cancelButtonText: "取消",
+								type: "warning"
+							}
+						)
+						.then(() => {
+							let obj = {
+								bespeak: JSON.stringify({
+									Bs_type: type,
+									User_id: this.userId,
+									User_tel: this.tel,
+									House_id: this.rentData.House_id,
+									Admin_id: this.rentData.Admin_id,
+									Bs_time: `${this.getTimeCh(
+										this.rentRetDate
+									)} 00:00:00.000`,
+									Bs_isDeal: "N",
+									Bs_content: `{'con_id':'${this.rentData.Con_id}'}`
+								}),
+								noLoading: true
+							};
+							this.rentOtherS = false;
+							addBespeak(obj).then(res => {
+								let hint = {
+									title: "预约",
+									duration: 1000,
+									showClose: true,
+									message: res.msg
+								};
+								if (res.status) {
+									this.$notify.success(hint);
+								} else {
+									this.$notify.error(hint);
+								}
+								this.getCtractIn();
+							});
+						})
+						.catch(() => {});
 				}
+				// } else {
+				// 	this.$notify.error({
+				// 		duration: 1000,
+				// 		message: "确保时间在合同期间内",
+				// 		title: "退租"
+				// 	});
+				// }
 			},
 			// 根据订单id获取合同id
 			async queryConIdByMsg() {
 				// let arrOrder = [209, 210, 211];
 				await Promise.all(
 					this.payRemind.map(item => {
-						return getConIdByOrder({ order_id: item.Link_id }).then(res => {
-							if (res) {
-								this.arrMsgConId.push(res)
+						return getConIdByOrder({ order_id: item.Link_id }).then(
+							res => {
+								if (res) {
+									this.arrMsgConId.push(res);
+								}
 							}
-						});
+						);
 					})
 				);
 			},
@@ -685,290 +702,290 @@
 </script>
 
 <style lang="scss" scoped>
-$hoverColor: #00bfc8;
-$fontLightColor: #3dbcc6;
-$bacHoerClr: #3dbcc6;
-$NoHover: #999999;
-.header {
-	display: flex;
-	padding: 0 0 2rem 2rem;
-	border-bottom: 1px solid #f1f1f1;
-	&__left {
-		width: 12rem;
-		height: 12rem;
-		border-radius: 50%;
-		border: 0.2rem solid $fontLightColor;
-		overflow: hidden;
-		img {
-			height: 100%;
-			width: 100%;
+	$hoverColor: #00bfc8;
+	$fontLightColor: #3dbcc6;
+	$bacHoerClr: #3dbcc6;
+	$NoHover: #999999;
+	.header {
+		display: flex;
+		padding: 0 0 2rem 2rem;
+		border-bottom: 1px solid #f1f1f1;
+		&__left {
+			width: 12rem;
+			height: 12rem;
+			border-radius: 50%;
+			border: 0.2rem solid $fontLightColor;
+			overflow: hidden;
+			img {
+				height: 100%;
+				width: 100%;
+			}
+		}
+		&__right {
+			flex-grow: 1;
+			display: flex;
+			padding: 20px 0 0 40px;
+			justify-content: space-between;
+			&--name {
+				font-size: 2rem;
+				color: #000;
+				margin-bottom: 1rem;
+			}
+			&--hint {
+				color: $NoHover;
+			}
+			&__next {
+				font-size: 1.4rem;
+				color: $fontLightColor;
+				a {
+					color: $fontLightColor;
+				}
+			}
 		}
 	}
-	&__right {
-		flex-grow: 1;
-		display: flex;
-		padding: 20px 0 0 40px;
-		justify-content: space-between;
-		&--name {
-			font-size: 2rem;
-			color: #000;
-			margin-bottom: 1rem;
-		}
+	.contract-box {
+		position: relative;
+	}
+	.contract {
 		&--hint {
-			color: $NoHover;
+			height: 380px;
+		}
+		&-title {
+			padding: 3rem 0 2.4rem;
+			display: flex;
+			justify-content: space-between;
+			&__h {
+				line-height: 2.1rem;
+
+				span {
+					margin-left: 1.4rem;
+				}
+				font-size: 1.8rem;
+			}
+			color: #333;
+			&__s {
+			}
+		}
+		&--have {
+			border-bottom: 1px solid #f1f1f1;
+		}
+		&--no {
+			height: 200px;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			flex-direction: column;
+		}
+	}
+	.contract--no {
+		&__title {
+			font-size: 16px;
+			color: #999;
 		}
 		&__next {
-			font-size: 1.4rem;
-			color: $fontLightColor;
-			a {
-				color: $fontLightColor;
+			display: block;
+			background-color: #fff;
+			min-width: 180px;
+			width: auto;
+			height: 50px;
+			font-size: 1.8rem;
+			line-height: 4.6rem;
+			text-align: center;
+			border: 2px solid #3dbcc6;
+			border-radius: 33px;
+			box-sizing: border-box;
+			color: $hoverColor;
+			padding: 0 30px;
+			transition: all 0.2s;
+			margin-top: 2rem;
+			&:hover {
+				background-color: $bacHoerClr;
+				color: #fff;
 			}
 		}
 	}
-}
-.contract-box {
-	position: relative;
-}
-.contract {
-	&--hint {
-		height: 380px;
+	.user-do {
+		display: flex;
+		align-items: center;
+		&--base {
+			margin-right: 10px;
+			font-size: 12px;
+			display: block;
+			flex-shrink: 0;
+			transition: all 0.3s;
+			border: 1px solid #3dbcc6;
+			padding: 2px 10px;
+			border-radius: 2rem;
+			color: #00bfc8;
+		}
+		&--ok {
+			cursor: pointer;
+			&:hover {
+				color: #fff;
+				background-color: #3dbcc6;
+			}
+			&:active {
+				background-color: #2fa4ad;
+			}
+		}
+		&--no {
+			cursor: default;
+			background-color: rgba(0, 0, 0, 0.1);
+			background-color: rgba(0, 0, 0, 0.1);
+			color: #fff;
+			border-color: #dcdee1;
+		}
+		&--nomar {
+			margin-right: 0;
+		}
 	}
-	&-title {
-		padding: 3rem 0 2.4rem;
+
+	.mywrite {
+		&-box {
+		}
+		&-title {
+			font-size: 30px;
+			font-weight: bold;
+			width: fit-content;
+			margin: 0 auto 20px;
+		}
+		&-con {
+			width: fit-content;
+			flex-shrink: 0;
+			margin: 0 auto;
+			border: 1px solid #dddddd;
+		}
+		&-menu {
+			display: flex;
+			width: fit-content;
+			margin: 20px auto 0;
+			div {
+				width: 100px;
+			}
+			div:nth-of-type(2) {
+				margin: 0 20px;
+			}
+		}
+	}
+	::v-deep .el-dialog__header {
+		padding: 0;
+	}
+	::v-deep .el-input--prefix .el-input__inner {
+		border: 0;
+		border-bottom: 1px solid #999999;
+		font-size: 16px;
+		outline: none;
+		border-radius: 0;
+		padding: 0;
+	}
+	::v-deep .el-date-editor {
+		width: 100%;
 		display: flex;
 		justify-content: space-between;
-		&__h {
-			line-height: 2.1rem;
-
-			span {
-				margin-left: 1.4rem;
-			}
-			font-size: 1.8rem;
-		}
-		color: #333;
-		&__s {
-		}
-	}
-	&--have {
-		border-bottom: 1px solid #f1f1f1;
-	}
-	&--no {
-		height: 200px;
-		display: flex;
-		justify-content: center;
 		align-items: center;
-		flex-direction: column;
 	}
-}
-.contract--no {
-	&__title {
-		font-size: 16px;
-		color: #999;
-	}
-	&__next {
-		display: block;
-		background-color: #fff;
-		min-width: 180px;
+	::v-deep .el-date-editor.el-input {
 		width: auto;
-		height: 50px;
-		font-size: 1.8rem;
-		line-height: 4.6rem;
-		text-align: center;
-		border: 2px solid #3dbcc6;
-		border-radius: 33px;
-		box-sizing: border-box;
-		color: $hoverColor;
-		padding: 0 30px;
-		transition: all 0.2s;
-		margin-top: 2rem;
-		&:hover {
-			background-color: $bacHoerClr;
-			color: #fff;
-		}
 	}
-}
-.user-do {
-	display: flex;
-	align-items: center;
-	&--base {
-		margin-right: 10px;
-		font-size: 12px;
-		display: block;
-		flex-shrink: 0;
-		transition: all 0.3s;
-		border: 1px solid #3dbcc6;
-		padding: 2px 10px;
-		border-radius: 2rem;
-		color: #00bfc8;
+	::v-deep .el-icon-date::before {
+		content: "\e6df";
 	}
-	&--ok {
+	::v-deep .el-input__prefix {
+		position: static;
 		cursor: pointer;
-		&:hover {
-			color: #fff;
-			background-color: #3dbcc6;
-		}
-		&:active {
-			background-color: #2fa4ad;
-		}
+		font-size: 22px;
+		margin-left: 15px;
 	}
-	&--no {
-		cursor: default;
-		background-color: rgba(0, 0, 0, 0.1);
-		background-color: rgba(0, 0, 0, 0.1);
-		color: #fff;
-		border-color: #dcdee1;
-	}
-	&--nomar {
-		margin-right: 0;
-	}
-}
 
-.mywrite {
-	&-box {
+	::v-deep .el-tabs--border-card > .el-tabs__header .el-tabs__item.is-active {
+		color: #000;
 	}
-	&-title {
-		font-size: 30px;
-		font-weight: bold;
-		width: fit-content;
-		margin: 0 auto 20px;
+	::v-deep
+		.el-tabs--border-card
+		> .el-tabs__header
+		.el-tabs__item:not(.is-disabled):hover {
+		color: #000;
 	}
-	&-con {
-		width: fit-content;
-		flex-shrink: 0;
-		margin: 0 auto;
-		border: 1px solid #dddddd;
-	}
-	&-menu {
-		display: flex;
-		width: fit-content;
-		margin: 20px auto 0;
-		div {
-			width: 100px;
-		}
-		div:nth-of-type(2) {
-			margin: 0 20px;
-		}
-	}
-}
-::v-deep .el-dialog__header {
-	padding: 0;
-}
-::v-deep .el-input--prefix .el-input__inner {
-	border: 0;
-	border-bottom: 1px solid #999999;
-	font-size: 16px;
-	outline: none;
-	border-radius: 0;
-	padding: 0;
-}
-::v-deep .el-date-editor {
-	width: 100%;
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-}
-::v-deep .el-date-editor.el-input {
-	width: auto;
-}
-::v-deep .el-icon-date::before {
-	content: "\e6df";
-}
-::v-deep .el-input__prefix {
-	position: static;
-	cursor: pointer;
-	font-size: 22px;
-	margin-left: 15px;
-}
-
-::v-deep .el-tabs--border-card > .el-tabs__header .el-tabs__item.is-active {
-	color: #000;
-}
-::v-deep
-	.el-tabs--border-card
-	> .el-tabs__header
-	.el-tabs__item:not(.is-disabled):hover {
-	color: #000;
-}
-.house-info {
-	&__img {
-		display: block;
-		width: 100%;
-		img {
+	.house-info {
+		&__img {
+			display: block;
 			width: 100%;
-			height: 205px;
+			img {
+				width: 100%;
+				height: 205px;
+			}
+		}
+		&__d {
+			padding-top: 10px;
+		}
+		&__t {
+			display: inline-block;
+			color: #606266;
+			margin-bottom: 12px;
+			&:hover {
+				color: #3dbcc6;
+			}
 		}
 	}
-	&__d {
-		padding-top: 10px;
-	}
-	&__t {
-		display: inline-block;
-		color: #606266;
-		margin-bottom: 12px;
-		&:hover {
-			color: #3dbcc6;
-		}
-	}
-}
-.rent-header {
-	font-size: 20px;
-	color: #303133;
-	margin-top: -10px;
-	margin-bottom: 14px;
-}
-.rent-hou {
-	width: 380px;
-}
-.rent-info {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	margin-bottom: 15px;
-
-	& > div:first-child {
-		font-size: 16px;
+	.rent-header {
+		font-size: 20px;
 		color: #303133;
+		margin-top: -10px;
+		margin-bottom: 14px;
 	}
-}
-.rent-retreat {
-	padding-left: 10px;
-	height: fit-content;
-	margin: auto;
-	&-price {
-		margin-bottom: 2rem;
-		& > span:first-child {
+	.rent-hou {
+		width: 380px;
+	}
+	.rent-info {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 15px;
+
+		& > div:first-child {
 			font-size: 16px;
 			color: #303133;
 		}
-		&--num {
-			position: relative;
-			color: #000;
-			display: inline-block;
-			border-bottom: 2px solid #2878ff;
+	}
+	.rent-retreat {
+		padding-left: 10px;
+		height: fit-content;
+		margin: auto;
+		&-price {
+			margin-bottom: 2rem;
+			& > span:first-child {
+				font-size: 16px;
+				color: #303133;
+			}
+			&--num {
+				position: relative;
+				color: #000;
+				display: inline-block;
+				border-bottom: 2px solid #2878ff;
+			}
+		}
+		&-time {
+			margin-bottom: 2rem;
+		}
+		&-but {
 		}
 	}
-	&-time {
-		margin-bottom: 2rem;
+	.rent-conta {
+		display: flex;
 	}
-	&-but {
+	.per-heder-badge {
+		line-height: initial;
 	}
-}
-.rent-conta {
-	display: flex;
-}
-.per-heder-badge {
-	line-height: initial;
-}
-.besinfo {
-	margin: 5px;
-}
-.nowrap-ecli {
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
-}
-.look-badge {
-	margin: 5px 10px 0 0;
-	flex-shrink: 0;
-}
+	.besinfo {
+		margin: 5px;
+	}
+	.nowrap-ecli {
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+	.look-badge {
+		margin: 5px 10px 5px 0;
+		flex-shrink: 0;
+	}
 </style>

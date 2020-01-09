@@ -5,9 +5,9 @@ import axiosExtra from "axios-extra";
 import { showLoading, tryHideLoading } from './otherLoadding';
 const Axios = axiosExtra.create({
     axios,
-    timeout: 6000,
+    timeout: 11000,
     queueOptions: {
-        retry: 2, // 重试次数
+        retry: 0, // 重试次数
         retryIsJump: true
     },
 })
@@ -18,6 +18,7 @@ const Axios = axiosExtra.create({
 // http://192.168.3.26:8888  余展鹏
 const Lxd = 'http://192.168.3.5:8888';
 const ServerA = 'http://39.106.122.19:8888';
+const ServerB = 'https://chenmaio.com';
 const Yzp = 'http://192.168.3.26:8888';
 Axios.defaults.baseURL = ServerA;
 Axios.defaults.headers.post["Content-Type"] =
